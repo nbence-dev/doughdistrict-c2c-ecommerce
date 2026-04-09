@@ -15,7 +15,8 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Docker Deploy
+        shell: bash
         run: |
-          cd ~/homelab/apps/doughdistrict-c2c-ecommerce
+          cd "$HOME/homelab/apps/doughdistrict-c2c-ecommerce"
           docker compose up -d --build --remove-orphans
           docker system prune -f

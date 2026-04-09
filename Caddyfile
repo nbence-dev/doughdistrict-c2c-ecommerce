@@ -1,7 +1,0 @@
-{
-	admin off
-}
-
-:80 {
-	reverse_proxy app:80
-}

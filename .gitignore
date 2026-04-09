@@ -1,0 +1,18 @@
+# Environment
+.env
+
+# Uploads (user-submitted files)
+public/uploads/*
+!public/uploads/.gitkeep
+
+# Docker volumes / overrides
+docker-compose.override.yml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp

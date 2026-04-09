@@ -3,6 +3,7 @@ services:
     # Changed name to keep it simple and consistent
     container_name: dough-app
     build: .
+    restart: always
     env_file: .env
     volumes:
       - ./public:/var/www/html/public

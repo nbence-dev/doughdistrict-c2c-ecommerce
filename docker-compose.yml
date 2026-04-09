@@ -1,21 +1,28 @@
 services:
-  app:
+  dough-app:
+    # Changed name to keep it simple and consistent
+    container_name: dough-app
     build: .
     volumes:
       - ./public:/var/www/html/public
       - ./src:/var/www/html/src
     depends_on:
-      - db
+      - dough-db
+    networks:
+      - dough-internal
     environment:
-      DB_HOST: db
+      DB_HOST: dough-db
       DB_PORT: "3306"
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASS: ${DB_PASS}
 
-  db:
+  dough-db:
+    container_name: dough-db
     image: mysql:8.0
     restart: unless-stopped
+    networks:
+      - dough-internal
     environment:
       MYSQL_DATABASE: ${DB_NAME}
       MYSQL_USER: ${DB_USER}
@@ -25,20 +32,20 @@ services:
       - db_data:/var/lib/mysql
       - ./sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql
 
-  caddy:
-    image: caddy:latest
-    restart: unless-stopped
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
-    depends_on:
-      - app
-
-  tunnel:
+  # Dedicated tunnel for DoughDistrict
+  cloudflare-tunnel:
     image: cloudflare/cloudflared:latest
+    container_name: dough-tunnel
     restart: unless-stopped
-    command: tunnel --no-autoupdate run --url http://caddy:80
-    depends_on:
-      - caddy
+    # PHP apps usually listen on port 80 inside the container
+    command: tunnel --no-autoupdate --url http://dough-app:80
+    networks:
+      - dough-internal
+
+networks:
+  # Internal network so the app can talk to MySQL safely
+  dough-internal:
+    driver: bridge
 
 volumes:
   db_data:

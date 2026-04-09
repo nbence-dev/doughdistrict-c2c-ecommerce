@@ -2,11 +2,14 @@ name: Deploy DoughDistrict
 
 on:
   push:
-    branches: [ main ] # This triggers the "signal"
+    branches: [ main ]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   deploy:
-    runs-on: self-hosted # This tells GitHub to talk to your VM
+    runs-on: self-hosted
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -14,5 +17,5 @@ jobs:
       - name: Docker Deploy
         run: |
           cd ~/homelab/apps/doughdistrict-c2c-ecommerce
-          docker compose up -d --build
-          docker image prune -f
+          docker compose up -d --build --remove-orphans
+          docker system prune -f

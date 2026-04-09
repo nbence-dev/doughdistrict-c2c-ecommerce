@@ -1,0 +1,7 @@
+.git
+.env
+docker-compose.yml
+Dockerfile
+sql/
+# If you eventually use Composer:
+vendor/

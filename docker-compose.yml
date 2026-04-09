@@ -39,7 +39,7 @@ services:
     container_name: dough-tunnel
     restart: unless-stopped
     # PHP apps usually listen on port 80 inside the container
-    command: tunnel --no-autoupdate --url http://dough-app:80
+    command: tunnel --no-autoupdate --url http://dough-app:80/public
     networks:
       - dough-internal
 

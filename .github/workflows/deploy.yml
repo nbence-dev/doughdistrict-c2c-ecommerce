@@ -15,6 +15,6 @@ jobs:
       - name: Docker Deploy
         shell: bash
         run: |
-          cd "$HOME/homelab/apps/doughdistrict-c2c-ecommerce"
+          cd "$GITHUB_WORKSPACE"
           docker compose up -d --build --remove-orphans
           docker system prune -f

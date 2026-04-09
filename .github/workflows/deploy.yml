@@ -1,17 +1,11 @@
----
-name: Deploy DoughDistrict
-on:
-  push:
-    branches:
-      - main
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-jobs:
-  deploy:
-    runs-on: self-hosted
-    steps:
-      - name: Checkout Code
+- name: Checkout Code
         uses: actions/checkout@v4
+
+      # ADD THIS STEP: It creates the .env file from your GitHub Secrets
+      - name: Create .env file
+        run: |
+          echo "${{ secrets.DOT_ENV }}" > .env
+
       - name: Docker Deploy
         shell: bash
         run: |

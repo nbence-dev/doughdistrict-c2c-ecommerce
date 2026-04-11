@@ -1,16 +1,11 @@
 <?php 
-    // Building path to .env file
-    $envPath = __DIR__ . '/../.env';
-
-    // Parse the file into associative array
-    $env = parse_ini_file($envPath);
-
-    // Database connection parameters
-    $dbHost = $env['DB_HOST'];
-    $dbPort = $env['DB_PORT'];
-    $dbName = $env['DB_NAME'];
-    $dbUser = $env['DB_USER'];
-    $dbPass = $env['DB_PASS'];
+    // Read database connection parameters from environment variables
+    // (injected by docker-compose — no need to parse a file)
+    $dbHost = getenv('DB_HOST') ?: 'dough-db';
+    $dbPort = getenv('DB_PORT') ?: '3306';
+    $dbName = getenv('DB_NAME');
+    $dbUser = getenv('DB_USER');
+    $dbPass = getenv('DB_PASS');
 
     // Create DSN (Data Source Name) for PDO
 

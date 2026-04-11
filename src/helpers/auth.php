@@ -29,7 +29,7 @@
 
     function require_login() {
         if (!is_logged_in()) {
-            header('Location: ' . BASE_URL . '/login');
+            header('Location: ' . BASE_URL . 'login');
             exit();
         }
     }
@@ -37,7 +37,7 @@
     function require_role($role) {
         $user = current_user();
         if (!$user || $user['role'] !== $role) {
-            header('Location: ' . BASE_URL . '/login');
+            header('Location: ' . BASE_URL . 'login');
             exit();
         }
     }

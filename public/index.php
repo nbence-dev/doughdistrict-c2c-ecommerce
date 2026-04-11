@@ -30,10 +30,18 @@ switch ($path) {
         break;
 
     case 'logout':
-        session_destroy();
         set_flash('You have been logged out.', 'success');
+        session_unset();
+        session_destroy();
+        setcookie(session_name(), '', time() - 3600, '/');
         header('Location: ' . BASE_URL . 'login');
         exit();
+    
+    case 'browse':
+        require_login();
+        require_once ROOT_PATH . '/controllers/browse_controller.php';
+        require_once ROOT_PATH . '/views/buyer/browse.php'; 
+        break;
 
     default:
         http_response_code(404);

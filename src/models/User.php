@@ -37,5 +37,21 @@ class User {
         return $stmt->fetch();
     }
     
+
+    // admin functions
+    public function getAllUsers(){
+        $stmt = $this->db->query('SELECT id, name, email, role, is_active FROM users');
+        return $stmt->fetchAll();
+    }
+
+    public function setActive($id, $active){
+        $stmt = $this->db->prepare('UPDATE users SET is_active = ? WHERE id = ?');
+        return $stmt->execute([$active, $id]);
+    }
+
+    public function setRole($user_id, $role){
+        $stmt = $this->db->prepare('UPDATE users SET role = ? WHERE id = ?');
+        return $stmt->execute([$role, $user_id]);
+    }
 }
 ?>

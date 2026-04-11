@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] ==="POST" && isset($_POST['register'])){
     // handle validation failure
     if ($error){
         set_flash($error, 'danger');
-        header('Location: ' . BASE_URL . '/register');
+        header('Location: ' . BASE_URL . 'register');
         exit();
     }
 
@@ -33,11 +33,11 @@ if ($_SERVER['REQUEST_METHOD'] ==="POST" && isset($_POST['register'])){
     $created = $userModel->create($name, $email, $password);
     if ($created){
         set_flash("Registration successful! Please log in.", 'success');
-        header('Location: ' . BASE_URL . '/login');
+        header('Location: ' . BASE_URL . 'login');
         exit();
     } else {
         set_flash("Email already registered.", 'danger');
-        header('Location: ' . BASE_URL . '/register');
+        header('Location: ' . BASE_URL . 'register');
         exit();
     }
 }
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['login'])){
 
     if ($error){
         set_flash($error, 'danger');
-        header('Location: ' . BASE_URL . '/login');
+        header('Location: ' . BASE_URL . 'login');
         exit();
     }
 
@@ -64,26 +64,20 @@ if ($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['login'])){
     $user = $userModel->findByEmail($email);
 
     if ($user && password_verify($password, $user['password'])){
-        // Login successful
         $_SESSION['user_id'] = $user['id'];
         set_flash("Welcome back, " . htmlspecialchars($user['name']) . "!", 'success');
         if ($user['role'] === 'admin') {
-             header('Location: ' . BASE_URL . '/admin/dashboard');
+            header('Location: ' . BASE_URL . 'admin/dashboard');
+        } elseif ($user['role'] === 'seller') {
+            header('Location: ' . BASE_URL . 'seller/dashboard');
         } else {
-            header('Location: ' . BASE_URL);
+            header('Location: ' . BASE_URL . 'browse');
         }
         exit();
     } else {
         set_flash("Invalid email or password.", 'danger');
-        header('Location: ' . BASE_URL . '/login');
+        header('Location: ' . BASE_URL . 'login');
         exit();
     }
-}
-// Logout
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['logout'])){
-    session_destroy();
-    set_flash("You have been logged out.", 'success');
-    header('Location: ' . BASE_URL . '/login');
-    exit();
 }
 ?>

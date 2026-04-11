@@ -11,7 +11,8 @@ services:
       - ./public:/var/www/html/public
       - ./src:/var/www/html/src
     depends_on:
-      - dough-db
+      dough-db:
+        condition: service_healthy
     networks:
       - dough-internal
     environment:
@@ -35,6 +36,12 @@ services:
     volumes:
       - db_data:/var/lib/mysql
       - ./sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASS}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
 
   # Dedicated tunnel for DoughDistrict
   cloudflare-tunnel:

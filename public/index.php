@@ -43,6 +43,18 @@ switch ($path) {
         require_once ROOT_PATH . '/views/buyer/browse.php'; 
         break;
 
+    case 'admin/dashboard':
+        require_role('admin');
+        require_once ROOT_PATH . '/controllers/admin_controller.php';
+        require_once ROOT_PATH . '/views/admin/dashboard.php';
+        break;
+    
+    case 'seller/dashboard':
+        require_role('seller');
+        require_once ROOT_PATH . '/controllers/seller_controller.php';
+        require_once ROOT_PATH . '/views/seller/dashboard.php';
+        break;
+        
     default:
         http_response_code(404);
         echo '<h1>404 — Page not found</h1>';

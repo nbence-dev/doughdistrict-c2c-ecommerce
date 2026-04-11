@@ -1,7 +1,33 @@
-.git
+# Credentials — never bake into the image
 .env
+.env.example
+
+# Git
+.git
+.gitignore
+.github/
+
+# Docker meta files
 docker-compose.yml
+docker-compose.override.yml
 Dockerfile
+
+# SQL is volume-mounted at runtime, not needed in image
 sql/
-# If you eventually use Composer:
+
+# Docs
+*.md
+context.md
+
+# Dependencies
 vendor/
+node_modules/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

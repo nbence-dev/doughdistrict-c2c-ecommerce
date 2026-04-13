@@ -1,6 +1,6 @@
 <?php
 // Register
-if ($_SERVER['REQUEST_METHOD'] ==="POST" && isset($_POST['register'])){
+if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['register'])) {
 
     $name = trim($_POST['name']) ?? '';
     $email = trim($_POST['email']) ?? '';
@@ -11,18 +11,18 @@ if ($_SERVER['REQUEST_METHOD'] ==="POST" && isset($_POST['register'])){
 
     $error = null;
 
-    if (empty($name) || empty($email) || empty($password) || empty($confirm_password)){
+    if (empty($name) || empty($email) || empty($password) || empty($confirm_password)) {
         $error = "All fields are required.";
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)){
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = "Invalid email format.";
-    } elseif ($password !== $confirm_password){
+    } elseif ($password !== $confirm_password) {
         $error = "Passwords do not match.";
-    } elseif(strlen($password) < 8){
+    } elseif (strlen($password) < 8) {
         $error = "Password must be at least 8 characters.";
     }
 
     // handle validation failure
-    if ($error){
+    if ($error) {
         set_flash($error, 'danger');
         header('Location: ' . BASE_URL . 'register');
         exit();
@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] ==="POST" && isset($_POST['register'])){
     // validation passed, create user
     $userModel = new User($pdo);
     $created = $userModel->create($name, $email, $password);
-    if ($created){
+    if ($created) {
         set_flash("Registration successful! Please log in.", 'success');
         header('Location: ' . BASE_URL . 'login');
         exit();
@@ -42,19 +42,19 @@ if ($_SERVER['REQUEST_METHOD'] ==="POST" && isset($_POST['register'])){
     }
 }
 // Login
-if ($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['login'])){
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
     $email = trim($_POST['email']) ?? '';
     $password = $_POST['password'] ?? '';
 
     $error = null;
 
-    if (empty($email) || empty($password)){
+    if (empty($email) || empty($password)) {
         $error = "Email and password are required.";
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)){
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = "Invalid email format.";
     }
 
-    if ($error){
+    if ($error) {
         set_flash($error, 'danger');
         header('Location: ' . BASE_URL . 'login');
         exit();
@@ -63,12 +63,12 @@ if ($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['login'])){
     $userModel = new User($pdo);
     $user = $userModel->findByEmail($email);
 
-    if ($user && password_verify($password, $user['password'])){
+    if ($user && password_verify($password, $user['password'])) {
         session_regenerate_id(true);
         $_SESSION['user_id'] = $user['id'];
         set_flash("Welcome back, " . htmlspecialchars($user['name']) . "!", 'success');
         if ($user['role'] === 'admin') {
-            header('Location: ' . BASE_URL . 'admin/dashboard');
+            header('Location: ' . BASE_URL . 'admin/users');
         } elseif ($user['role'] === 'seller') {
             header('Location: ' . BASE_URL . 'seller/dashboard');
         } else {

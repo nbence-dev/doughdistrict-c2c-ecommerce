@@ -4,6 +4,8 @@ require_once __DIR__ . '/../src/config/constants.php';
 require_once ROOT_PATH . '/helpers/auth.php';   // also loads db.php and User.php
 require_once ROOT_PATH . '/helpers/flash.php';
 
+
+
 // Parse the request path
 $path = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
 
@@ -36,25 +38,43 @@ switch ($path) {
         setcookie(session_name(), '', time() - 3600, '/');
         header('Location: ' . BASE_URL . 'login');
         exit();
-    
+
     case 'browse':
         require_login();
         require_once ROOT_PATH . '/controllers/browse_controller.php';
-        require_once ROOT_PATH . '/views/buyer/browse.php'; 
+        require_once ROOT_PATH . '/views/buyer/browse.php';
         break;
 
-    case 'admin/dashboard':
+    // case 'admin/dashboard':
+    //     require_role('admin');
+    //     require_once ROOT_PATH . '/controllers/admin_controller.php';
+    //     require_once ROOT_PATH . '/views/admin/dashboard.php';
+    //     break;
+
+    case 'admin/users':
         require_role('admin');
         require_once ROOT_PATH . '/controllers/admin_controller.php';
-        require_once ROOT_PATH . '/views/admin/dashboard.php';
+        require_once ROOT_PATH . '/views/admin/users.php';
         break;
-    
+
+    case 'admin/products':
+        require_role('admin');
+        require_once ROOT_PATH . '/controllers/admin_controller.php';
+        require_once ROOT_PATH . '/views/admin/product.php';
+        break;
+
+    case 'admin/categories':
+        require_role('admin');
+        require_once ROOT_PATH . '/controllers/admin_controller.php';
+        require_once ROOT_PATH . '/views/admin/categories.php';
+        break;
+
     case 'seller/dashboard':
         require_role('seller');
         require_once ROOT_PATH . '/controllers/seller_controller.php';
         require_once ROOT_PATH . '/views/seller/dashboard.php';
         break;
-        
+
     default:
         http_response_code(404);
         echo '<h1>404 — Page not found</h1>';

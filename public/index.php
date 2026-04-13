@@ -62,16 +62,41 @@ switch ($path) {
         require_once ROOT_PATH . '/controllers/admin_controller.php';
         break;
 
+    case 'admin/users/role':
+        require_role('admin');
+        require_once ROOT_PATH . '/controllers/admin_controller.php';
+        break;
+
     case 'admin/products':
         require_role('admin');
         require_once ROOT_PATH . '/controllers/admin_controller.php';
-        require_once ROOT_PATH . '/views/admin/product.php';
+        require_once ROOT_PATH . '/views/admin/products.php';
+        break;
+
+    case 'admin/products/toggle':
+        require_role('admin');
+        require_once ROOT_PATH . '/controllers/admin_controller.php';
         break;
 
     case 'admin/categories':
         require_role('admin');
         require_once ROOT_PATH . '/controllers/admin_controller.php';
         require_once ROOT_PATH . '/views/admin/categories.php';
+        break;
+
+    case 'admin/categories/create':
+        require_role('admin');
+        require_once ROOT_PATH . '/controllers/admin_controller.php';
+        break;
+
+    case 'admin/categories/update':
+        require_role('admin');
+        require_once ROOT_PATH . '/controllers/admin_controller.php';
+        break;
+
+    case 'admin/categories/delete':
+        require_role('admin');
+        require_once ROOT_PATH . '/controllers/admin_controller.php';
         break;
 
     case 'seller/dashboard':

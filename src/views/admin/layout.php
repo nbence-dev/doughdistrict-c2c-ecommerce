@@ -502,8 +502,13 @@ function admin_nav_link(string $path, string $icon, string $label, string $curre
         }
 
         /* ── Sidebar toggle (mobile) ── */
-        #sidebar-toggle { display: none; }
-        #sidebar-overlay { display: none; }
+        #sidebar-toggle {
+            display: none;
+        }
+
+        #sidebar-overlay {
+            display: none;
+        }
 
         /* ── Mobile breakpoint ── */
         @media (max-width: 991.98px) {
@@ -511,40 +516,50 @@ function admin_nav_link(string $path, string $icon, string $label, string $curre
                 transform: translateX(-100%);
                 transition: transform 0.25s ease;
             }
+
             body.sidebar-open #admin-sidebar {
                 transform: translateX(0);
             }
+
             #sidebar-overlay {
                 position: fixed;
                 inset: 0;
                 background: rgba(0, 0, 0, 0.45);
                 z-index: 1039;
             }
+
             body.sidebar-open #sidebar-overlay {
                 display: block;
             }
+
             #admin-topbar {
                 left: 0;
                 padding: 0 1rem;
             }
+
             #admin-topbar .search-wrap {
                 display: none;
             }
+
             #sidebar-toggle {
                 display: inline-flex;
             }
+
             #admin-main {
                 margin-left: 0;
             }
+
             .admin-content {
                 padding: 1.5rem 1rem;
             }
+
             .page-heading {
                 font-size: 1.4rem;
             }
         }
 
         @media (max-width: 575.98px) {
+
             #admin-topbar .topbar-name,
             #admin-topbar .topbar-role,
             #admin-topbar .vr {
@@ -589,7 +604,7 @@ function admin_nav_link(string $path, string $icon, string $label, string $curre
 
     <!-- ════════ Admin Topbar ════════ -->
     <header id="admin-topbar">
-        <div class="d-flex align-items-center gap-2">
+        <div class="d-flex align-items-center gap-2 d-lg-none">
             <button class="icon-btn" id="sidebar-toggle" title="Menu">
                 <span class="material-symbols-outlined">menu</span>
             </button>

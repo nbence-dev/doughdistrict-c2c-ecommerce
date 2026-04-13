@@ -153,3 +153,4 @@ See `PLAN.md` for the detailed task list.
 - Prefer editing existing files over creating new ones.
 - When in doubt, propose and wait for confirmation.
 - No Agents.md needed — this project is built step-by-step by the student with Claude assisting.
+- Do not add a `Co-Authored-By` trailer to git commits.

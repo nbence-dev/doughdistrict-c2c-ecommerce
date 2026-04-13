@@ -53,7 +53,7 @@ class User
     public function setActive($id, $active)
     {
         $stmt = $this->db->prepare('UPDATE users SET is_active = ? WHERE id = ?');
-        return $stmt->execute([$active, $id]);
+        return $stmt->execute([(int) $active, $id]);
     }
 
     public function setRole($user_id, $role)

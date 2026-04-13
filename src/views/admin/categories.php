@@ -101,8 +101,8 @@ $flash         = get_flash();
             <thead>
                 <tr>
                     <th>Category Name</th>
-                    <th>Slug</th>
-                    <th>Products</th>
+                    <th class="d-none d-md-table-cell">Slug</th>
+                    <th class="d-none d-sm-table-cell">Products</th>
                     <th class="text-end">Actions</th>
                 </tr>
             </thead>
@@ -130,14 +130,14 @@ $flash         = get_flash();
                         </div>
                     </td>
                     <!-- Slug -->
-                    <td>
+                    <td class="d-none d-md-table-cell">
                         <code class="small px-2 py-1 rounded"
                               style="background:var(--dd-surface-low);color:var(--dd-on-surface-var);font-size:.8rem">
                             <?= htmlspecialchars($cat['slug'] ?? strtolower(str_replace(' ', '-', $cat['name']))) ?>
                         </code>
                     </td>
                     <!-- Product count -->
-                    <td>
+                    <td class="d-none d-sm-table-cell">
                         <span class="badge-status badge-approved">
                             <?= (int)($cat['product_count'] ?? 0) ?> Items
                         </span>

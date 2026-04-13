@@ -1,35 +1,45 @@
 <?php $flash = get_flash(); ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register — DoughDistrict</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Be+Vietnam+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Be+Vietnam+Pro:wght@400;500;600&display=swap"
+        rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         :root {
-            --dd-primary:        #6f4627;
-            --dd-secondary:      #924c00;
-            --dd-surface:        #fbf9f1;
-            --dd-surface-low:    #f5f4ec;
-            --dd-on-surface:     #1b1c17;
+            --dd-primary: #6f4627;
+            --dd-secondary: #924c00;
+            --dd-surface: #fbf9f1;
+            --dd-surface-low: #f5f4ec;
+            --dd-on-surface: #1b1c17;
             --dd-on-surface-var: #51443c;
         }
+
         body {
             font-family: 'Be Vietnam Pro', sans-serif;
             background-color: var(--dd-surface);
         }
-        .font-headline { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        .font-headline {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
 
         .brand-panel {
             background: linear-gradient(160deg, #6f4627 0%, #4a2c15 100%);
             min-height: 100vh;
         }
+
         @media (max-width: 991.98px) {
-            .brand-panel { min-height: 160px; }
+            .brand-panel {
+                min-height: 160px;
+            }
         }
 
         .form-panel {
@@ -46,6 +56,7 @@
             color: var(--dd-on-surface);
             transition: all 0.2s ease;
         }
+
         .input-carved:focus {
             background-color: #ffffff;
             border-color: rgba(111, 70, 39, 0.4);
@@ -63,121 +74,114 @@
             font-family: 'Be Vietnam Pro', sans-serif;
             transition: all 0.3s ease;
         }
+
         .btn-golden:hover {
             box-shadow: 0 8px 32px rgba(111, 70, 39, 0.3);
             transform: translateY(-1px);
             color: #ffffff;
         }
-        .link-warm { color: var(--dd-secondary); text-decoration: none; }
-        .link-warm:hover { color: var(--dd-primary); text-decoration: underline; }
+
+        .link-warm {
+            color: var(--dd-secondary);
+            text-decoration: none;
+        }
+
+        .link-warm:hover {
+            color: var(--dd-primary);
+            text-decoration: underline;
+        }
     </style>
 </head>
+
 <body>
-<div class="container-fluid p-0">
-    <div class="row g-0 min-vh-100">
+    <div class="container-fluid p-0">
+        <div class="row g-0 min-vh-100">
 
-        <!-- Brand Panel -->
-        <div class="col-lg-5 brand-panel d-flex flex-column justify-content-center align-items-center text-white p-5">
-            <div class="text-center">
-                <div class="mb-3" style="font-size: 3.5rem;">🥐</div>
-                <h1 class="font-headline fw-bold display-5 text-white mb-2">DoughDistrict</h1>
-                <p class="fs-5 fw-light mb-0" style="opacity: 0.75;">Join the District</p>
-                <hr class="border-white my-4" style="opacity: 0.2; width: 60px; margin-left: auto; margin-right: auto;">
-                <p class="small" style="opacity: 0.6;">Support local South African bakers<br>across all nine provinces.</p>
-            </div>
-        </div>
-
-        <!-- Form Panel -->
-        <div class="col-lg-7 form-panel d-flex align-items-center justify-content-center p-4 p-md-5">
-            <div class="w-100" style="max-width: 480px;">
-
-                <h2 class="font-headline fw-bold mb-1" style="color: var(--dd-on-surface);">Create your account.</h2>
-                <p class="mb-4" style="color: var(--dd-on-surface-var);">Start browsing or selling home-baked goods today.</p>
-
-                <?php if ($flash): ?>
-                <div class="alert alert-<?= htmlspecialchars($flash['type']) ?> py-2 small" role="alert">
-                    <?= htmlspecialchars($flash['message']) ?>
+            <!-- Brand Panel -->
+            <div
+                class="col-lg-6 brand-panel d-flex flex-column justify-content-center align-items-center text-white p-5">
+                <div class="text-center">
+                    <div class="mb-3" style="font-size: 3.5rem;">🥐</div>
+                    <h1 class="font-headline fw-bold display-5 text-white mb-2">DoughDistrict</h1>
+                    <p class="fs-5 fw-light mb-0" style="opacity: 0.75;">Join the District</p>
+                    <hr class="border-white my-4"
+                        style="opacity: 0.2; width: 60px; margin-left: auto; margin-right: auto;">
+                    <p class="small" style="opacity: 0.6;">Support local South African bakers<br>across all nine
+                        provinces.</p>
                 </div>
-                <?php endif; ?>
-
-                <form method="POST" action="<?= BASE_URL ?>register" novalidate>
-                    <div class="mb-3">
-                        <label for="name" class="form-label small fw-semibold" style="color: var(--dd-on-surface-var);">
-                            Full Name
-                        </label>
-                        <input
-                            type="text"
-                            id="name"
-                            name="name"
-                            class="form-control input-carved"
-                            placeholder="Jane Dough"
-                            autocomplete="name"
-                            required
-                        >
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="email" class="form-label small fw-semibold" style="color: var(--dd-on-surface-var);">
-                            Email Address
-                        </label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            class="form-control input-carved"
-                            placeholder="you@example.com"
-                            autocomplete="email"
-                            required
-                        >
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="password" class="form-label small fw-semibold" style="color: var(--dd-on-surface-var);">
-                            Password
-                        </label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            class="form-control input-carved"
-                            placeholder="At least 8 characters"
-                            autocomplete="new-password"
-                            required
-                        >
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="confirm_password" class="form-label small fw-semibold" style="color: var(--dd-on-surface-var);">
-                            Confirm Password
-                        </label>
-                        <input
-                            type="password"
-                            id="confirm_password"
-                            name="confirm_password"
-                            class="form-control input-carved"
-                            placeholder="••••••••"
-                            autocomplete="new-password"
-                            required
-                        >
-                    </div>
-
-                    <div class="d-grid mb-4">
-                        <button type="submit" name="register" class="btn btn-golden">
-                            Create Account
-                        </button>
-                    </div>
-
-                    <p class="text-center small mb-0" style="color: var(--dd-on-surface-var);">
-                        Already have an account?
-                        <a href="<?= BASE_URL ?>login" class="link-warm fw-semibold">Sign in</a>
-                    </p>
-                </form>
-
             </div>
-        </div>
 
+            <!-- Form Panel -->
+            <div class="col-lg-6 form-panel d-flex align-items-center justify-content-center p-4 p-md-5">
+                <div class="w-100" style="max-width: 480px;">
+
+                    <h2 class="font-headline fw-bold mb-1" style="color: var(--dd-on-surface);">Create your account.
+                    </h2>
+                    <p class="mb-4" style="color: var(--dd-on-surface-var);">Start browsing or selling home-baked goods
+                        today.</p>
+
+                        <?php if ($flash): ?>
+                        <div class="alert alert-<?= htmlspecialchars($flash['type']) ?> py-2 small" role="alert">
+                                    <?= htmlspecialchars($flash['message']) ?>
+                        </div>
+                        <?php endif; ?>
+
+                    <form method="POST" action="<?= BASE_URL ?>register" novalidate>
+                        <div class="mb-3">
+                            <label for="name" class="form-label small fw-semibold"
+                                style="color: var(--dd-on-surface-var);">
+                                Full Name
+                            </label>
+                            <input type="text" id="name" name="name" class="form-control input-carved"
+                                placeholder="Jane Dough" autocomplete="name" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label small fw-semibold"
+                                style="color: var(--dd-on-surface-var);">
+                                Email Address
+                            </label>
+                            <input type="email" id="email" name="email" class="form-control input-carved"
+                                placeholder="you@example.com" autocomplete="email" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label small fw-semibold"
+                                style="color: var(--dd-on-surface-var);">
+                                Password
+                            </label>
+                            <input type="password" id="password" name="password" class="form-control input-carved"
+                                placeholder="At least 8 characters" autocomplete="new-password" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="confirm_password" class="form-label small fw-semibold"
+                                style="color: var(--dd-on-surface-var);">
+                                Confirm Password
+                            </label>
+                            <input type="password" id="confirm_password" name="confirm_password"
+                                class="form-control input-carved" placeholder="••••••••" autocomplete="new-password"
+                                required>
+                        </div>
+
+                        <div class="d-grid mb-4">
+                            <button type="submit" name="register" class="btn btn-golden">
+                                Create Account
+                            </button>
+                        </div>
+
+                        <p class="text-center small mb-0" style="color: var(--dd-on-surface-var);">
+                            Already have an account?
+                            <a href="<?= BASE_URL ?>login" class="link-warm fw-semibold">Sign in</a>
+                        </p>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
     </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

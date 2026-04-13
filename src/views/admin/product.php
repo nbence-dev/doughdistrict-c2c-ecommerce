@@ -38,10 +38,10 @@ function product_status_badge(string $status): string {
         <table class="table table-dd mb-0">
             <thead>
                 <tr>
-                    <th style="width:35%">Product &amp; Listing Details</th>
-                    <th>Maker</th>
-                    <th>Category</th>
-                    <th>Price &amp; Status</th>
+                    <th>Product &amp; Listing Details</th>
+                    <th class="d-none d-md-table-cell">Maker</th>
+                    <th class="d-none d-lg-table-cell">Category</th>
+                    <th class="d-none d-sm-table-cell">Price &amp; Status</th>
                     <th class="text-end">Actions</th>
                 </tr>
             </thead>
@@ -80,7 +80,7 @@ function product_status_badge(string $status): string {
                         </div>
                     </td>
                     <!-- Maker -->
-                    <td>
+                    <td class="d-none d-md-table-cell">
                         <div class="d-flex align-items-center gap-2">
                             <img src="https://ui-avatars.com/api/?name=<?= urlencode($p['seller_name'] ?? 'Seller') ?>&background=f5f4ec&color=6f4627&bold=true&size=48"
                                  alt="<?= htmlspecialchars($p['seller_name'] ?? '') ?>"
@@ -91,11 +91,11 @@ function product_status_badge(string $status): string {
                         </div>
                     </td>
                     <!-- Category -->
-                    <td class="small" style="color:var(--dd-on-surface-var)">
+                    <td class="d-none d-lg-table-cell small" style="color:var(--dd-on-surface-var)">
                         <?= htmlspecialchars($p['category_name'] ?? '—') ?>
                     </td>
                     <!-- Price & Status -->
-                    <td>
+                    <td class="d-none d-sm-table-cell">
                         <div class="fw-bold mb-1" style="color:var(--dd-secondary);font-family:'Plus Jakarta Sans',sans-serif">
                             R <?= number_format((float)$p['price'], 2) ?>
                         </div>

@@ -55,10 +55,10 @@ function status_badge(int $isActive): string {
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Email</th>
+                    <th class="d-none d-md-table-cell">Email</th>
                     <th>Role</th>
-                    <th>Status</th>
-                    <th>Joined</th>
+                    <th class="d-none d-sm-table-cell">Status</th>
+                    <th class="d-none d-lg-table-cell">Joined</th>
                     <th class="text-end">Actions</th>
                 </tr>
             </thead>
@@ -83,10 +83,10 @@ function status_badge(int $isActive): string {
                             </span>
                         </div>
                     </td>
-                    <td style="color:var(--dd-on-surface-var)"><?= htmlspecialchars($u['email']) ?></td>
+                    <td class="d-none d-md-table-cell" style="color:var(--dd-on-surface-var)"><?= htmlspecialchars($u['email']) ?></td>
                     <td><?= role_badge($u['role']) ?></td>
-                    <td><?= status_badge((int)$u['is_active']) ?></td>
-                    <td style="color:var(--dd-outline);white-space:nowrap">
+                    <td class="d-none d-sm-table-cell"><?= status_badge((int)$u['is_active']) ?></td>
+                    <td class="d-none d-lg-table-cell" style="color:var(--dd-outline);white-space:nowrap">
                         <?= date('d M Y', strtotime($u['created_at'])) ?>
                     </td>
                     <td>

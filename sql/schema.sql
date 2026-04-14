@@ -53,7 +53,7 @@ CREATE TABLE products (
     price DECIMAL(10, 2) NOT NULL,
     stock_qty INT NOT NULL DEFAULT 0,
     image_url VARCHAR(1000),
-    is_active BOOLEAN DEFAULT TRUE,
+    status ENUM('pending', 'active', 'rejected') NOT NULL DEFAULT 'pending',
     weight_g INT DEFAULT 0,
     length_cm INT DEFAULT 0,
     width_cm INT DEFAULT 0,

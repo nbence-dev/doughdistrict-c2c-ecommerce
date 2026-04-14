@@ -65,10 +65,12 @@ class Product
         }
     }
 
-    public function setActive($id, $active)
+    public function setStatus($id, $status)
     {
-        $stmt = $this->db->prepare('UPDATE products SET is_active = ? WHERE id = ?');
-        return $stmt->execute([$active, $id]);
+        $allowed = ['pending', 'active', 'rejected'];
+        if (!in_array($status, $allowed)) return false;
+        $stmt = $this->db->prepare('UPDATE products SET status = ? WHERE id = ?');
+        return $stmt->execute([$status, $id]);
     }
 
     // admin: all products with seller name, shop name, and category

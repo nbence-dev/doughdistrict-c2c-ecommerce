@@ -24,7 +24,11 @@
 - Stored in `users.role ENUM`
 - `is_seller` boolean removed — use `role = 'seller'` check instead
 - Any `buyer` can self-upgrade to `seller` by completing shop onboarding
-- Admin can change any user's role or deactivate them
+- Admin can change user roles, but with strict transition rules:
+  - `buyer → admin` (promote) and `admin → buyer` (demote) are the only allowed transitions
+  - `seller` role is locked — cannot be reassigned by admin
+  - Rationale: admins are not permitted to shop or sell; they need a separate account for that
+- Admin can deactivate any user regardless of role
 
 ### Payments
 - **Stripe Connect** — sellers connect their own Stripe accounts

@@ -35,14 +35,15 @@ $flash = get_flash();
                 class="d-flex flex-column flex-md-row gap-3 align-items-md-end">
                 <div class="flex-grow-1">
                     <label class="form-label small fw-semibold" style="color:var(--dd-outline)">Category Name</label>
-                    <input type="text" name="name" class="form-control" placeholder="e.g. Artisanal Sourdough" required
+                    <input type="text" name="name" id="quickCreateName" class="form-control" placeholder="e.g. Artisanal Sourdough" required
                         style="background:var(--dd-surface-low);border:none;border-radius:.5rem;font-size:.875rem;color:var(--dd-on-surface)">
+                    <div id="quickCreateNameError" class="text-danger mt-1" style="font-size:.8rem;display:none"></div>
                 </div>
                 <div>
                     <label class="form-label small fw-semibold" style="color:var(--dd-outline)">Slug <span
-                            class="text-muted">(optional)</span></label>
-                    <input type="text" name="slug" class="form-control" placeholder="auto-generated"
-                        style="background:var(--dd-surface-low);border:none;border-radius:.5rem;font-size:.875rem;color:var(--dd-on-surface)">
+                            class="text-muted">(auto)</span></label>
+                    <input type="text" name="slug" id="quickCreateSlug" class="form-control" placeholder="auto-generated" readonly
+                        style="background:var(--dd-surface-low);border:none;border-radius:.5rem;font-size:.875rem;color:var(--dd-on-surface);opacity:.65;cursor:default">
                 </div>
                 <button type="submit" class="btn btn-dd d-flex align-items-center gap-2 px-4 py-2 text-nowrap">
                     <span class="material-symbols-outlined" style="font-size:1rem">add</span> Save Category
@@ -181,9 +182,10 @@ $flash = get_flash();
                             style="background:var(--dd-surface-low);border:none;border-radius:.5rem">
                     </div>
                     <div class="mb-1">
-                        <label class="form-label small fw-semibold" style="color:var(--dd-outline)">Slug</label>
-                        <input type="text" name="slug" id="editCategorySlug" class="form-control"
-                            style="background:var(--dd-surface-low);border:none;border-radius:.5rem">
+                        <label class="form-label small fw-semibold" style="color:var(--dd-outline)">Slug <span class="text-muted">(auto)</span></label>
+                        <input type="text" name="slug" id="editCategorySlug" class="form-control" readonly
+                            style="background:var(--dd-surface-low);border:none;border-radius:.5rem;opacity:.65;cursor:default">
+                        <div id="editCategoryNameError" class="text-danger mt-1" style="font-size:.8rem;display:none"></div>
                     </div>
                 </div>
                 <div class="modal-footer border-0 pt-0">
@@ -236,15 +238,74 @@ $flash = get_flash();
 </div><!-- /#admin-main -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Populate the edit modal fields when triggered
+    // Existing category names for duplicate checking (id + lowercased name)
+    const existingCategories = <?= json_encode(array_map(fn($c) => ['id' => (int)$c['id'], 'name' => strtolower(trim($c['name']))], $categories)) ?>;
+
+    function slugify(str) {
+        return str.toLowerCase().trim()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-');
+    }
+
+    // ── Quick Create: live slug + duplicate check ──
+    const quickNameInput = document.getElementById('quickCreateName');
+    const quickSlugInput = document.getElementById('quickCreateSlug');
+    const quickNameError = document.getElementById('quickCreateNameError');
+
+    quickNameInput.addEventListener('input', function () {
+        quickSlugInput.value = slugify(this.value);
+
+        const val = this.value.trim().toLowerCase();
+        const duplicate = val && existingCategories.some(c => c.name === val);
+        quickNameError.textContent = duplicate ? 'A category with this name already exists.' : '';
+        quickNameError.style.display = duplicate ? '' : 'none';
+    });
+
+    quickNameInput.closest('form').addEventListener('submit', function (e) {
+        const val = quickNameInput.value.trim().toLowerCase();
+        if (val && existingCategories.some(c => c.name === val)) {
+            e.preventDefault();
+            quickNameError.textContent = 'A category with this name already exists.';
+            quickNameError.style.display = '';
+            quickNameInput.focus();
+        }
+    });
+
+    // ── Edit Modal: populate fields, live slug + duplicate check ──
+    const editNameInput = document.getElementById('editCategoryName');
+    const editSlugInput = document.getElementById('editCategorySlug');
+    const editNameError = document.getElementById('editCategoryNameError');
+
     document.getElementById('editCategoryModal').addEventListener('show.bs.modal', function (e) {
         const btn = e.relatedTarget;
         document.getElementById('editCategoryId').value = btn.dataset.id;
-        document.getElementById('editCategoryName').value = btn.dataset.name;
-        document.getElementById('editCategorySlug').value = btn.dataset.slug;
+        editNameInput.value = btn.dataset.name;
+        editSlugInput.value = btn.dataset.slug;
+        editNameError.style.display = 'none';
     });
 
-    // Populate the delete modal fields when triggered
+    editNameInput.addEventListener('input', function () {
+        editSlugInput.value = slugify(this.value);
+
+        const val = this.value.trim().toLowerCase();
+        const currentId = parseInt(document.getElementById('editCategoryId').value);
+        const duplicate = val && existingCategories.some(c => c.name === val && c.id !== currentId);
+        editNameError.textContent = duplicate ? 'A category with this name already exists.' : '';
+        editNameError.style.display = duplicate ? '' : 'none';
+    });
+
+    editNameInput.closest('form').addEventListener('submit', function (e) {
+        const val = editNameInput.value.trim().toLowerCase();
+        const currentId = parseInt(document.getElementById('editCategoryId').value);
+        if (val && existingCategories.some(c => c.name === val && c.id !== currentId)) {
+            e.preventDefault();
+            editNameError.textContent = 'A category with this name already exists.';
+            editNameError.style.display = '';
+            editNameInput.focus();
+        }
+    });
+
+    // ── Delete Modal: populate fields ──
     document.getElementById('deleteCategoryModal').addEventListener('show.bs.modal', function (e) {
         const btn = e.relatedTarget;
         document.getElementById('deleteCategoryId').value = btn.dataset.id;

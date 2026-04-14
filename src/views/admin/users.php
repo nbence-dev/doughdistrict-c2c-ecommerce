@@ -34,7 +34,8 @@ function status_badge(int $isActive): string
     <div class="alert alert-<?= htmlspecialchars($flash['type']) ?> alert-dismissible fade show mb-4 py-2 small"
         role="alert">
         <?= htmlspecialchars($flash['message']) ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" style="top: 50%; transform: translateY(-50%);"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"
+            style="top: 50%; transform: translateY(-50%);"></button>
     </div>
 <?php endif; ?>
 
@@ -51,11 +52,11 @@ function status_badge(int $isActive): string
 
 <!-- ── Filter Chips ── -->
 <div class="d-flex flex-wrap gap-2 mb-4">
-    <button class="filter-chip chip-active">All</button>
-    <button class="filter-chip">Sellers</button>
-    <button class="filter-chip">Buyers</button>
-    <button class="filter-chip">Admins</button>
-    <button class="filter-chip">Inactive</button>
+    <button class="filter-chip chip-active" data-filter="all">All</button>
+    <button class="filter-chip" data-filter="seller">Sellers</button>
+    <button class="filter-chip" data-filter="buyer">Buyers</button>
+    <button class="filter-chip" data-filter="admin">Admins</button>
+    <button class="filter-chip" data-filter="inactive">Inactive</button>
 </div>
 
 <!-- ── Users Table ── -->
@@ -82,7 +83,7 @@ function status_badge(int $isActive): string
                     </tr>
                 <?php else: ?>
                     <?php foreach ($users as $u): ?>
-                        <tr>
+                        <tr data-role="<?= htmlspecialchars($u['role']) ?>" data-active="<?= (int) $u['is_active'] ?>">
                             <td>
                                 <div class="d-flex align-items-center gap-3">
                                     <img src="https://ui-avatars.com/api/?name=<?= urlencode($u['name']) ?>&background=f5f4ec&color=6f4627&bold=true&size=64"
@@ -103,40 +104,48 @@ function status_badge(int $isActive): string
                             </td>
                             <td>
                                 <div class="d-flex justify-content-end gap-1">
-                                    <!-- Change role -->
-                                    <div class="dropdown">
-                                        <button class="action-btn action-btn-edit dropdown-toggle" data-bs-toggle="dropdown"
-                                            style="border-radius:.45rem" title="Change role">
-                                            <span class="material-symbols-outlined">manage_accounts</span>
-                                        </button>
-                                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0"
-                                            style="font-size:.8125rem">
-                                            <li><span class="dropdown-item-text text-muted"
-                                                    style="font-size:.675rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em">Set
-                                                    Role</span></li>
-                                            <li>
-                                                <form method="POST" action="<?= BASE_URL ?>admin/users/role">
-                                                    <input type="hidden" name="user_id" value="<?= (int) $u['id'] ?>">
-                                                    <input type="hidden" name="role" value="admin">
-                                                    <button class="dropdown-item">Admin</button>
-                                                </form>
-                                            </li>
-                                            <li>
-                                                <form method="POST" action="<?= BASE_URL ?>admin/users/role">
-                                                    <input type="hidden" name="user_id" value="<?= (int) $u['id'] ?>">
-                                                    <input type="hidden" name="role" value="seller">
-                                                    <button class="dropdown-item">Seller</button>
-                                                </form>
-                                            </li>
-                                            <li>
-                                                <form method="POST" action="<?= BASE_URL ?>admin/users/role">
-                                                    <input type="hidden" name="user_id" value="<?= (int) $u['id'] ?>">
-                                                    <input type="hidden" name="role" value="buyer">
-                                                    <button class="dropdown-item">Buyer</button>
-                                                </form>
-                                            </li>
-                                        </ul>
-                                    </div>
+                                    <!-- Change role (buyer↔admin only; sellers locked) -->
+                                    <?php if ($u['role'] === 'buyer'): ?>
+                                        <div class="dropdown">
+                                            <button class="action-btn action-btn-edit dropdown-toggle" data-bs-toggle="dropdown"
+                                                style="border-radius:.45rem" title="Change role">
+                                                <span class="material-symbols-outlined">manage_accounts</span>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0"
+                                                style="font-size:.8125rem">
+                                                <li><span class="dropdown-item-text text-muted"
+                                                        style="font-size:.675rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em">Set
+                                                        Role</span></li>
+                                                <li>
+                                                    <form method="POST" action="<?= BASE_URL ?>admin/users/role">
+                                                        <input type="hidden" name="user_id" value="<?= (int) $u['id'] ?>">
+                                                        <input type="hidden" name="role" value="admin">
+                                                        <button class="dropdown-item">Make Admin</button>
+                                                    </form>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    <?php elseif ($u['role'] === 'admin'): ?>
+                                        <div class="dropdown">
+                                            <button class="action-btn action-btn-edit dropdown-toggle" data-bs-toggle="dropdown"
+                                                style="border-radius:.45rem" title="Change role">
+                                                <span class="material-symbols-outlined">manage_accounts</span>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0"
+                                                style="font-size:.8125rem">
+                                                <li><span class="dropdown-item-text text-muted"
+                                                        style="font-size:.675rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em">Set
+                                                        Role</span></li>
+                                                <li>
+                                                    <form method="POST" action="<?= BASE_URL ?>admin/users/role">
+                                                        <input type="hidden" name="user_id" value="<?= (int) $u['id'] ?>">
+                                                        <input type="hidden" name="role" value="buyer">
+                                                        <button class="dropdown-item">Make Buyer</button>
+                                                    </form>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    <?php endif; /* sellers: no role button */ ?>
                                     <!-- Toggle active/inactive -->
                                     <form method="POST" action="<?= BASE_URL ?>admin/users/toggle">
                                         <input type="hidden" name="user_id" value="<?= (int) $u['id'] ?>">
@@ -161,33 +170,106 @@ function status_badge(int $isActive): string
 </div>
 
 <!-- ── Pagination ── -->
+<?php
+$page       = $page       ?? 1;
+$totalPages = $totalPages ?? 1;
+$perPage    = $perPage    ?? PHP_INT_MAX;
+$total      = $total      ?? count($users);
+$showFrom   = $total > 0 ? ($page - 1) * $perPage + 1 : 0;
+$showTo     = min($page * $perPage, $total);
+
+// Build page-number window (max 7 entries, with '...' gaps)
+if ($totalPages <= 7) {
+    $pageWindow = range(1, $totalPages);
+} elseif ($page <= 4) {
+    $pageWindow = [1, 2, 3, 4, 5, '...', $totalPages];
+} elseif ($page >= $totalPages - 3) {
+    $pageWindow = [1, '...', $totalPages - 4, $totalPages - 3, $totalPages - 2, $totalPages - 1, $totalPages];
+} else {
+    $pageWindow = [1, '...', $page - 1, $page, $page + 1, '...', $totalPages];
+}
+?>
 <div class="d-flex justify-content-between align-items-center mt-4">
     <p class="mb-0 small" style="color:var(--dd-outline)">
-        Showing <?= count($users) ?> user<?= count($users) !== 1 ? 's' : '' ?>
+        Showing <span id="userCount">
+            <?php if ($total === 0): ?>
+                0 users
+            <?php elseif ($totalPages <= 1): ?>
+                <?= $total ?> user<?= $total !== 1 ? 's' : '' ?>
+            <?php else: ?>
+                <?= $showFrom ?>–<?= $showTo ?> of <?= $total ?> user<?= $total !== 1 ? 's' : '' ?>
+            <?php endif; ?>
+        </span>
     </p>
+    <?php if ($totalPages > 1): ?>
     <nav>
         <ul class="pagination pagination-sm mb-0" style="gap:.25rem">
-            <li class="page-item disabled">
-                <a class="page-link rounded" href="#" style="border-color:rgba(213,195,184,.3)">
+            <!-- Prev -->
+            <li class="page-item <?= $page <= 1 ? 'disabled' : '' ?>">
+                <a class="page-link rounded" href="?page=<?= max(1, $page - 1) ?>"
+                    style="border-color:rgba(213,195,184,.3)">
                     <span class="material-symbols-outlined" style="font-size:.9rem">chevron_left</span>
                 </a>
             </li>
-            <li class="page-item active">
-                <a class="page-link rounded" href="#"
-                    style="background:var(--dd-primary);border-color:var(--dd-primary)">1</a>
-            </li>
-            <li class="page-item">
-                <a class="page-link rounded" href="#" style="border-color:rgba(213,195,184,.3);color:var(--dd-primary)">
+            <!-- Page numbers -->
+            <?php foreach ($pageWindow as $pn): ?>
+                <?php if ($pn === '...'): ?>
+                    <li class="page-item disabled">
+                        <span class="page-link" style="border-color:rgba(213,195,184,.3)">…</span>
+                    </li>
+                <?php else: ?>
+                    <li class="page-item <?= $pn === $page ? 'active' : '' ?>">
+                        <a class="page-link rounded" href="?page=<?= $pn ?>"
+                            style="<?= $pn === $page
+                                ? 'background:var(--dd-primary);border-color:var(--dd-primary)'
+                                : 'border-color:rgba(213,195,184,.3);color:var(--dd-primary)' ?>">
+                            <?= $pn ?>
+                        </a>
+                    </li>
+                <?php endif; ?>
+            <?php endforeach; ?>
+            <!-- Next -->
+            <li class="page-item <?= $page >= $totalPages ? 'disabled' : '' ?>">
+                <a class="page-link rounded" href="?page=<?= min($totalPages, $page + 1) ?>"
+                    style="border-color:rgba(213,195,184,.3);color:var(--dd-primary)">
                     <span class="material-symbols-outlined" style="font-size:.9rem">chevron_right</span>
                 </a>
             </li>
         </ul>
     </nav>
+    <?php endif; ?>
 </div>
 
 </div><!-- /.admin-content -->
 </div><!-- /#admin-main -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const chips = document.querySelectorAll('.filter-chip[data-filter]');
+    const rows = document.querySelectorAll('tbody tr[data-role]');
+
+    chips.forEach(chip => {
+        chip.addEventListener('click', function () {
+            chips.forEach(c => c.classList.remove('chip-active'));
+            this.classList.add('chip-active');
+
+            const filter = this.dataset.filter;
+            let visible = 0;
+
+            rows.forEach(row => {
+                let show = false;
+                if (filter === 'all') show = true;
+                else if (filter === 'inactive') show = row.dataset.active === '0';
+                else show = row.dataset.role === filter;
+
+                row.style.display = show ? '' : 'none';
+                if (show) visible++;
+            });
+
+            document.getElementById('userCount').textContent =
+                visible + ' user' + (visible !== 1 ? 's' : '');
+        });
+    });
+</script>
 </body>
 
 </html>

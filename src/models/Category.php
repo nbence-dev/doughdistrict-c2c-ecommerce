@@ -59,6 +59,18 @@ class Category
         }
     }
 
+    public function nameExists($name, $excludeId = null)
+    {
+        if ($excludeId) {
+            $stmt = $this->db->prepare('SELECT COUNT(*) FROM categories WHERE LOWER(TRIM(name)) = LOWER(TRIM(?)) AND id != ?');
+            $stmt->execute([$name, $excludeId]);
+        } else {
+            $stmt = $this->db->prepare('SELECT COUNT(*) FROM categories WHERE LOWER(TRIM(name)) = LOWER(TRIM(?))');
+            $stmt->execute([$name]);
+        }
+        return (int) $stmt->fetchColumn() > 0;
+    }
+
     private function slugify($name)
     {
         $slug = strtolower(trim($name));

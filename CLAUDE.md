@@ -31,6 +31,11 @@ Includes a separate admin website with RBAC (required by university deliverable)
 - Role stored in `users.role ENUM('admin','seller','buyer')`
 - Any buyer can self-upgrade to seller (shop onboarding form)
 - Admin can promote/demote/deactivate any user
+- **Role transition rules (enforced in controller + view):**
+  - `buyer` → `admin` only (promote)
+  - `admin` → `buyer` only (demote)
+  - `seller` role is locked — no admin reassignment permitted
+  - Admins are not permitted to buy or sell; they must use a separate account
 
 ## Auth
 - PHP `$_SESSION` — no JWT

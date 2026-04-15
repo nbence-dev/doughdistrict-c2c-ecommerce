@@ -81,6 +81,21 @@ The original schema from a previous session had these bugs — all fixed in `sql
 | No `stripe_onboarding_complete` on seller_profiles | Added |
 | No `is_default` or `label` on addresses | Added |
 
+## Phase 2 — Admin Panel (completed 2026-04-15)
+
+### What was built
+- **Layout:** Fixed sidebar + frosted-glass topbar, mobile slide-in overlay, full design token system in `src/views/admin/layout.php`. All admin pages share this layout via `include`.
+- **Users page:** Table with role/status badges, activate/deactivate toggle, role change dropdown (buyer↔admin only; seller locked). Server-side pagination + filtering (?filter=all|admin|seller|buyer|inactive). Self-demotion blocked in controller.
+- **Products page:** Table with seller/category/price/status. Status dropdown (approve/pending/reject). Same server-side pagination + filtering (?filter=all|pending|active|rejected).
+- **Categories page:** Quick-create form with live slug generation and client-side duplicate check. Edit modal (inline). Delete modal with confirmation. Deletion blocked server-side if category has products.
+- **Dashboard:** Route exists but `dashboard.php` is empty — left for later polish.
+
+### Key decisions
+- Pagination: 15 rows/page, `LIMIT ? OFFSET ?` in model. Count query runs separately (not SQL_CALC_FOUND_ROWS).
+- Filtering: query param `?filter=X` drives a `WHERE` clause in the model. Filter chips are `<a>` links, not JS buttons — no client-side row hiding.
+- Category slug: generated server-side in `Category::slugify()` on every create/update. The slug field in the form is display-only (readonly).
+- `dashboard.php` nav link is commented out in the sidebar until the page is built.
+
 ## What Is NOT in Scope for MVP
 
 - Platform fee (Stripe `application_fee_amount`) — skip for now

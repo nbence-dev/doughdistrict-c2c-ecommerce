@@ -136,9 +136,9 @@ DoughDistrict/
 | Phase | Scope | Status |
 |---|---|---|
 | 0 | Folder structure, Docker, schema.sql | Done |
-| 1 | Auth + RBAC (register, login, logout, role guards, seed admin) | **Next** |
-| 2 | Admin panel (user management, categories, product moderation) | Pending |
-| 3 | Seller: shop onboarding, product CRUD, R2 image upload, Stripe Connect | Pending |
+| 1 | Auth + RBAC (register, login, logout, role guards, seed admin) | Done |
+| 2 | Admin panel (user management, categories, product moderation) | Done |
+| 3 | Seller: shop onboarding, product CRUD, R2 image upload, Stripe Connect | **Next** |
 | 4 | Buyer: browse, search, category filter, product detail, session cart | Pending |
 | 5 | Checkout + Stripe payment, order creation | Pending |
 | 6 | Order management (buyer history, seller fulfilment, status updates) | Pending |
@@ -147,8 +147,8 @@ DoughDistrict/
 | 9 | Polish, mobile check, seed data, Cloudflare tunnel verification | Pending |
 
 ## Current phase
-**Phase 1 — Auth + RBAC.**
-Start with `src/config/db.php`, then `src/helpers/auth.php`, then the User model, then auth controller and views.
+**Phase 3 — Seller.**
+Start with seller onboarding (shop profile creation), then product CRUD with R2 image upload, then Stripe Connect account linking.
 See `PLAN.md` for the detailed task list.
 
 ## Rules for Claude

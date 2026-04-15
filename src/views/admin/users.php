@@ -51,12 +51,13 @@ function status_badge(int $isActive): string
 </div>
 
 <!-- ── Filter Chips ── -->
+<?php $f = $filter ?? 'all'; ?>
 <div class="d-flex flex-wrap gap-2 mb-4">
-    <button class="filter-chip chip-active" data-filter="all">All</button>
-    <button class="filter-chip" data-filter="seller">Sellers</button>
-    <button class="filter-chip" data-filter="buyer">Buyers</button>
-    <button class="filter-chip" data-filter="admin">Admins</button>
-    <button class="filter-chip" data-filter="inactive">Inactive</button>
+    <a href="?filter=all"      class="filter-chip <?= $f === 'all'      ? 'chip-active' : '' ?>">All</a>
+    <a href="?filter=seller"   class="filter-chip <?= $f === 'seller'   ? 'chip-active' : '' ?>">Sellers</a>
+    <a href="?filter=buyer"    class="filter-chip <?= $f === 'buyer'    ? 'chip-active' : '' ?>">Buyers</a>
+    <a href="?filter=admin"    class="filter-chip <?= $f === 'admin'    ? 'chip-active' : '' ?>">Admins</a>
+    <a href="?filter=inactive" class="filter-chip <?= $f === 'inactive' ? 'chip-active' : '' ?>">Inactive</a>
 </div>
 
 <!-- ── Users Table ── -->
@@ -205,8 +206,9 @@ if ($totalPages <= 7) {
     <nav>
         <ul class="pagination pagination-sm mb-0" style="gap:.25rem">
             <!-- Prev -->
+            <?php $fp = ($f !== 'all') ? 'filter=' . urlencode($f) . '&' : ''; ?>
             <li class="page-item <?= $page <= 1 ? 'disabled' : '' ?>">
-                <a class="page-link rounded" href="?page=<?= max(1, $page - 1) ?>"
+                <a class="page-link rounded" href="?<?= $fp ?>page=<?= max(1, $page - 1) ?>"
                     style="border-color:rgba(213,195,184,.3)">
                     <span class="material-symbols-outlined" style="font-size:.9rem">chevron_left</span>
                 </a>
@@ -219,7 +221,7 @@ if ($totalPages <= 7) {
                     </li>
                 <?php else: ?>
                     <li class="page-item <?= $pn === $page ? 'active' : '' ?>">
-                        <a class="page-link rounded" href="?page=<?= $pn ?>"
+                        <a class="page-link rounded" href="?<?= $fp ?>page=<?= $pn ?>"
                             style="<?= $pn === $page
                                 ? 'background:var(--dd-primary);border-color:var(--dd-primary)'
                                 : 'border-color:rgba(213,195,184,.3);color:var(--dd-primary)' ?>">
@@ -230,7 +232,7 @@ if ($totalPages <= 7) {
             <?php endforeach; ?>
             <!-- Next -->
             <li class="page-item <?= $page >= $totalPages ? 'disabled' : '' ?>">
-                <a class="page-link rounded" href="?page=<?= min($totalPages, $page + 1) ?>"
+                <a class="page-link rounded" href="?<?= $fp ?>page=<?= min($totalPages, $page + 1) ?>"
                     style="border-color:rgba(213,195,184,.3);color:var(--dd-primary)">
                     <span class="material-symbols-outlined" style="font-size:.9rem">chevron_right</span>
                 </a>
@@ -243,33 +245,7 @@ if ($totalPages <= 7) {
 </div><!-- /.admin-content -->
 </div><!-- /#admin-main -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    const chips = document.querySelectorAll('.filter-chip[data-filter]');
-    const rows = document.querySelectorAll('tbody tr[data-role]');
-
-    chips.forEach(chip => {
-        chip.addEventListener('click', function () {
-            chips.forEach(c => c.classList.remove('chip-active'));
-            this.classList.add('chip-active');
-
-            const filter = this.dataset.filter;
-            let visible = 0;
-
-            rows.forEach(row => {
-                let show = false;
-                if (filter === 'all') show = true;
-                else if (filter === 'inactive') show = row.dataset.active === '0';
-                else show = row.dataset.role === filter;
-
-                row.style.display = show ? '' : 'none';
-                if (show) visible++;
-            });
-
-            document.getElementById('userCount').textContent =
-                visible + ' user' + (visible !== 1 ? 's' : '');
-        });
-    });
-</script>
+<script></script>
 </body>
 
 </html>

@@ -50,15 +50,36 @@ class User
         return $stmt->fetchAll();
     }
 
-    public function countAllUsers()
+    public function countAllUsers(string $filter = 'all'): int
     {
+        if ($filter === 'inactive') {
+            return (int) $this->db->query('SELECT COUNT(*) FROM users WHERE is_active = 0')->fetchColumn();
+        }
+        if (in_array($filter, ['admin', 'seller', 'buyer'])) {
+            $stmt = $this->db->prepare('SELECT COUNT(*) FROM users WHERE role = ?');
+            $stmt->execute([$filter]);
+            return (int) $stmt->fetchColumn();
+        }
         return (int) $this->db->query('SELECT COUNT(*) FROM users')->fetchColumn();
     }
 
-    public function getPaginated(int $limit, int $offset): array
+    public function getPaginated(int $limit, int $offset, string $filter = 'all'): array
     {
-        $stmt = $this->db->prepare('SELECT id, name, email, role, is_active, created_at FROM users ORDER BY created_at DESC LIMIT ? OFFSET ?');
-        $stmt->execute([$limit, $offset]);
+        $where = '';
+        $params = [];
+        if ($filter === 'inactive') {
+            $where = 'WHERE is_active = 0';
+        } elseif (in_array($filter, ['admin', 'seller', 'buyer'])) {
+            $where = 'WHERE role = ?';
+            $params[] = $filter;
+        }
+        $params[] = $limit;
+        $params[] = $offset;
+        $stmt = $this->db->prepare(
+            "SELECT id, name, email, role, is_active, created_at
+             FROM users $where ORDER BY created_at DESC LIMIT ? OFFSET ?"
+        );
+        $stmt->execute($params);
         return $stmt->fetchAll();
     }
 

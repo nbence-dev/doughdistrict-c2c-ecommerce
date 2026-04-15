@@ -33,11 +33,12 @@ function product_status_badge(string $status): string
         <p class="page-subheading mb-0">Review artisan listings and maintain DoughDistrict's marketplace quality.</p>
     </div>
     <!-- Filter chips -->
+    <?php $f = $filter ?? 'all'; ?>
     <div class="d-flex flex-wrap gap-2">
-        <button class="filter-chip chip-active" data-filter="all">All</button>
-        <button class="filter-chip" data-filter="pending">Pending Review</button>
-        <button class="filter-chip" data-filter="active">Active</button>
-        <button class="filter-chip" data-filter="rejected">Rejected</button>
+        <a href="?filter=all"      class="filter-chip <?= $f === 'all'      ? 'chip-active' : '' ?>">All</a>
+        <a href="?filter=pending"  class="filter-chip <?= $f === 'pending'  ? 'chip-active' : '' ?>">Pending Review</a>
+        <a href="?filter=active"   class="filter-chip <?= $f === 'active'   ? 'chip-active' : '' ?>">Active</a>
+        <a href="?filter=rejected" class="filter-chip <?= $f === 'rejected' ? 'chip-active' : '' ?>">Rejected</a>
     </div>
 </div>
 
@@ -199,8 +200,9 @@ if ($totalPages <= 7) {
     <nav>
         <ul class="pagination pagination-sm mb-0" style="gap:.25rem">
             <!-- Prev -->
+            <?php $fp = ($f !== 'all') ? 'filter=' . urlencode($f) . '&' : ''; ?>
             <li class="page-item <?= $page <= 1 ? 'disabled' : '' ?>">
-                <a class="page-link rounded" href="?page=<?= max(1, $page - 1) ?>"
+                <a class="page-link rounded" href="?<?= $fp ?>page=<?= max(1, $page - 1) ?>"
                     style="border-color:rgba(213,195,184,.3)">
                     <span class="material-symbols-outlined" style="font-size:.9rem">chevron_left</span>
                 </a>
@@ -213,7 +215,7 @@ if ($totalPages <= 7) {
                     </li>
                 <?php else: ?>
                     <li class="page-item <?= $pn === $page ? 'active' : '' ?>">
-                        <a class="page-link rounded" href="?page=<?= $pn ?>"
+                        <a class="page-link rounded" href="?<?= $fp ?>page=<?= $pn ?>"
                             style="<?= $pn === $page
                                 ? 'background:var(--dd-primary);border-color:var(--dd-primary)'
                                 : 'border-color:rgba(213,195,184,.3);color:var(--dd-primary)' ?>">
@@ -224,7 +226,7 @@ if ($totalPages <= 7) {
             <?php endforeach; ?>
             <!-- Next -->
             <li class="page-item <?= $page >= $totalPages ? 'disabled' : '' ?>">
-                <a class="page-link rounded" href="?page=<?= min($totalPages, $page + 1) ?>"
+                <a class="page-link rounded" href="?<?= $fp ?>page=<?= min($totalPages, $page + 1) ?>"
                     style="border-color:rgba(213,195,184,.3);color:var(--dd-primary)">
                     <span class="material-symbols-outlined" style="font-size:.9rem">chevron_right</span>
                 </a>
@@ -237,29 +239,7 @@ if ($totalPages <= 7) {
 </div><!-- /.admin-content -->
 </div><!-- /#admin-main -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    const chips = document.querySelectorAll('.filter-chip[data-filter]');
-    const rows = document.querySelectorAll('tbody tr[data-status]');
-
-    chips.forEach(chip => {
-        chip.addEventListener('click', function () {
-            chips.forEach(c => c.classList.remove('chip-active'));
-            this.classList.add('chip-active');
-
-            const filter = this.dataset.filter;
-            let visible = 0;
-
-            rows.forEach(row => {
-                const show = filter === 'all' || row.dataset.status === filter;
-                row.style.display = show ? '' : 'none';
-                if (show) visible++;
-            });
-
-            document.getElementById('productCount').textContent =
-                visible + ' product' + (visible !== 1 ? 's' : '');
-        });
-    });
-</script>
+<script></script>
 </body>
 
 </html>

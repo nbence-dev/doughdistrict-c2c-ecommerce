@@ -4,25 +4,30 @@ require_once ROOT_PATH . '/models/Category.php';
 
 // Views for each page (users, products, categories) will be included in the main admin view
 if ($path === 'admin/users') {
-    //fetch users
     $userModel = new User($pdo);
 
-    $perPage = 5;
-    $page = max(1, (int) ($_GET['page'] ?? 1));
-    $total = $userModel->countAllUsers();
+    $allowedFilters = ['all', 'admin', 'seller', 'buyer', 'inactive'];
+    $filter = in_array($_GET['filter'] ?? '', $allowedFilters) ? $_GET['filter'] : 'all';
+
+    $perPage    = 15;
+    $page       = max(1, (int) ($_GET['page'] ?? 1));
+    $total      = $userModel->countAllUsers($filter);
     $totalPages = (int) ceil($total / $perPage);
-    $page = min($page, max(1, $totalPages));   // clamp to valid range
-    $users = $userModel->getPaginated($perPage, ($page - 1) * $perPage);
+    $page       = min($page, max(1, $totalPages));
+    $users      = $userModel->getPaginated($perPage, ($page - 1) * $perPage, $filter);
 
 } elseif ($path === 'admin/products') {
-    //fetch products
     $productModel = new Product($pdo);
-    $perPage = 5;
-    $page = max(1, (int) ($_GET['page'] ?? 1));
-    $total = $productModel->countAll();
+
+    $allowedFilters = ['all', 'pending', 'active', 'rejected'];
+    $filter = in_array($_GET['filter'] ?? '', $allowedFilters) ? $_GET['filter'] : 'all';
+
+    $perPage    = 15;
+    $page       = max(1, (int) ($_GET['page'] ?? 1));
+    $total      = $productModel->countAll($filter);
     $totalPages = (int) ceil($total / $perPage);
-    $page = min($page, max(1, $totalPages));
-    $products = $productModel->getPaginated($perPage, ($page - 1) * $perPage);
+    $page       = min($page, max(1, $totalPages));
+    $products   = $productModel->getPaginated($perPage, ($page - 1) * $perPage, $filter);
 
 
 } else if ($path === 'admin/categories') {
@@ -58,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === 'admin/users/role' && iss
     $user = $userModel->find($userId);
     if ($user) {
         $allowed = ['buyer' => 'admin', 'admin' => 'buyer'];
-        if (!array_key_exists($user['role'], $allowed) || $allowed[$user['role']] !== $newRole) {
+        if (!array_key_exists($user['role'], $allowed) || $allowed[$user['role']] !== $newRole || $user['id'] === current_user()['id']) {
             set_flash("Role change not permitted.", 'danger');
             header('Location: ' . BASE_URL . 'admin/users');
             exit();
@@ -124,8 +129,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === 'admin/categories/update'
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === 'admin/categories/delete' && isset($_POST['category_id'])) {
     $categoryId = (int) $_POST['category_id'];
     $categoryModel = new Category($pdo);
-    $categoryModel->delete($categoryId);
-    set_flash("Category deleted successfully.", 'success');
+    if ($categoryModel->hasProducts($categoryId)) {
+        set_flash("Cannot delete category with associated products. Please reassign or delete those products first.", 'danger');
+    } else {
+        $categoryModel->delete($categoryId);
+        set_flash("Category deleted successfully.", 'success');
+    }
+
     header('Location: ' . BASE_URL . 'admin/categories');
     exit();
 }

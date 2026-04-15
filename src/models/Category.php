@@ -59,6 +59,13 @@ class Category
         }
     }
 
+    public function hasProducts(int $id): bool
+    {
+        $stmt = $this->db->prepare('SELECT COUNT(*) FROM products WHERE category_id = ?');
+        $stmt->execute([$id]);
+        return (int) $stmt->fetchColumn() > 0;
+    }
+
     public function nameExists($name, $excludeId = null)
     {
         if ($excludeId) {

@@ -24,23 +24,35 @@ class Product
         return $stmt->fetchAll();
     }
 
-    public function countAll()
+    public function countAll(string $filter = 'all'): int
     {
-        $stmt = $this->db->query('SELECT COUNT(*) FROM products');
-        return $stmt->fetchColumn();
+        if (in_array($filter, ['pending', 'active', 'rejected'])) {
+            $stmt = $this->db->prepare('SELECT COUNT(*) FROM products WHERE status = ?');
+            $stmt->execute([$filter]);
+            return (int) $stmt->fetchColumn();
+        }
+        return (int) $this->db->query('SELECT COUNT(*) FROM products')->fetchColumn();
     }
-    public function getPaginated(int $limit, int $offset): array
+
+    public function getPaginated(int $limit, int $offset, string $filter = 'all'): array
     {
+        $where = '';
+        $params = [];
+        if (in_array($filter, ['pending', 'active', 'rejected'])) {
+            $where = 'WHERE p.status = ?';
+            $params[] = $filter;
+        }
+        $params[] = $limit;
+        $params[] = $offset;
         $stmt = $this->db->prepare(
-            'SELECT p.*, c.name AS category_name, sp.shop_name, u.name AS seller_name
-           FROM products p                                                                                                                                 
-           JOIN categories c ON p.category_id = c.id
-           JOIN seller_profiles sp ON p.seller_id = sp.id                                                                                                  
-           JOIN users u ON sp.user_id = u.id
-           ORDER BY p.created_at DESC                                                                                                                      
-           LIMIT ? OFFSET ?'
+            "SELECT p.*, c.name AS category_name, sp.shop_name, u.name AS seller_name
+             FROM products p
+             JOIN categories c ON p.category_id = c.id
+             JOIN seller_profiles sp ON p.seller_id = sp.id
+             JOIN users u ON sp.user_id = u.id
+             $where ORDER BY p.created_at DESC LIMIT ? OFFSET ?"
         );
-        $stmt->execute([$limit, $offset]);
+        $stmt->execute($params);
         return $stmt->fetchAll();
     }
 

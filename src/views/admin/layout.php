@@ -355,7 +355,7 @@ function admin_nav_link(string $path, string $icon, string $label, string $curre
         }
 
         .badge-pending {
-            background-color: #ffdcc5;
+            background-color: #ec945996;
             color: #6f4627;
         }
 

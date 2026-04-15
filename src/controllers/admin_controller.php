@@ -6,12 +6,24 @@ require_once ROOT_PATH . '/models/Category.php';
 if ($path === 'admin/users') {
     //fetch users
     $userModel = new User($pdo);
-    $users = $userModel->getAllUsers();
+
+    $perPage = 5;
+    $page = max(1, (int) ($_GET['page'] ?? 1));
+    $total = $userModel->countAllUsers();
+    $totalPages = (int) ceil($total / $perPage);
+    $page = min($page, max(1, $totalPages));   // clamp to valid range
+    $users = $userModel->getPaginated($perPage, ($page - 1) * $perPage);
 
 } elseif ($path === 'admin/products') {
     //fetch products
     $productModel = new Product($pdo);
-    $products = $productModel->getAllWithSeller();
+    $perPage = 5;
+    $page = max(1, (int) ($_GET['page'] ?? 1));
+    $total = $productModel->countAll();
+    $totalPages = (int) ceil($total / $perPage);
+    $page = min($page, max(1, $totalPages));
+    $products = $productModel->getPaginated($perPage, ($page - 1) * $perPage);
+
 
 } else if ($path === 'admin/categories') {
     //fetch categories
@@ -21,6 +33,8 @@ if ($path === 'admin/users') {
     $totalProducts = $productModel->countAll();
 
 }
+
+
 // Handle POST requests for user status toggle
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === 'admin/users/toggle' && isset($_POST['user_id'])) {
     $userId = (int) $_POST['user_id'];
@@ -116,17 +130,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === 'admin/categories/delete'
     exit();
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === 'admin/products/status' && isset($_POST['product_id'], $_POST['status'])) {
-    $productId = (int) $_POST['product_id'];
-    $newStatus = $_POST['status'];
-    $productModel = new Product($pdo);
-    if ($productModel->setStatus($productId, $newStatus)) {
-        $label = ['pending' => 'marked as pending', 'active' => 'approved', 'rejected' => 'rejected'];
-        set_flash("Product " . ($label[$newStatus] ?? 'updated') . " successfully.", 'success');
-    } else {
-        set_flash("Invalid status or product not found.", 'danger');
-    }
-    header('Location: ' . BASE_URL . 'admin/products');
-    exit();
-}
+
 ?>

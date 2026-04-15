@@ -29,6 +29,20 @@ class Product
         $stmt = $this->db->query('SELECT COUNT(*) FROM products');
         return $stmt->fetchColumn();
     }
+    public function getPaginated(int $limit, int $offset): array
+    {
+        $stmt = $this->db->prepare(
+            'SELECT p.*, c.name AS category_name, sp.shop_name, u.name AS seller_name
+           FROM products p                                                                                                                                 
+           JOIN categories c ON p.category_id = c.id
+           JOIN seller_profiles sp ON p.seller_id = sp.id                                                                                                  
+           JOIN users u ON sp.user_id = u.id
+           ORDER BY p.created_at DESC                                                                                                                      
+           LIMIT ? OFFSET ?'
+        );
+        $stmt->execute([$limit, $offset]);
+        return $stmt->fetchAll();
+    }
 
 
     public function find($id)
@@ -68,7 +82,8 @@ class Product
     public function setStatus($id, $status)
     {
         $allowed = ['pending', 'active', 'rejected'];
-        if (!in_array($status, $allowed)) return false;
+        if (!in_array($status, $allowed))
+            return false;
         $stmt = $this->db->prepare('UPDATE products SET status = ? WHERE id = ?');
         return $stmt->execute([$status, $id]);
     }

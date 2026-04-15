@@ -73,7 +73,12 @@ switch ($path) {
         require_once ROOT_PATH . '/views/admin/products.php';
         break;
 
-    case 'admin/products/toggle':
+    // case 'admin/products/toggle':
+    //     require_role('admin');
+    //     require_once ROOT_PATH . '/controllers/admin_controller.php';
+    //     break;
+
+    case 'admin/products/status':
         require_role('admin');
         require_once ROOT_PATH . '/controllers/admin_controller.php';
         break;

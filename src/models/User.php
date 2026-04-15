@@ -50,6 +50,18 @@ class User
         return $stmt->fetchAll();
     }
 
+    public function countAllUsers()
+    {
+        return (int) $this->db->query('SELECT COUNT(*) FROM users')->fetchColumn();
+    }
+
+    public function getPaginated(int $limit, int $offset): array
+    {
+        $stmt = $this->db->prepare('SELECT id, name, email, role, is_active, created_at FROM users ORDER BY created_at DESC LIMIT ? OFFSET ?');
+        $stmt->execute([$limit, $offset]);
+        return $stmt->fetchAll();
+    }
+
     public function setActive($id, $active)
     {
         $stmt = $this->db->prepare('UPDATE users SET is_active = ? WHERE id = ?');

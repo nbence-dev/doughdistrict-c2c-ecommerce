@@ -104,10 +104,79 @@ switch ($path) {
         require_once ROOT_PATH . '/controllers/admin_controller.php';
         break;
 
+    // ── Onboarding (buyer only — becomes seller on submit) ──────────────
+    case 'seller/onboard':
+        require_login();
+        require_once ROOT_PATH . '/controllers/seller_controller.php';
+        require_once ROOT_PATH . '/views/seller/onboarding.php';
+        break;
+
+    // ── Seller dashboard ─────────────────────────────────────────────
     case 'seller/dashboard':
         require_role('seller');
         require_once ROOT_PATH . '/controllers/seller_controller.php';
         require_once ROOT_PATH . '/views/seller/dashboard.php';
+        break;
+
+    // ── Shop profile ─────────────────────────────────────────────────
+    case 'seller/profile':
+        require_role('seller');
+        require_once ROOT_PATH . '/controllers/seller_controller.php';
+        require_once ROOT_PATH . '/views/seller/profile.php';
+        break;
+
+    // ── Products ─────────────────────────────────────────────────────
+    case 'seller/products':
+        require_role('seller');
+        require_once ROOT_PATH . '/controllers/seller_controller.php';
+        require_once ROOT_PATH . '/views/seller/products/index.php';
+        break;
+
+    case 'seller/products/create':
+        require_role('seller');
+        require_once ROOT_PATH . '/controllers/seller_controller.php';
+        require_once ROOT_PATH . '/views/seller/products/create.php';
+        break;
+
+    case 'seller/products/edit':
+        require_role('seller');
+        require_once ROOT_PATH . '/controllers/seller_controller.php';
+        require_once ROOT_PATH . '/views/seller/products/edit.php';
+        break;
+
+    case 'seller/products/delete':
+        require_role('seller');
+        require_once ROOT_PATH . '/controllers/seller_controller.php';
+        break;
+
+    // ── Stripe Connect ────────────────────────────────────────────────
+    case 'seller/stripe/connect':
+        require_role('seller');
+        require_once ROOT_PATH . '/controllers/seller_controller.php';
+        break;
+
+    case 'seller/stripe/callback':
+        require_role('seller');
+        require_once ROOT_PATH . '/controllers/seller_controller.php';
+        break;
+
+    // ── Orders (Phase 6) ─────────────────────────────────────────────
+    // TODO: implement in Phase 6
+    case 'seller/orders':
+        require_role('seller');
+        // require_once ROOT_PATH . '/controllers/seller_controller.php';
+        // require_once ROOT_PATH . '/views/seller/orders/index.php';
+        break;
+
+    case 'seller/orders/detail':
+        require_role('seller');
+        // require_once ROOT_PATH . '/controllers/seller_controller.php';
+        // require_once ROOT_PATH . '/views/seller/orders/detail.php';
+        break;
+
+    case 'seller/orders/ship':
+        require_role('seller');
+        // require_once ROOT_PATH . '/controllers/seller_controller.php';
         break;
 
     default:

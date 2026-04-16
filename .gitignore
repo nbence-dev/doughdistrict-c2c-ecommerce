@@ -1,6 +1,9 @@
 # Environment
 .env
 
+# Composer dependencies
+vendor/
+
 # Uploads (user-submitted files)
 public/uploads/*
 !public/uploads/.gitkeep

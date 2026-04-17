@@ -64,15 +64,20 @@ services:
     networks:
       - dough-internal
 
-  # Dedicated tunnel for DoughDistrict
   cloudflare-tunnel:
     image: cloudflare/cloudflared:latest
     container_name: dough-tunnel
     restart: unless-stopped
-    # PHP apps usually listen on port 80 inside the container
-    command: tunnel --no-autoupdate --url http://dough-app:80/public
+    command: tunnel --no-autoupdate --config /etc/cloudflared/config.yml run
+    volumes:
+      - ./cloudflared/config.yml:/etc/cloudflared/config.yml:ro
+      - ./cloudflared/creds.json:/etc/cloudflared/creds.json:ro
+    depends_on:
+      - dough-app
     networks:
       - dough-internal
+    profiles:
+      - tunnel
 
 networks:
   # Internal network so the app can talk to MySQL safely

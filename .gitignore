@@ -19,3 +19,9 @@ Thumbs.db
 .idea/
 .vscode/
 *.swp
+
+# Cloudflare tunnel secrets and active machine config (machine-specific, never commit)
+cloudflared/creds.json
+cloudflared/config.yml
+cloudflared/dev-creds.json
+cloudflared/prod-creds.json

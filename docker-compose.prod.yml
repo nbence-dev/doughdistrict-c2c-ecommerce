@@ -1,0 +1,4 @@
+services:
+  cloudflare-tunnel:
+    restart: always
+    profiles: []

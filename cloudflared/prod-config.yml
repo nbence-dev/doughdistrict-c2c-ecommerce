@@ -1,0 +1,7 @@
+tunnel: doughdistrict-prod
+credentials-file: /etc/cloudflared/creds.json
+
+ingress:
+  - hostname: app.doughdistrict.co.za
+    service: http://dough-app:80
+  - service: http_status:404

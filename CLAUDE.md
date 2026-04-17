@@ -19,7 +19,10 @@ Includes a separate admin website with RBAC (required by university deliverable)
 - **Images:** Cloudflare R2 (S3-compatible). AWS SDK used for upload. CDN URL stored in DB.
 - **Payments:** Stripe Connect (sellers link their own accounts). No platform fee for MVP.
 - **Courier:** The Courier Guy REST API. Seller manually triggers shipment.
-- **Infrastructure:** Docker + docker-compose, Ubuntu Server VM, Cloudflare Quick Tunnel, GitHub Actions CI/CD
+- **Infrastructure:** Docker + docker-compose, Ubuntu Server VM, named Cloudflare Tunnels, GitHub Actions CI/CD
+  - Prod: `doughdistrict.co.za` via tunnel `doughdistrict-prod` (always-on, `docker-compose.prod.yml` override)
+  - Dev: `dev.doughdistrict.co.za` via tunnel `doughdistrict-dev` (manual, `--profile tunnel`)
+  - `cloudflared/config.yml` + `cloudflared/creds.json` are gitignored — copied to server once via `scp`
 
 ## Roles (RBAC)
 | Role | Capabilities |

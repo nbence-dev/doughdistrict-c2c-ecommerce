@@ -62,8 +62,11 @@
 ### Hosting
 - Ubuntu Server VM (VirtualBox)
 - Docker + docker-compose (`restart: always` already configured)
-- Cloudflare Quick Tunnel (`trycloudflare`) for public HTTPS URL
-- GitHub Actions CI/CD already configured
+- **Named Cloudflare Tunnels** (replaced quick tunnel):
+  - `doughdistrict-prod` → `doughdistrict.co.za` + `www.doughdistrict.co.za` (always-on via `docker-compose.prod.yml` override)
+  - `doughdistrict-dev` → `dev.doughdistrict.co.za` (manual, profile-gated: `docker compose --profile tunnel up -d`)
+- `cloudflared/config.yml` and `cloudflared/creds.json` are gitignored — must be copied to the server manually via `scp` once; they persist between deploys
+- GitHub Actions CI/CD deploys via: `docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build --remove-orphans`
 
 ## Schema Changes Made at Planning (2026-04-10)
 

@@ -45,6 +45,12 @@ switch ($path) {
         require_once ROOT_PATH . '/views/buyer/browse.php';
         break;
 
+    case 'product':
+        require_login();
+        require_once ROOT_PATH . '/controllers/browse_controller.php';
+        require_once ROOT_PATH . '/views/buyer/product_detail.php';
+        break;
+
     // case 'admin/dashboard':
     //     require_role('admin');
     //     require_once ROOT_PATH . '/controllers/admin_controller.php';

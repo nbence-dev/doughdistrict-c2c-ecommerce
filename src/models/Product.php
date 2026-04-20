@@ -127,8 +127,46 @@ class Product
         return $stmt->fetchAll();
     }
 
+    public function getBrowse($search = '', $category_id = null)
+    {
+        $conditions = ["p.status = 'active'"];
+        $params = [];
+        if (!empty($search)) {
+            $conditions[] = '(p.name LIKE ? OR p.description LIKE ?)';
+            $params[] = "%$search%";
+            $params[] = "%$search%";
+        }
+        if ($category_id) {
+            $conditions[] = 'p.category_id = ?';
+            $params[] = $category_id;
+        }
+        $where = 'WHERE ' . implode(' AND ', $conditions);
 
+        $stmt = $this->db->prepare(
+            "SELECT p.*, c.name AS category_name, sp.shop_name, u.name AS seller_name
+             FROM products p
+             JOIN categories c ON p.category_id = c.id
+             JOIN seller_profiles sp ON p.seller_id = sp.id
+             JOIN users u ON sp.user_id = u.id
+             $where ORDER BY p.created_at DESC"
+        );
 
+        $stmt->execute($params);
+        return $stmt->fetchAll();
+
+    }
+
+    public function findActive($id)
+    {
+        $stmt = $this->db->prepare('SELECT p.*, c.name AS category_name, sp.shop_name, u.name AS seller_name
+             FROM products p
+             JOIN categories c ON p.category_id = c.id
+             JOIN seller_profiles sp ON p.seller_id = sp.id
+             JOIN users u ON sp.user_id = u.id
+             WHERE p.id = ? AND p.status = "active"');
+        $stmt->execute([$id]);
+        return $stmt->fetch();
+    }
 
 }
 ?>

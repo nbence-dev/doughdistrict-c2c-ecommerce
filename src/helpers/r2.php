@@ -75,3 +75,40 @@ function upload_to_r2(array $file): string
 
     return "{$cdnUrl}/{$key}";
 }
+
+function delete_from_r2(string $imageUrl): void
+{
+    $accountId = getenv('R2_ACCOUNT_ID');
+    $accessKey = getenv('R2_ACCESS_KEY_ID');
+    $secretKey = getenv('R2_SECRET_ACCESS_KEY');
+    $bucket    = getenv('R2_BUCKET');
+    $cdnUrl    = rtrim(getenv('R2_CDN_URL'), '/');
+
+    if (!$accountId || !$accessKey || !$secretKey || !$bucket || !$cdnUrl) {
+        return;
+    }
+
+    // Derive the object key by stripping the CDN base URL
+    $key = ltrim(substr($imageUrl, strlen($cdnUrl)), '/');
+    if (!$key) {
+        return;
+    }
+
+    $client = new S3Client([
+        'version'                 => 'latest',
+        'region'                  => 'auto',
+        'endpoint'                => "https://{$accountId}.r2.cloudflarestorage.com",
+        'credentials'             => [
+            'key'    => $accessKey,
+            'secret' => $secretKey,
+        ],
+        'use_path_style_endpoint' => true,
+    ]);
+
+    try {
+        $client->deleteObject(['Bucket' => $bucket, 'Key' => $key]);
+    } catch (AwsException $e) {
+        // Non-fatal — log and continue
+        error_log('R2 delete failed for key ' . $key . ': ' . $e->getAwsErrorMessage());
+    }
+}

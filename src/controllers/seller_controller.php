@@ -212,6 +212,9 @@ if ($path === 'seller/onboard') {
         }
 
         try {
+            if (!empty($product['image_url'])) {
+                delete_from_r2($product['image_url']);
+            }
             $productModel->delete($productId);
             set_flash("Product deleted.", 'success');
         } catch (PDOException $e) {

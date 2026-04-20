@@ -84,6 +84,22 @@ The original schema from a previous session had these bugs — all fixed in `sql
 | No `stripe_onboarding_complete` on seller_profiles | Added |
 | No `is_default` or `label` on addresses | Added |
 
+## Phase 3 — Seller (completed ~2026-04-20)
+
+### What was built
+- **seller_controller.php:** Onboarding (buyer → seller upgrade), product CRUD (create/edit/delete with R2 image upload via AWS SDK), Stripe Connect route stubs (TODO).
+- **SellerProfile.php:** `create()`, `findByUserId()`, `findById()`, `nameExists()`.
+- **Product.php:** `create()`, `update()`, `delete()`, `findBySeller()`, `findById()`.
+- **r2.php:** AWS SDK S3-compatible upload helper. Returns CDN URL stored in `products.image_url`.
+- **Views:** `onboarding.php`, `dashboard.php`, `layout.php` (seller sidebar), `products/index.php`, `products/create.php`, `products/edit.php`, `stripe_connect.php`.
+
+### What is NOT yet done in Phase 3
+- `src/helpers/stripe.php` is an empty file — Stripe PHP SDK not yet wired up.
+- Stripe Connect OAuth (`seller/stripe/connect` + `seller/stripe/callback`) are controller stubs with TODO comments. Needs live/test Stripe keys in `.env`.
+- `seller/orders/` views (`index.php`, `detail.php`, `ship.php`) are empty — deferred to Phase 6/7.
+
+---
+
 ## Phase 2 — Admin Panel (completed 2026-04-15)
 
 ### What was built

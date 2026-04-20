@@ -141,8 +141,8 @@ DoughDistrict/
 | 0 | Folder structure, Docker, schema.sql | Done |
 | 1 | Auth + RBAC (register, login, logout, role guards, seed admin) | Done |
 | 2 | Admin panel (user management, categories, product moderation) | Done |
-| 3 | Seller: shop onboarding, product CRUD, R2 image upload, Stripe Connect | **Next** |
-| 4 | Buyer: browse, search, category filter, product detail, session cart | Pending |
+| 3 | Seller: shop onboarding, product CRUD, R2 image upload, Stripe Connect | Done (Stripe Connect OAuth stub only — needs `stripe.php`) |
+| 4 | Buyer: browse, search, category filter, product detail, session cart | **Next** |
 | 5 | Checkout + Stripe payment, order creation | Pending |
 | 6 | Order management (buyer history, seller fulfilment, status updates) | Pending |
 | 7 | The Courier Guy API integration (shipment creation, tracking) | Pending |
@@ -150,9 +150,9 @@ DoughDistrict/
 | 9 | Polish, mobile check, seed data, Cloudflare tunnel verification | Pending |
 
 ## Current phase
-**Phase 3 — Seller.**
-Start with seller onboarding (shop profile creation), then product CRUD with R2 image upload, then Stripe Connect account linking.
-See `PLAN.md` for the detailed task list.
+**Phase 4 — Buyer: Browse, Search, Cart.**
+The browse controller and all buyer views (browse, product_detail, cart) are empty stubs. Start with `browse_controller.php` + `browse.php`, then `product_detail.php`, then `cart_controller.php` + `cart.php`.
+See `PLAN.md` for the detailed task list and the estimated timeline.
 
 ## Rules for Claude
 - Do not scaffold an entire phase unprompted. Work one task at a time.

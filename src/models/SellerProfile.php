@@ -50,13 +50,15 @@ class SellerProfile
     // Stripe Connect OAuth callback - stores the connected account ID
     public function setStripeAccount($id, $stripe_account_id)
     {
-
+        $stmt = $this->db->prepare("UPDATE seller_profiles SET stripe_account_id = ? WHERE id = ?");
+        return $stmt->execute([$stripe_account_id, $id]);
     }
 
     // Called after Stripe confirms onboarding is done
     public function setStripeOnboardingComplete($id, $complete)
     {
-
+        $stmt = $this->db->prepare("UPDATE seller_profiles SET stripe_onboarding_complete = ? WHERE id = ?");
+        return $stmt->execute([$complete ? 1 : 0, $id]);
     }
 
     public function nameExists($shop_name, $excludeId = null)

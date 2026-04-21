@@ -21,7 +21,7 @@ if ($path === 'seller/onboard') {
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['shop_name'], $_POST['bio'])) {
         $shop_name = trim($_POST['shop_name']);
-        $bio       = trim($_POST['bio']);
+        $bio = trim($_POST['bio']);
 
         if (empty($shop_name) || empty($bio)) {
             set_flash("Shop name and bio cannot be empty.", 'danger');
@@ -52,12 +52,12 @@ if ($path === 'seller/onboard') {
         }
     }
 
-// ── All other seller routes ───────────────────────────────────────────────────
+    // ── All other seller routes ───────────────────────────────────────────────────
 // Require a seller profile. If missing, push back to onboarding.
 
 } else {
     $sellerProfileModel = new SellerProfile($pdo);
-    $sellerProfile      = $sellerProfileModel->findByUserId(current_user()['id']);
+    $sellerProfile = $sellerProfileModel->findByUserId(current_user()['id']);
 
     if (!$sellerProfile) {
         set_flash("Please complete your seller profile first.", 'warning');
@@ -69,14 +69,14 @@ if ($path === 'seller/onboard') {
 
     if ($path === 'seller/dashboard') {
         $productModel = new Product($pdo);
-        $products     = $productModel->findBySeller($sellerProfile['id']);
+        $products = $productModel->findBySeller($sellerProfile['id']);
 
-    // ── Shop profile (edit shop name / bio) ───────────────────────────────────
+        // ── Shop profile (edit shop name / bio) ───────────────────────────────────
 
     } elseif ($path === 'seller/profile') {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['shop_name'], $_POST['bio'])) {
             $shop_name = trim($_POST['shop_name']);
-            $bio       = trim($_POST['bio']);
+            $bio = trim($_POST['bio']);
 
             if (empty($shop_name) || empty($bio)) {
                 set_flash("Shop name and bio cannot be empty.", 'danger');
@@ -90,36 +90,42 @@ if ($path === 'seller/onboard') {
             }
         }
 
-    // ── Products list ─────────────────────────────────────────────────────────
+        // ── Products list ─────────────────────────────────────────────────────────
 
     } elseif ($path === 'seller/products') {
         $productModel = new Product($pdo);
-        $products     = $productModel->findBySeller($sellerProfile['id']);
+        $products = $productModel->findBySeller($sellerProfile['id']);
 
-    // ── Create product ────────────────────────────────────────────────────────
+        // ── Create product ────────────────────────────────────────────────────────
 
     } elseif ($path === 'seller/products/create') {
         $categoryModel = new Category($pdo);
-        $categories    = $categoryModel->getAll();
+        $categories = $categoryModel->getAll();
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $name        = trim($_POST['name']          ?? '');
-            $description = trim($_POST['description']   ?? '');
-            $price       = (float) ($_POST['price']     ?? 0);
-            $stock_qty   = (int)   ($_POST['stock_qty'] ?? 0);
-            $category_id = (int)   ($_POST['category_id'] ?? 0);
+            $name = trim($_POST['name'] ?? '');
+            $description = trim($_POST['description'] ?? '');
+            $price = (float) ($_POST['price'] ?? 0);
+            $stock_qty = (int) ($_POST['stock_qty'] ?? 0);
+            $category_id = (int) ($_POST['category_id'] ?? 0);
 
             $errors = [];
-            if ($name === '')        $errors[] = "Product name is required.";
-            if ($description === '') $errors[] = "Description is required.";
-            if ($price <= 0)         $errors[] = "Price must be greater than zero.";
-            if ($stock_qty < 0)      $errors[] = "Stock quantity cannot be negative.";
-            if ($category_id <= 0)   $errors[] = "Please select a category.";
-            if (empty($_FILES['image']['name'])) $errors[] = "A product image is required.";
+            if ($name === '')
+                $errors[] = "Product name is required.";
+            if ($description === '')
+                $errors[] = "Description is required.";
+            if ($price <= 0)
+                $errors[] = "Price must be greater than zero.";
+            if ($stock_qty < 0)
+                $errors[] = "Stock quantity cannot be negative.";
+            if ($category_id <= 0)
+                $errors[] = "Please select a category.";
+            if (empty($_FILES['image']['name']))
+                $errors[] = "A product image is required.";
 
             if (empty($errors)) {
                 try {
-                    $image_url    = upload_to_r2($_FILES['image']);
+                    $image_url = upload_to_r2($_FILES['image']);
                     $productModel = new Product($pdo);
                     $productModel->create($sellerProfile['id'], $category_id, $name, $description, $price, $stock_qty, $image_url);
                     set_flash("Product listed successfully. It is pending admin approval before going live.", 'success');
@@ -137,12 +143,12 @@ if ($path === 'seller/onboard') {
             }
         }
 
-    // ── Edit product ──────────────────────────────────────────────────────────
+        // ── Edit product ──────────────────────────────────────────────────────────
 
     } elseif ($path === 'seller/products/edit') {
-        $productId    = (int) ($_GET['id'] ?? 0);
+        $productId = (int) ($_GET['id'] ?? 0);
         $productModel = new Product($pdo);
-        $product      = $productModel->find($productId);
+        $product = $productModel->find($productId);
 
         // Ownership check — prevent editing another seller's product
         if (!$product || (int) $product['seller_id'] !== (int) $sellerProfile['id']) {
@@ -152,21 +158,26 @@ if ($path === 'seller/onboard') {
         }
 
         $categoryModel = new Category($pdo);
-        $categories    = $categoryModel->getAll();
+        $categories = $categoryModel->getAll();
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $name        = trim($_POST['name']          ?? '');
-            $description = trim($_POST['description']   ?? '');
-            $price       = (float) ($_POST['price']     ?? 0);
-            $stock_qty   = (int)   ($_POST['stock_qty'] ?? 0);
-            $category_id = (int)   ($_POST['category_id'] ?? 0);
+            $name = trim($_POST['name'] ?? '');
+            $description = trim($_POST['description'] ?? '');
+            $price = (float) ($_POST['price'] ?? 0);
+            $stock_qty = (int) ($_POST['stock_qty'] ?? 0);
+            $category_id = (int) ($_POST['category_id'] ?? 0);
 
             $errors = [];
-            if ($name === '')        $errors[] = "Product name is required.";
-            if ($description === '') $errors[] = "Description is required.";
-            if ($price <= 0)         $errors[] = "Price must be greater than zero.";
-            if ($stock_qty < 0)      $errors[] = "Stock quantity cannot be negative.";
-            if ($category_id <= 0)   $errors[] = "Please select a category.";
+            if ($name === '')
+                $errors[] = "Product name is required.";
+            if ($description === '')
+                $errors[] = "Description is required.";
+            if ($price <= 0)
+                $errors[] = "Price must be greater than zero.";
+            if ($stock_qty < 0)
+                $errors[] = "Stock quantity cannot be negative.";
+            if ($category_id <= 0)
+                $errors[] = "Please select a category.";
 
             if (empty($errors)) {
                 try {
@@ -192,7 +203,7 @@ if ($path === 'seller/onboard') {
             }
         }
 
-    // ── Delete product ────────────────────────────────────────────────────────
+        // ── Delete product ────────────────────────────────────────────────────────
 
     } elseif ($path === 'seller/products/delete') {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['product_id'])) {
@@ -200,9 +211,9 @@ if ($path === 'seller/onboard') {
             exit();
         }
 
-        $productId    = (int) $_POST['product_id'];
+        $productId = (int) $_POST['product_id'];
         $productModel = new Product($pdo);
-        $product      = $productModel->find($productId);
+        $product = $productModel->find($productId);
 
         // Ownership check
         if (!$product || (int) $product['seller_id'] !== (int) $sellerProfile['id']) {
@@ -224,17 +235,44 @@ if ($path === 'seller/onboard') {
         header('Location: ' . BASE_URL . 'seller/products');
         exit();
 
-    // ── Stripe Connect — Phase 3 stub ─────────────────────────────────────────
+        // ── Stripe Connect — Phase 3 stub ─────────────────────────────────────────
 
     } elseif ($path === 'seller/stripe/connect') {
         // TODO Phase 3: redirect to Stripe Connect OAuth URL
-        set_flash("Stripe Connect is not yet configured.", 'info');
-        header('Location: ' . BASE_URL . 'seller/dashboard');
+        require_once ROOT_PATH . '/helpers/stripe.php';
+        header('Location: ' . stripe_connect_oauth_url($sellerProfile['id']));
         exit();
+
 
     } elseif ($path === 'seller/stripe/callback') {
         // TODO Phase 3: exchange OAuth code for Stripe account ID, store in seller_profiles
-        set_flash("Stripe Connect callback is not yet implemented.", 'info');
+        require_once ROOT_PATH . '/helpers/stripe.php';
+        if (isset($_GET['error'])) {
+            set_flash('Stripe connection cancelled.', 'warning');
+            header('Location: ' . BASE_URL . 'seller/dashboard');
+            exit();
+        }
+        $code = $_GET['code'] ?? '';
+        $state = (int) ($_GET['state'] ?? 0);
+
+        if ($state !== (int) $sellerProfile['id'] || $code === '') {
+            set_flash('Invalid Stripe callback', 'danger');
+            header('Location: ' . BASE_URL . 'seller/dashboard');
+            exit();
+        }
+        try {
+            $response = \Stripe\OAuth::token([
+                'grant_type' => 'authorization_code',
+                'code' => $code,
+            ]);
+            $sellerProfileModel->setStripeAccount($sellerProfile['id'], $response->stripe_user_id);
+            $sellerProfileModel->setStripeOnboardingComplete($sellerProfile['id'], true);
+            set_flash('Stripe account connected successfully!', 'success');
+        } catch (\Stripe\Exception\OAuth\OAuthErrorException $e) {
+            set_flash('Failed to connect to Stripe: ' . $e->getMessage(), 'danger');
+
+
+        }
         header('Location: ' . BASE_URL . 'seller/dashboard');
         exit();
     }

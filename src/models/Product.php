@@ -158,7 +158,7 @@ class Product
 
     public function findActive($id)
     {
-        $stmt = $this->db->prepare('SELECT p.*, c.name AS category_name, sp.shop_name, u.name AS seller_name
+        $stmt = $this->db->prepare('SELECT p.*, c.name AS category_name, sp.shop_name, u.name AS seller_name, u.id AS seller_user_id
              FROM products p
              JOIN categories c ON p.category_id = c.id
              JOIN seller_profiles sp ON p.seller_id = sp.id

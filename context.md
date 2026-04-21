@@ -84,6 +84,28 @@ The original schema from a previous session had these bugs — all fixed in `sql
 | No `stripe_onboarding_complete` on seller_profiles | Added |
 | No `is_default` or `label` on addresses | Added |
 
+## Phase 4 — Buyer: Browse, Search, Cart (completed 2026-04-21)
+
+### What was built
+- **browse_controller.php:** Loads active products via `Product::getBrowse($search, $category_id)`. Passes `$products`, `$categories`, `$search`, `$selected_category` to browse view.
+- **cart_controller.php:** Session cart — `add`, `update`, `remove` POST actions + `GET` view data builder (`$cart_items`, `$total`). Seller-owns-product guard added (seller cannot add their own product to cart).
+- **Product.php:** Added `getBrowse()` (active products with search + category filter), `findActive()` (single active product — updated to include `u.id AS seller_user_id` for the ownership guard).
+- **Views:** `browse.php` (product grid, search bar, category filter), `product_detail.php` (image, description, price, stock, add-to-cart form), `cart.php` (item list with qty stepper + remove, order summary sidebar, empty state).
+- **errors/404.php:** Branded 404 page — router default case now renders this instead of a plain echo.
+- **header.php:** Added Material Symbols Outlined font (required for icons across all views).
+
+### Key decisions
+- Cart stored in `$_SESSION['cart']` as `[$product_id => $qty]`. No DB writes until checkout.
+- Qty stepper in cart uses JavaScript to intercept +/- clicks and submit the update form — avoids a full page reload just to change quantity.
+- Seller ownership check compares `$_SESSION['user_id']` against `$product['seller_user_id']` (joined `u.id` in `findActive()`).
+- 404 view lives in `src/views/errors/` — a new subdirectory added for error pages.
+- Shipping not calculated on cart page — shown as "Calculated at checkout" (Phase 5 concern).
+
+### What is NOT yet done in Phase 4
+- "Proceed to Checkout" button links to `/checkout` — Phase 5 not yet built (returns 404 currently).
+
+---
+
 ## Phase 3 — Seller (completed ~2026-04-20)
 
 ### What was built

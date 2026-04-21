@@ -51,6 +51,29 @@ switch ($path) {
         require_once ROOT_PATH . '/views/buyer/product_detail.php';
         break;
 
+    case 'cart':
+        require_login();
+        require_once ROOT_PATH . '/controllers/cart_controller.php';
+        require_once ROOT_PATH . '/views/buyer/cart.php';
+        break;
+
+    case 'cart/add':
+        require_login();
+        require_once ROOT_PATH . '/controllers/cart_controller.php';
+        break;
+
+    case 'cart/remove':
+        require_login();
+        require_once ROOT_PATH . '/controllers/cart_controller.php';
+        break;
+
+
+    case 'cart/update':
+        require_login();
+        require_once ROOT_PATH . '/controllers/cart_controller.php';
+        break;
+
+
     // case 'admin/dashboard':
     //     require_role('admin');
     //     require_once ROOT_PATH . '/controllers/admin_controller.php';
@@ -187,6 +210,6 @@ switch ($path) {
 
     default:
         http_response_code(404);
-        echo '<h1>404 — Page not found</h1>';
+        require_once ROOT_PATH . '/views/errors/404.php';
         break;
 }

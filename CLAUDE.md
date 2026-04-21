@@ -115,6 +115,8 @@ DoughDistrict/
 │       │       ├── index.php
 │       │       ├── detail.php
 │       │       └── ship.php
+│       ├── errors/
+│       │   └── 404.php             ← branded 404 page
 │       └── buyer/
 │           ├── browse.php
 │           ├── product_detail.php
@@ -142,17 +144,18 @@ DoughDistrict/
 | 1 | Auth + RBAC (register, login, logout, role guards, seed admin) | Done |
 | 2 | Admin panel (user management, categories, product moderation) | Done |
 | 3 | Seller: shop onboarding, product CRUD, R2 image upload, Stripe Connect | Done (Stripe Connect OAuth stub only — needs `stripe.php`) |
-| 4 | Buyer: browse, search, category filter, product detail, session cart | **Next** |
-| 5 | Checkout + Stripe payment, order creation | Pending |
+| 4 | Buyer: browse, search, category filter, product detail, session cart | Done |
+| 5 | Checkout + Stripe payment, order creation | **Next** |
 | 6 | Order management (buyer history, seller fulfilment, status updates) | Pending |
 | 7 | The Courier Guy API integration (shipment creation, tracking) | Pending |
 | 8 | Reviews (post-delivery, per product per order) | Pending |
 | 9 | Polish, mobile check, seed data, Cloudflare tunnel verification | Pending |
 
 ## Current phase
-**Phase 4 — Buyer: Browse, Search, Cart.**
-The browse controller and all buyer views (browse, product_detail, cart) are empty stubs. Start with `browse_controller.php` + `browse.php`, then `product_detail.php`, then `cart_controller.php` + `cart.php`.
-See `PLAN.md` for the detailed task list and the estimated timeline.
+**Phase 5 — Checkout + Stripe Payment.**
+Phase 4 is complete. All buyer browse, product detail, and cart views are built and wired.
+Next: `src/helpers/stripe.php`, `src/controllers/checkout_controller.php`, `src/views/buyer/checkout.php`, `src/views/buyer/order_confirmation.php`, `src/models/Order.php`.
+See `PLAN.md` for the detailed task list.
 
 ## Rules for Claude
 - Do not scaffold an entire phase unprompted. Work one task at a time.

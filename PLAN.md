@@ -75,30 +75,24 @@
 
 ---
 
-## Phase 4 — Buyer: Browse, Search, Cart (**NEXT**)
+## Phase 4 — Buyer: Browse, Search, Cart (COMPLETE)
 
 **Goal:** Buyers can browse products, filter by category, search, view product detail, and manage a session cart.
 
-**What exists (stubs/empty):**
-- `src/controllers/browse_controller.php` — empty file
-- `src/views/buyer/browse.php` — 2-line stub
-- All other buyer views are empty files
-
-### Tasks
-1. `src/models/Product.php` — add `getAll($filters)`, `search($query)`, `filterByCategory($catId)` (model partially exists, needs buyer query methods)
-2. `src/models/Category.php` — add `getAll()` for filter sidebar
-3. `src/controllers/browse_controller.php` — handle search + category filter query params
-4. `src/views/buyer/browse.php` — product grid with search bar + category filter sidebar
-5. `src/views/buyer/product_detail.php` — image, description, price, stock, add-to-cart button, reviews section
-6. `src/views/buyer/cart.php` — session cart: list items, update qty, remove, subtotal
-7. `src/controllers/cart_controller.php` — `add`, `update`, `remove`, `clear` actions on `$_SESSION['cart']`
-8. Wire up cart + browse routes in `public/index.php` (routes exist, controllers are empty)
-
-**Done when:** Buyer can browse, search, filter, view a product, add to cart, and adjust cart.
+- [x] `src/models/Product.php` — added `getBrowse($search, $category_id)` and `findActive($id)` (includes `seller_user_id` for ownership guard)
+- [x] `src/models/Category.php` — `getAll()` used for filter sidebar
+- [x] `src/controllers/browse_controller.php` — search + category filter via query params
+- [x] `src/views/buyer/browse.php` — product grid, search bar, category filter
+- [x] `src/views/buyer/product_detail.php` — image, description, price, stock, add-to-cart form
+- [x] `src/views/buyer/cart.php` — item list with qty stepper, remove, order summary, empty state
+- [x] `src/controllers/cart_controller.php` — `add`, `update`, `remove` actions + GET view builder. Seller ownership guard prevents seller adding their own product.
+- [x] `src/views/errors/404.php` — branded 404 page; router default case updated
+- [x] `src/views/layouts/header.php` — Material Symbols Outlined font added globally
+- [x] `public/index.php` — all cart routes wired correctly
 
 ---
 
-## Phase 5 — Checkout + Stripe Payment
+## Phase 5 — Checkout + Stripe Payment (**NEXT**)
 
 **Goal:** Buyer completes purchase. Stripe Payment Intent created. Order written to DB on success.
 
@@ -194,18 +188,18 @@ Router routes for `seller/orders` and `seller/orders/detail` exist but are comme
 
 ---
 
-## Estimated Timeline (as of 2026-04-20)
+## Estimated Timeline (as of 2026-04-21)
 
-| Phase | Scope | Est. Sessions | Target Date |
-|---|---|---|---|
-| 4 | Browse, search, cart | 1–2 sessions | 2026-04-22 |
-| 5 | Checkout + Stripe payment | 2–3 sessions | 2026-04-26 |
-| 6 | Order management (buyer + seller views) | 1–2 sessions | 2026-04-28 |
-| 7 | The Courier Guy integration | 1–2 sessions | 2026-04-30 |
-| 8 | Reviews | 1 session | 2026-05-01 |
-| 9 | Polish, seed data, hosting smoke test | 1 session | 2026-05-03 |
+| Phase | Scope | Est. Sessions | Target Date | Status |
+|---|---|---|---|---|
+| 4 | Browse, search, cart | — | — | **DONE** |
+| 5 | Checkout + Stripe payment | 2–3 sessions | 2026-04-25 | Next |
+| 6 | Order management (buyer + seller views) | 1–2 sessions | 2026-04-27 | Pending |
+| 7 | The Courier Guy integration | 1–2 sessions | 2026-04-29 | Pending |
+| 8 | Reviews | 1 session | 2026-04-30 | Pending |
+| 9 | Polish, seed data, hosting smoke test | 1 session | 2026-05-02 | Pending |
 
-**Remaining work:** ~9–13 focused sessions. Realistically 2–3 weeks of part-time work.
+**Remaining work:** ~7–10 focused sessions. Realistically 1.5–2 weeks of part-time work.
 
 **Critical path:** Phase 4 → 5 → 6 → 7 → 8 → 9 (strictly sequential — each phase depends on the last).
 

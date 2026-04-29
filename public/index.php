@@ -207,22 +207,33 @@ switch ($path) {
         break;
 
     // ── Orders (Phase 6) ─────────────────────────────────────────────
-    // TODO: implement in Phase 6
+    case 'orders':
+        require_login();
+        require_once ROOT_PATH . '/controllers/order_controller.php';
+        require_once ROOT_PATH . '/views/buyer/orders.php';
+        break;
+
+    case 'orders/detail':
+        require_login();
+        require_once ROOT_PATH . '/controllers/order_controller.php';
+        require_once ROOT_PATH . '/views/buyer/order_detail.php';
+        break;
+
     case 'seller/orders':
         require_role('seller');
-        // require_once ROOT_PATH . '/controllers/seller_controller.php';
-        // require_once ROOT_PATH . '/views/seller/orders/index.php';
+        require_once ROOT_PATH . '/controllers/order_controller.php';
+        require_once ROOT_PATH . '/views/seller/orders/index.php';
         break;
 
     case 'seller/orders/detail':
         require_role('seller');
-        // require_once ROOT_PATH . '/controllers/seller_controller.php';
-        // require_once ROOT_PATH . '/views/seller/orders/detail.php';
+        require_once ROOT_PATH . '/controllers/order_controller.php';
+        require_once ROOT_PATH . '/views/seller/orders/detail.php';
         break;
 
     case 'seller/orders/ship':
         require_role('seller');
-        // require_once ROOT_PATH . '/controllers/seller_controller.php';
+        // require_once ROOT_PATH . '/controllers/courier_controller.php';
         break;
 
     default:

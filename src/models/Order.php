@@ -31,12 +31,43 @@ class Order
     public function findByBuyer($buyer_id)
     {
         $stmt = $this->db->prepare('
-        SELECT o.*, sp.shop_Name
+        SELECT o.*, sp.shop_name
         FROM orders o
-        JOIN seller_profiles sp ON sp.id = o.seller_id
+        JOIN seller_profiles sp ON sp.user_id = o.seller_id
         WHERE o.buyer_id = ?
         ORDER BY o.created_at DESC');
         $stmt->execute([$buyer_id]);
+        return $stmt->fetchAll();
+    }
+
+    public function updateStatus($order_id, $status)
+    {
+        $stmt = $this->db->prepare('UPDATE orders SET status = ? WHERE id = ?');
+        $stmt->execute([$status, $order_id]);
+    }
+    public function findById($order_id)
+    {
+        $stmt = $this->db->prepare('SELECT o.*, sp.shop_name FROM orders o
+        JOIN seller_profiles sp ON sp.user_id = o.seller_id
+        WHERE o.id = ?');
+        $stmt->execute([$order_id]);
+        $order = $stmt->fetch();
+
+        $stmt2 = $this->db->prepare('SELECT * FROM order_items WHERE order_id = ?');
+        $stmt2->execute([$order_id]);
+        $items = $stmt2->fetchAll();
+
+        return ['order' => $order, 'items' => $items];
+    }
+    public function findBySeller($seller_id)
+    {
+        $stmt = $this->db->prepare('SELECT o.*, u.name 
+        FROM orders o 
+        JOIN users u 
+        ON u.id =o.buyer_id 
+        WHERE o.seller_id = ? 
+        ORDER BY o.created_at DESC');
+        $stmt->execute([$seller_id]);
         return $stmt->fetchAll();
     }
 

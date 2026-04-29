@@ -79,7 +79,7 @@ tailwind.config = {
     <?= seller_nav_link('seller/dashboard', 'dashboard', 'Dashboard', $currentPath) ?>
     <?= seller_nav_link('seller/products', 'storefront', 'My Products', $currentPath) ?>
     <?= seller_nav_link('seller/orders', 'receipt_long', 'Orders', $currentPath) ?>
-    <?= seller_nav_link('seller/stripe/connect', 'payments', 'Payments', $currentPath) ?>
+    <?= seller_nav_link('seller/stripe', 'payments', 'Payments', $currentPath) ?>
     <?= seller_nav_link('seller/profile', 'settings', 'Shop Profile', $currentPath) ?>
   </nav>
 

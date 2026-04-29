@@ -179,6 +179,12 @@ switch ($path) {
         break;
 
     // ── Stripe Connect ────────────────────────────────────────────────
+    case 'seller/stripe':
+        require_role('seller');
+        require_once ROOT_PATH . '/controllers/seller_controller.php';
+        require_once ROOT_PATH . '/views/seller/stripe_connect.php';
+        break;
+
     case 'seller/stripe/connect':
         require_role('seller');
         require_once ROOT_PATH . '/controllers/seller_controller.php';

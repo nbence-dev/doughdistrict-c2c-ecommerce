@@ -189,6 +189,23 @@ switch ($path) {
         require_once ROOT_PATH . '/controllers/seller_controller.php';
         break;
 
+    case 'checkout':
+        require_login();
+        require_once ROOT_PATH . '/controllers/checkout_controller.php';
+        require_once ROOT_PATH . '/views/buyer/checkout.php';
+        break;
+
+    case 'checkout/confirm':
+        require_login();
+        require_once ROOT_PATH . '/controllers/checkout_controller.php';
+        break;
+
+    case 'order/confirmation':
+        require_login();
+        require_once ROOT_PATH . '/controllers/checkout_controller.php';
+        require_once ROOT_PATH . '/views/buyer/order_confirmation.php';
+        break;
+
     // ── Orders (Phase 6) ─────────────────────────────────────────────
     // TODO: implement in Phase 6
     case 'seller/orders':

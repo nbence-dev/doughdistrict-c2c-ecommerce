@@ -33,7 +33,7 @@ class Order
         $stmt = $this->db->prepare('
         SELECT o.*, sp.shop_name
         FROM orders o
-        JOIN seller_profiles sp ON sp.user_id = o.seller_id
+        JOIN seller_profiles sp ON sp.id = o.seller_id
         WHERE o.buyer_id = ?
         ORDER BY o.created_at DESC');
         $stmt->execute([$buyer_id]);
@@ -48,7 +48,7 @@ class Order
     public function findById($order_id)
     {
         $stmt = $this->db->prepare('SELECT o.*, sp.shop_name FROM orders o
-        JOIN seller_profiles sp ON sp.user_id = o.seller_id
+        JOIN seller_profiles sp ON sp.id = o.seller_id
         WHERE o.id = ?');
         $stmt->execute([$order_id]);
         $order = $stmt->fetch();
@@ -61,11 +61,11 @@ class Order
     }
     public function findBySeller($seller_id)
     {
-        $stmt = $this->db->prepare('SELECT o.*, u.name 
-        FROM orders o 
-        JOIN users u 
-        ON u.id =o.buyer_id 
-        WHERE o.seller_id = ? 
+        $stmt = $this->db->prepare('SELECT o.*, u.name
+        FROM orders o
+        JOIN users u ON u.id = o.buyer_id
+        JOIN seller_profiles sp ON sp.id = o.seller_id
+        WHERE sp.user_id = ?
         ORDER BY o.created_at DESC');
         $stmt->execute([$seller_id]);
         return $stmt->fetchAll();

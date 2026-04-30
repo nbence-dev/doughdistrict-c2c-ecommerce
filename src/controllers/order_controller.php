@@ -1,6 +1,7 @@
 <?php
 /** @var string $path injected by index.php before require_once */
 require_once ROOT_PATH . '/models/Order.php';
+require_once ROOT_PATH . '/models/SellerProfile.php';
 
 $user = current_user();
 $order = new Order($pdo);
@@ -29,7 +30,10 @@ if ($path === 'orders') {
     $id = (int) ($_GET['id'] ?? 0);
     $data = $order->findById($id);
 
-    if (!$data['order'] || $data['order']['seller_id'] != $user['id']) {
+    $sellerProfileModel = new SellerProfile($pdo);
+    $sellerProfile = $sellerProfileModel->findByUserId($user['id']);
+
+    if (!$data['order'] || !$sellerProfile || (int) $data['order']['seller_id'] !== (int) $sellerProfile['id']) {
         set_flash('Forbidden', 'danger');
         header('Location: ' . BASE_URL . 'seller/dashboard');
         exit();

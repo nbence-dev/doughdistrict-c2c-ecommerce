@@ -239,7 +239,8 @@ switch ($path) {
 
     case 'seller/orders/ship':
         require_role('seller');
-        // require_once ROOT_PATH . '/controllers/courier_controller.php';
+        require_once ROOT_PATH . '/controllers/courier_controller.php';
+        require_once ROOT_PATH . '/views/seller/orders/ship.php';
         break;
 
     default:

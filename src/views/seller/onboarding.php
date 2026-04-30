@@ -119,6 +119,79 @@ tailwind.config = {
             <p class="text-[11px] text-outline px-1">Keep it authentic and inviting.</p>
           </div>
 
+          <!-- Collection Address -->
+          <div class="pt-2">
+            <div class="flex items-center gap-2 mb-5">
+              <span class="material-symbols-outlined text-primary">local_shipping</span>
+              <h3 class="text-sm font-headline font-bold text-on-surface uppercase tracking-widest">Collection Address</h3>
+            </div>
+            <div class="space-y-4">
+
+              <!-- Street Address -->
+              <div class="space-y-2">
+                <label for="street_address" class="block text-sm font-label font-semibold text-on-surface ml-1">Street Address</label>
+                <input type="text" id="street_address" name="street_address"
+                       placeholder="e.g. 12 Bakers Lane"
+                       value="<?= htmlspecialchars($_POST['street_address'] ?? '') ?>"
+                       required
+                       class="w-full px-6 py-4 rounded-xl bg-surface-container-low border-none focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all text-on-surface placeholder:text-outline/60"/>
+              </div>
+
+              <!-- Local Area + City -->
+              <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-2">
+                  <label for="local_area" class="block text-sm font-label font-semibold text-on-surface ml-1">Suburb / Local Area</label>
+                  <input type="text" id="local_area" name="local_area"
+                         placeholder="e.g. Sandton"
+                         value="<?= htmlspecialchars($_POST['local_area'] ?? '') ?>"
+                         required
+                         class="w-full px-6 py-4 rounded-xl bg-surface-container-low border-none focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all text-on-surface placeholder:text-outline/60"/>
+                </div>
+                <div class="space-y-2">
+                  <label for="city" class="block text-sm font-label font-semibold text-on-surface ml-1">City</label>
+                  <input type="text" id="city" name="city"
+                         placeholder="e.g. Johannesburg"
+                         value="<?= htmlspecialchars($_POST['city'] ?? '') ?>"
+                         required
+                         class="w-full px-6 py-4 rounded-xl bg-surface-container-low border-none focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all text-on-surface placeholder:text-outline/60"/>
+                </div>
+              </div>
+
+              <!-- Province + Postal Code -->
+              <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-2">
+                  <label for="zone" class="block text-sm font-label font-semibold text-on-surface ml-1">Province</label>
+                  <select id="zone" name="zone" required
+                          class="w-full px-6 py-4 rounded-xl bg-surface-container-low border-none focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all text-on-surface">
+                    <option value="" disabled <?= empty($_POST['zone']) ? 'selected' : '' ?>>Select province</option>
+                    <?php foreach (['Gauteng','Western Cape','Eastern Cape','KwaZulu-Natal','Limpopo','Mpumalanga','North West','Northern Cape','Free State'] as $p): ?>
+                      <option value="<?= $p ?>" <?= ($_POST['zone'] ?? '') === $p ? 'selected' : '' ?>><?= $p ?></option>
+                    <?php endforeach; ?>
+                  </select>
+                </div>
+                <div class="space-y-2">
+                  <label for="postal_code" class="block text-sm font-label font-semibold text-on-surface ml-1">Postal Code</label>
+                  <input type="text" id="postal_code" name="postal_code"
+                         placeholder="e.g. 2196"
+                         value="<?= htmlspecialchars($_POST['postal_code'] ?? '') ?>"
+                         required maxlength="10"
+                         class="w-full px-6 py-4 rounded-xl bg-surface-container-low border-none focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all text-on-surface placeholder:text-outline/60"/>
+                </div>
+              </div>
+
+              <!-- Mobile Number -->
+              <div class="space-y-2">
+                <label for="mobile_number" class="block text-sm font-label font-semibold text-on-surface ml-1">Mobile Number <span class="text-outline font-normal">(for courier collection)</span></label>
+                <input type="tel" id="mobile_number" name="mobile_number"
+                       placeholder="e.g. 0821234567"
+                       value="<?= htmlspecialchars($_POST['mobile_number'] ?? '') ?>"
+                       required
+                       class="w-full px-6 py-4 rounded-xl bg-surface-container-low border-none focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all text-on-surface placeholder:text-outline/60"/>
+              </div>
+
+            </div>
+          </div>
+
           <!-- Info box -->
           <div class="p-4 rounded-2xl bg-tertiary-fixed/30 border border-tertiary/10 flex items-start gap-4">
             <div class="p-2 bg-white rounded-lg shadow-sm">
@@ -127,7 +200,7 @@ tailwind.config = {
             <div>
               <h4 class="text-sm font-bold text-tertiary">What happens next?</h4>
               <p class="text-xs text-on-tertiary-fixed-variant leading-tight mt-1">
-                After submitting, your account is upgraded to Seller. You can then list products and connect your Stripe account to receive payments.
+                After submitting, your account is upgraded to Seller. You can then list products, connect your Stripe account to receive payments, and ship orders via The Courier Guy.
               </p>
             </div>
           </div>

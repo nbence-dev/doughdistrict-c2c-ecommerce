@@ -100,6 +100,21 @@ $statuses = ['paid', 'processing', 'shipped', 'delivered'];
                     <button type="submit" class="btn btn-dd-primary w-100">Save Status</button>
                 </form>
 
+                <?php if (in_array($order['status'], ['paid', 'processing'])): ?>
+                <hr style="border-color: var(--dd-outline-var);">
+                <a href="<?= BASE_URL ?>seller/orders/ship?id=<?= (int) $order['id'] ?>"
+                   class="btn btn-dd-primary w-100 d-flex align-items-center justify-content-center gap-2">
+                    <span class="material-symbols-outlined" style="font-size: 1.1rem;">local_shipping</span>
+                    Ship This Order
+                </a>
+                <?php elseif (!empty($order['tracking_reference'])): ?>
+                <hr style="border-color: var(--dd-outline-var);">
+                <div class="rounded-3 p-3" style="background: var(--dd-surface-low);">
+                    <p class="text-uppercase fw-bold mb-1" style="font-size: .65rem; letter-spacing: .1em; color: var(--dd-outline);">Tracking Reference</p>
+                    <p class="fw-bold mb-0" style="color: var(--dd-primary);"><?= htmlspecialchars($order['tracking_reference']) ?></p>
+                </div>
+                <?php endif; ?>
+
                 <hr style="border-color: var(--dd-outline-var);">
 
                 <a href="<?= BASE_URL ?>seller/orders" class="btn w-100" style="border: 1px solid var(--dd-outline-var); color: var(--dd-primary);">

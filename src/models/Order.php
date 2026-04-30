@@ -45,6 +45,12 @@ class Order
         $stmt = $this->db->prepare('UPDATE orders SET status = ? WHERE id = ?');
         $stmt->execute([$status, $order_id]);
     }
+
+    public function storeTracking($order_id, $shiplogic_shipment_id, $tracking_reference)
+    {
+        $stmt = $this->db->prepare('UPDATE orders SET shiplogic_shipment_id = ?, tracking_reference = ?, status = ? WHERE id = ?');
+        $stmt->execute([$shiplogic_shipment_id, $tracking_reference, 'shipped', $order_id]);
+    }
     public function findById($order_id)
     {
         $stmt = $this->db->prepare('SELECT o.*, sp.shop_name FROM orders o

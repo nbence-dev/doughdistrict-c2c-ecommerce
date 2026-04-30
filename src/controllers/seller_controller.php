@@ -20,11 +20,17 @@ if ($path === 'seller/onboard') {
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['shop_name'], $_POST['bio'])) {
-        $shop_name = trim($_POST['shop_name']);
-        $bio = trim($_POST['bio']);
+        $shop_name     = trim($_POST['shop_name']);
+        $bio           = trim($_POST['bio']);
+        $street        = trim($_POST['street_address'] ?? '');
+        $local_area    = trim($_POST['local_area'] ?? '');
+        $city          = trim($_POST['city'] ?? '');
+        $zone          = trim($_POST['zone'] ?? '');
+        $postal_code   = trim($_POST['postal_code'] ?? '');
+        $mobile_number = trim($_POST['mobile_number'] ?? '');
 
-        if (empty($shop_name) || empty($bio)) {
-            set_flash("Shop name and bio cannot be empty.", 'danger');
+        if (empty($shop_name) || empty($bio) || empty($street) || empty($local_area) || empty($city) || empty($zone) || empty($postal_code) || empty($mobile_number)) {
+            set_flash("All fields are required.", 'danger');
             header('Location: ' . BASE_URL . 'seller/onboard');
             exit();
         }
@@ -37,8 +43,9 @@ if ($path === 'seller/onboard') {
 
         try {
             $sellerProfileModel->create(current_user()['id'], $shop_name, $bio);
+            $profile = $sellerProfileModel->findByUserId(current_user()['id']);
+            $sellerProfileModel->updateAddress($profile['id'], $street, $local_area, $city, $zone, $postal_code, $mobile_number);
 
-            // Upgrade the user's role from buyer → seller
             $userModel = new User($pdo);
             $userModel->setRole(current_user()['id'], 'seller');
 
@@ -75,8 +82,14 @@ if ($path === 'seller/onboard') {
 
     } elseif ($path === 'seller/profile') {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['shop_name'], $_POST['bio'])) {
-            $shop_name = trim($_POST['shop_name']);
-            $bio = trim($_POST['bio']);
+            $shop_name     = trim($_POST['shop_name']);
+            $bio           = trim($_POST['bio']);
+            $street        = trim($_POST['street_address'] ?? '');
+            $local_area    = trim($_POST['local_area'] ?? '');
+            $city          = trim($_POST['city'] ?? '');
+            $zone          = trim($_POST['zone'] ?? '');
+            $postal_code   = trim($_POST['postal_code'] ?? '');
+            $mobile_number = trim($_POST['mobile_number'] ?? '');
 
             if (empty($shop_name) || empty($bio)) {
                 set_flash("Shop name and bio cannot be empty.", 'danger');
@@ -84,6 +97,9 @@ if ($path === 'seller/onboard') {
                 set_flash("That shop name is already taken.", 'danger');
             } else {
                 $sellerProfileModel->update($sellerProfile['id'], $shop_name, $bio);
+                if (!empty($street) && !empty($city) && !empty($zone) && !empty($postal_code)) {
+                    $sellerProfileModel->updateAddress($sellerProfile['id'], $street, $local_area, $city, $zone, $postal_code, $mobile_number);
+                }
                 set_flash("Shop profile updated.", 'success');
                 header('Location: ' . BASE_URL . 'seller/profile');
                 exit();

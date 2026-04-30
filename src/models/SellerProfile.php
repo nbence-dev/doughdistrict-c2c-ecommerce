@@ -61,6 +61,12 @@ class SellerProfile
         return $stmt->execute([$complete ? 1 : 0, $id]);
     }
 
+    public function updateAddress($id, $street_address, $local_area, $city, $zone, $postal_code, $mobile_number)
+    {
+        $stmt = $this->db->prepare("UPDATE seller_profiles SET street_address = ?, local_area = ?, city = ?, zone = ?, postal_code = ?, mobile_number = ? WHERE id = ?");
+        return $stmt->execute([$street_address, $local_area, $city, $zone, $postal_code, $mobile_number, $id]);
+    }
+
     public function nameExists($shop_name, $excludeId = null)
     {
         if ($excludeId) {

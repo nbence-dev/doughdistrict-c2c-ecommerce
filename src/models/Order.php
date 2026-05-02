@@ -23,8 +23,10 @@ class Order
         INSERT INTO order_items (order_id,product_id, product_name, unit_price, quantity)
         VALUES (?, ?, ?, ?, ?)
         ");
+        $stmt2 = $this->db->prepare("UPDATE products SET stock_qty = stock_qty - ? WHERE id = ?");
         foreach ($items as $item) {
             $stmt->execute([$order_id, $item['product_id'], $item['product_name'], $item['unit_price'], $item['quantity']]);
+            $stmt2->execute([$item['quantity'], $item['product_id']]);
         }
     }
 
@@ -46,10 +48,10 @@ class Order
         $stmt->execute([$status, $order_id]);
     }
 
-    public function storeTracking($order_id, $shiplogic_shipment_id, $tracking_reference)
+    public function storeTracking($order_id, $shiplogic_shipment_id, $tracking_reference, $shipping_cost)
     {
-        $stmt = $this->db->prepare('UPDATE orders SET shiplogic_shipment_id = ?, tracking_reference = ?, status = ? WHERE id = ?');
-        $stmt->execute([$shiplogic_shipment_id, $tracking_reference, 'shipped', $order_id]);
+        $stmt = $this->db->prepare('UPDATE orders SET shiplogic_shipment_id = ?, tracking_reference = ?, shipping_cost = ?, status = ? WHERE id = ?');
+        $stmt->execute([$shiplogic_shipment_id, $tracking_reference, $shipping_cost, 'shipped', $order_id]);
     }
     public function findById($order_id)
     {

@@ -14,11 +14,11 @@ require_once ROOT_PATH . '/models/User.php';
 require_once ROOT_PATH . '/models/SellerProfile.php';
 require_once ROOT_PATH . '/helpers/courier.php';
 
-$user               = current_user();
-$orderModel         = new Order($pdo);
-$userModel          = new User($pdo);
+$user = current_user();
+$orderModel = new Order($pdo);
+$userModel = new User($pdo);
 $sellerProfileModel = new SellerProfile($pdo);
-$sellerProfile      = $sellerProfileModel->findByUserId($user['id']);
+$sellerProfile = $sellerProfileModel->findByUserId($user['id']);
 
 if (!$sellerProfile) {
     set_flash('Seller profile not found.', 'danger');
@@ -30,9 +30,9 @@ if (!$sellerProfile) {
 // We use findById() which returns ['order' => ..., 'items' => [...]]
 
 $order_id = (int) ($_GET['id'] ?? 0);
-$data     = $orderModel->findById($order_id);
-$order    = $data['order'];
-$items    = $data['items'];
+$data = $orderModel->findById($order_id);
+$order = $data['order'];
+$items = $data['items'];
 
 // Order must exist and belong to this seller's profile
 if (!$order || (int) $order['seller_id'] !== (int) $sellerProfile['id']) {
@@ -67,7 +67,7 @@ if (!$addressComplete) {
 // ── 3. Load buyer and seller user rows ───────────────────────────────────────
 // Shiplogic needs email addresses for both collection_contact and delivery_contact.
 
-$buyerUser  = $userModel->find($order['buyer_id']);
+$buyerUser = $userModel->find($order['buyer_id']);
 $sellerUser = $userModel->find($user['id']);
 
 // ── 4. Handle POST — submit shipment to Shiplogic ────────────────────────────
@@ -76,15 +76,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $parcel = [
         'description' => trim($_POST['parcel_description'] ?? 'Baked goods'),
-        'length_cm'   => (float) ($_POST['length_cm'] ?? 0),
-        'width_cm'    => (float) ($_POST['width_cm']  ?? 0),
-        'height_cm'   => (float) ($_POST['height_cm'] ?? 0),
-        'weight_kg'   => (float) ($_POST['weight_kg'] ?? 0),
+        'length_cm' => (float) ($_POST['length_cm'] ?? 0),
+        'width_cm' => (float) ($_POST['width_cm'] ?? 0),
+        'height_cm' => (float) ($_POST['height_cm'] ?? 0),
+        'weight_kg' => (float) ($_POST['weight_kg'] ?? 0),
     ];
 
     // All dimensions must be positive numbers
-    if ($parcel['length_cm'] <= 0 || $parcel['width_cm'] <= 0
-        || $parcel['height_cm'] <= 0 || $parcel['weight_kg'] <= 0) {
+    if (
+        $parcel['length_cm'] <= 0 || $parcel['width_cm'] <= 0
+        || $parcel['height_cm'] <= 0 || $parcel['weight_kg'] <= 0
+    ) {
         set_flash('Please enter valid parcel dimensions and weight.', 'danger');
         header('Location: ' . BASE_URL . 'seller/orders/ship?id=' . $order_id);
         exit();
@@ -96,9 +98,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $shipment = shiplogic_create_shipment($order, $sellerProfile, $sellerUser, $buyerUser, $parcel);
 
         $trackingRef = $shipment['custom_tracking_reference'] ?? $shipment['short_tracking_reference'];
+        $shippingCost = (float) ($shipment['rate'] ?? 0);
 
         // Persist the tracking reference and mark order as shipped
-        $orderModel->storeTracking($order_id, $shipment['id'], $trackingRef);
+        $orderModel->storeTracking($order_id, $shipment['id'], $trackingRef, $shippingCost);
 
         set_flash('Shipment booked! Tracking reference: ' . $trackingRef, 'success');
         header('Location: ' . BASE_URL . 'seller/orders/detail?id=' . $order_id);

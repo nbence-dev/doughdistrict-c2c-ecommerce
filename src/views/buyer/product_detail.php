@@ -7,12 +7,14 @@
         max-height: 520px;
         object-fit: cover;
     }
+
     .qty-input {
         width: 72px;
         text-align: center;
         border-radius: 0.5rem;
         border: 1px solid var(--dd-outline-var);
     }
+
     .badge-category {
         background: var(--dd-surface-low);
         color: var(--dd-outline);
@@ -23,6 +25,7 @@
         padding: 0.35em 0.85em;
         border-radius: 2rem;
     }
+
     .info-tile {
         background: var(--dd-surface-low);
         border-radius: 0.75rem;
@@ -41,9 +44,12 @@
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb small" style="color: var(--dd-outline);">
-                <li class="breadcrumb-item"><a href="<?= BASE_URL ?>browse" style="color: var(--dd-outline);">Browse</a></li>
-                <li class="breadcrumb-item"><a href="<?= BASE_URL ?>browse?category=<?= $product['category_id'] ?>" style="color: var(--dd-outline);"><?= htmlspecialchars($product['category_name']) ?></a></li>
-                <li class="breadcrumb-item active" style="color: var(--dd-on-surface);"><?= htmlspecialchars($product['name']) ?></li>
+                <li class="breadcrumb-item"><a href="<?= BASE_URL ?>browse" style="color: var(--dd-outline);">Browse</a>
+                </li>
+                <li class="breadcrumb-item"><a href="<?= BASE_URL ?>browse?category=<?= $product['category_id'] ?>"
+                        style="color: var(--dd-outline);"><?= htmlspecialchars($product['category_name']) ?></a></li>
+                <li class="breadcrumb-item active" style="color: var(--dd-on-surface);">
+                    <?= htmlspecialchars($product['name']) ?></li>
             </ol>
         </nav>
 
@@ -52,12 +58,11 @@
             <!-- Left: Image -->
             <div class="col-lg-6">
                 <?php if (!empty($product['image_url'])): ?>
-                    <img src="<?= htmlspecialchars($product['image_url']) ?>"
-                         class="product-img shadow-sm"
-                         alt="<?= htmlspecialchars($product['name']) ?>">
+                    <img src="<?= htmlspecialchars($product['image_url']) ?>" class="product-img shadow-sm"
+                        alt="<?= htmlspecialchars($product['name']) ?>">
                 <?php else: ?>
                     <div class="d-flex align-items-center justify-content-center shadow-sm"
-                         style="height: 420px; border-radius: 1.25rem; background: var(--dd-surface-low); font-size: 5rem;">
+                        style="height: 420px; border-radius: 1.25rem; background: var(--dd-surface-low); font-size: 5rem;">
                         🥐
                     </div>
                 <?php endif; ?>
@@ -80,13 +85,15 @@
                     by <?= htmlspecialchars($product['seller_name']) ?>
                 </p>
 
-                <div class="mb-2">
+                <div class="d-flex align-items-center gap-3 mb-1">
                     <span style="font-size: 2rem; font-weight: 700; color: var(--dd-secondary);">
                         R <?= number_format($product['price'], 2) ?>
                     </span>
+                    <span class="badge"
+                        style="background: var(--dd-surface-low); color: var(--dd-secondary); font-size: .7rem;">Free Delivery</span>
                 </div>
                 <p class="small mb-4" style="color: var(--dd-outline);">
-                    <?= (int)$product['stock_qty'] ?> in stock
+                    <?= (int) $product['stock_qty'] ?> in stock
                 </p>
 
                 <p class="mb-5" style="color: var(--dd-on-surface-var); line-height: 1.7;">
@@ -98,9 +105,8 @@
                     <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
                     <div class="d-flex align-items-center gap-3 mb-4">
                         <label class="fw-medium small" for="qty">Quantity</label>
-                        <input type="number" id="qty" name="qty" value="1" min="1"
-                               max="<?= (int)$product['stock_qty'] ?>"
-                               class="form-control qty-input">
+                        <input type="number" id="qty" name="qty" value="1" min="1" max="<?= (int) $product['stock_qty'] ?>"
+                            class="form-control qty-input">
                     </div>
                     <button type="submit" class="btn btn-dd-primary w-100 py-3 fs-5">
                         Add to Cart

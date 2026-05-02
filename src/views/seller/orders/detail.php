@@ -61,10 +61,25 @@ $statuses = ['paid', 'processing', 'shipped', 'delivered'];
                         </div>
                     </div>
                 <?php endforeach; ?>
+                <?php if (!empty($order['shipping_cost'])): ?>
+                <div class="d-flex justify-content-between align-items-center pt-3 mt-2 border-top">
+                    <span class="small" style="color: var(--dd-on-surface-var);">Items subtotal</span>
+                    <span class="small" style="color: var(--dd-on-surface-var);">R&nbsp;<?= number_format($order['total_amount'], 2) ?></span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center pt-2">
+                    <span class="small" style="color: var(--dd-on-surface-var);">Shipping (Shiplogic)</span>
+                    <span class="small" style="color: var(--dd-on-surface-var);">R&nbsp;<?= number_format($order['shipping_cost'], 2) ?></span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center pt-2 mt-1">
+                    <span class="fw-bold fs-5" style="color: var(--dd-on-surface);">Total</span>
+                    <span class="fw-bold fs-4" style="color: var(--dd-secondary);">R&nbsp;<?= number_format($order['total_amount'] + $order['shipping_cost'], 2) ?></span>
+                </div>
+                <?php else: ?>
                 <div class="d-flex justify-content-between align-items-center pt-3 mt-2">
                     <span class="fw-bold fs-5" style="color: var(--dd-on-surface);">Total</span>
                     <span class="fw-bold fs-4" style="color: var(--dd-secondary);">R&nbsp;<?= number_format($order['total_amount'], 2) ?></span>
                 </div>
+                <?php endif; ?>
             </div>
 
             <!-- Shipping Address -->

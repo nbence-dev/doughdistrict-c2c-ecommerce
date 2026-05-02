@@ -8,11 +8,11 @@ class Product
         $this->db = $pdo;
     }
 
-    public function create($seller_id, $category_id, $name, $description, $price, $stock_qty, $image_url)
+    public function create($seller_id, $category_id, $name, $description, $price, $stock_qty, $image_url, $weight_kg = 0, $length_cm = 0, $width_cm = 0, $height_cm = 0, $shipping_cost = null)
     {
         try {
-            $stmt = $this->db->prepare('INSERT INTO products (seller_id, category_id, name, description, price, stock_qty, image_url) VALUES (?, ?, ?, ?, ?, ?, ?)');
-            return $stmt->execute([$seller_id, $category_id, $name, $description, $price, $stock_qty, $image_url]);
+            $stmt = $this->db->prepare('INSERT INTO products (seller_id, category_id, name, description, price, stock_qty, image_url, weight_kg, length_cm, width_cm, height_cm, shipping_cost) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+            return $stmt->execute([$seller_id, $category_id, $name, $description, $price, $stock_qty, $image_url, $weight_kg, $length_cm, $width_cm, $height_cm, $shipping_cost]);
         } catch (PDOException $e) {
             throw $e;
         }
@@ -84,11 +84,11 @@ class Product
         return $stmt->fetch();
     }
 
-    public function update($id, $category_id, $name, $description, $price, $stock_qty, $image_url)
+    public function update($id, $category_id, $name, $description, $price, $stock_qty, $image_url, $weight_kg = 0, $length_cm = 0, $width_cm = 0, $height_cm = 0, $shipping_cost = null)
     {
         try {
-            $stmt = $this->db->prepare('UPDATE products SET category_id = ?, name = ?, description = ?, price = ?, stock_qty = ?, image_url = ? WHERE id = ?');
-            return $stmt->execute([$category_id, $name, $description, $price, $stock_qty, $image_url, $id]);
+            $stmt = $this->db->prepare('UPDATE products SET category_id = ?, name = ?, description = ?, price = ?, stock_qty = ?, image_url = ?, weight_kg = ?, length_cm = ?, width_cm = ?, height_cm = ?, shipping_cost = ? WHERE id = ?');
+            return $stmt->execute([$category_id, $name, $description, $price, $stock_qty, $image_url, $weight_kg, $length_cm, $width_cm, $height_cm, $shipping_cost, $id]);
         } catch (PDOException $e) {
             throw $e;
         }

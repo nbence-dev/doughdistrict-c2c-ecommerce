@@ -144,6 +144,42 @@ $p = $product;
                  class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3 text-on-surface focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all"/>
         </div>
 
+        <!-- Package Dimensions -->
+        <div class="md:col-span-2">
+          <label class="block text-xs font-bold text-primary uppercase tracking-wider mb-3">Package Dimensions &amp; Weight</label>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div>
+              <label class="block text-[10px] font-semibold text-outline uppercase mb-1">Length (cm)</label>
+              <input type="number" name="length_cm" min="0.1" step="0.1" required
+                     value="<?= htmlspecialchars($_POST['length_cm'] ?? $p['length_cm']) ?>"
+                     class="w-full bg-surface-container-low border-0 rounded-xl px-3 py-2 text-on-surface focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all"/>
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold text-outline uppercase mb-1">Width (cm)</label>
+              <input type="number" name="width_cm" min="0.1" step="0.1" required
+                     value="<?= htmlspecialchars($_POST['width_cm'] ?? $p['width_cm']) ?>"
+                     class="w-full bg-surface-container-low border-0 rounded-xl px-3 py-2 text-on-surface focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all"/>
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold text-outline uppercase mb-1">Height (cm)</label>
+              <input type="number" name="height_cm" min="0.1" step="0.1" required
+                     value="<?= htmlspecialchars($_POST['height_cm'] ?? $p['height_cm']) ?>"
+                     class="w-full bg-surface-container-low border-0 rounded-xl px-3 py-2 text-on-surface focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all"/>
+            </div>
+            <div>
+              <label class="block text-[10px] font-semibold text-outline uppercase mb-1">Weight (kg)</label>
+              <input type="number" name="weight_kg" min="0.01" step="0.001" required
+                     value="<?= htmlspecialchars($_POST['weight_kg'] ?? $p['weight_kg']) ?>"
+                     class="w-full bg-surface-container-low border-0 rounded-xl px-3 py-2 text-on-surface focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all"/>
+            </div>
+          </div>
+          <?php if (!empty($p['shipping_cost'])): ?>
+          <p class="text-xs text-outline mt-2">
+            Current estimated shipping: <span class="font-bold text-secondary">R <?= number_format($p['shipping_cost'], 2) ?></span> — recalculated on save.
+          </p>
+          <?php endif; ?>
+        </div>
+
         <!-- Current status chip -->
         <div class="flex items-end pb-3">
           <?php

@@ -12,40 +12,45 @@ if ($path === 'checkout') {
         exit();
     }
     $productModel = new Product($pdo);
-    $sellerModel = new SellerProfile($pdo);
+    $sellerModel  = new SellerProfile($pdo);
     $addressModel = new Address($pdo);
 
-    // Group cart items by seller
+    // Group cart items by seller; track max shipping cost per seller
     $seller_groups = [];
     foreach ($_SESSION['cart'] as $product_id => $quantity) {
         $product = $productModel->findActive($product_id);
-        if (!$product) {
-            continue;
-            // however i would like tho error this
-        }
+        if (!$product) continue;
+
         $sid = $product['seller_id'];
         if (!isset($seller_groups[$sid])) {
             $seller = $sellerModel->findById($sid);
             $seller_groups[$sid] = [
-                'seller' => $seller,
-                'items' => [],
+                'seller'   => $seller,
+                'items'    => [],
                 'subtotal' => 0,
+                'shipping' => 0,
             ];
         }
         $seller_groups[$sid]['items'][] = [
-            'product' => $product,
-            'quantity' => $quantity,
+            'product'    => $product,
+            'quantity'   => $quantity,
             'line_total' => $product['price'] * $quantity,
         ];
         $seller_groups[$sid]['subtotal'] += $product['price'] * $quantity;
+        // One shipment per seller — use the highest individual product rate
+        $seller_groups[$sid]['shipping'] = max(
+            $seller_groups[$sid]['shipping'],
+            (float) ($product['shipping_cost'] ?? 0)
+        );
     }
+
     if (empty($seller_groups)) {
         set_flash("Your cart has no active products.", 'warning');
         header('Location: ' . BASE_URL . 'cart');
         exit();
     }
 
-    // Create a PaymentIntent per seller
+    // Create a PaymentIntent per seller (items + shipping)
     $client_secrets = [];
     $_SESSION['pending_payment_intents'] = [];
 
@@ -59,21 +64,23 @@ if ($path === 'checkout') {
         }
 
         try {
-            $amount_cents = (int) round($group['subtotal'] * 100);
+            $amount_cents = (int) round(($group['subtotal'] + $group['shipping']) * 100);
             $intent = stripe_create_payment_intent($amount_cents, 'usd', $seller['stripe_account_id']);
-            $group['client_secret'] = $intent->client_secret;
             $client_secrets[] = $intent->client_secret;
-            $_SESSION['pending_payment_intents'][$sid] = $intent->id;
+            $_SESSION['pending_payment_intents'][$sid] = [
+                'id'       => $intent->id,
+                'shipping' => $group['shipping'],
+            ];
         } catch (Exception $e) {
             set_flash('Failed to initialize payment: ' . $e->getMessage(), 'danger');
             header('Location: ' . BASE_URL . 'cart');
             exit();
         }
     }
-    unset($group); // break reference
 
-    $addresses = $addressModel->findByUser(current_user()['id']);
-    $grand_total = array_sum(array_column($seller_groups, 'subtotal'));
+    $addresses   = $addressModel->findByUser(current_user()['id']);
+    $grand_total = array_sum(array_map(fn($g) => $g['subtotal'] + $g['shipping'], $seller_groups));
+
 } elseif ($path === 'checkout/confirm') {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST' || empty($_SESSION['pending_payment_intents'])) {
         header('Location: ' . BASE_URL . 'checkout');
@@ -81,11 +88,10 @@ if ($path === 'checkout') {
     }
     $addressModel = new Address($pdo);
     $productModel = new Product($pdo);
-    $orderModel = new Order($pdo);
-    $sellerModel = new SellerProfile($pdo);
+    $orderModel   = new Order($pdo);
+    $sellerModel  = new SellerProfile($pdo);
 
     // Resolve shipping address
-
     $address_id = (int) ($_POST['address_id'] ?? 0);
 
     if ($address_id > 0) {
@@ -95,12 +101,11 @@ if ($path === 'checkout') {
             header('Location: ' . BASE_URL . 'checkout');
             exit();
         }
-
     } else {
-        $label = trim($_POST['label'] ?? 'Home');
-        $street = trim($_POST['street'] ?? '');
-        $city = trim($_POST['city'] ?? '');
-        $province = trim($_POST['province'] ?? '');
+        $label       = trim($_POST['label'] ?? 'Home');
+        $street      = trim($_POST['street'] ?? '');
+        $city        = trim($_POST['city'] ?? '');
+        $province    = trim($_POST['province'] ?? '');
         $postal_code = trim($_POST['postal_code'] ?? '');
 
         if (empty($street) || empty($city) || empty($province) || empty($postal_code)) {
@@ -108,80 +113,85 @@ if ($path === 'checkout') {
             header('Location: ' . BASE_URL . 'checkout');
             exit();
         }
-
-        $new_id = $addressModel->create(current_user()['id'], $label, $street, $city, $province, $postal_code);
+        $new_id  = $addressModel->create(current_user()['id'], $label, $street, $city, $province, $postal_code);
         $address = $addressModel->find($new_id);
     }
+
     $shipping = [
-        'name' => current_user()['name'],
-        'street' => $address['street'],
-        'city' => $address['city'],
-        'province' => $address['province'],
+        'name'        => current_user()['name'],
+        'street'      => $address['street'],
+        'city'        => $address['city'],
+        'province'    => $address['province'],
         'postal_code' => $address['postal_code'],
     ];
 
-    // Re-build seller groups from session cart (never trust POST for this)
-
+    // Re-build seller groups from session cart
     $seller_groups = [];
     foreach ($_SESSION['cart'] as $product_id => $quantity) {
         $product = $productModel->findActive($product_id);
-        if (!$product) {
-            continue;
-        }
+        if (!$product) continue;
         $sid = $product['seller_id'];
-        if (!isset($seller_groups[$sid])) {
-            $seller_groups[$sid] = [];
-        }
+        if (!isset($seller_groups[$sid])) $seller_groups[$sid] = [];
         $seller_groups[$sid][] = ['product' => $product, 'quantity' => $quantity];
     }
+
     $order_ids = [];
     try {
-        foreach ($_SESSION['pending_payment_intents'] as $seller_id => $intent_id) {
-            // Process each payment intent
-            $seller = $sellerModel->findById($seller_id);
-            $intent = \Stripe\PaymentIntent::retrieve($intent_id);
+        foreach ($_SESSION['pending_payment_intents'] as $seller_id => $pi) {
+            $intent   = \Stripe\PaymentIntent::retrieve($pi['id']);
+            $shipping_cost = (float) ($pi['shipping'] ?? 0);
 
             if ($intent->status !== 'succeeded') {
                 set_flash('Payment not completed. Please try again.', 'danger');
                 header('Location: ' . BASE_URL . 'checkout');
                 exit();
             }
-            $items = $seller_groups[$seller_id] ?? [];
-            $total = array_sum(array_map(fn($i) => $i['product']['price'] * $i['quantity'], $items));
 
-            $order_id = $orderModel->create(current_user()['id'], $seller_id, $total, $intent_id, $shipping);
+            $items = $seller_groups[$seller_id] ?? [];
+            $items_total = array_sum(array_map(fn($i) => $i['product']['price'] * $i['quantity'], $items));
+
+            $order_id = $orderModel->create(
+                current_user()['id'],
+                $seller_id,
+                $items_total,
+                $intent->id,
+                $shipping,
+                $shipping_cost
+            );
 
             $order_items = array_map(fn($i) => [
-                'product_id' => $i['product']['id'],
+                'product_id'   => $i['product']['id'],
                 'product_name' => $i['product']['name'],
-                'unit_price' => $i['product']['price'],
-                'quantity' => $i['quantity'],
+                'unit_price'   => $i['product']['price'],
+                'quantity'     => $i['quantity'],
             ], $items);
 
             $orderModel->createItems($order_id, $order_items);
 
+            // Decrement stock (createItems no longer does this)
             foreach ($items as $item) {
-                $pdo->prepare('UPDATE products SET stock_qty = stock_qty - ? WHERE id = ?')->execute([$item['quantity'], $item['product']['id']]);
+                $pdo->prepare('UPDATE products SET stock_qty = stock_qty - ? WHERE id = ?')
+                    ->execute([$item['quantity'], $item['product']['id']]);
             }
+
             $order_ids[] = $order_id;
         }
-
     } catch (Exception $e) {
         set_flash('Order creation failed: ' . $e->getMessage(), 'danger');
         header('Location: ' . BASE_URL . 'checkout');
         exit();
     }
+
     unset($_SESSION['cart'], $_SESSION['pending_payment_intents']);
     $_SESSION['confirmed_order_ids'] = $order_ids;
-
     header('Location: ' . BASE_URL . 'order/confirmation');
     exit();
+
 } elseif ($path === 'order/confirmation') {
     if (empty($_SESSION['confirmed_order_ids'])) {
         header('Location: ' . BASE_URL);
         exit();
     }
-
     $order_ids = $_SESSION['confirmed_order_ids'];
     unset($_SESSION['confirmed_order_ids']);
 }

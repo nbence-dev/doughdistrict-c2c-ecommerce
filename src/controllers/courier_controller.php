@@ -98,10 +98,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $shipment = shiplogic_create_shipment($order, $sellerProfile, $sellerUser, $buyerUser, $parcel);
 
         $trackingRef = $shipment['custom_tracking_reference'] ?? $shipment['short_tracking_reference'];
-        $shippingCost = (float) ($shipment['rate'] ?? 0);
 
-        // Persist the tracking reference and mark order as shipped
-        $orderModel->storeTracking($order_id, $shipment['id'], $trackingRef, $shippingCost);
+        $orderModel->storeTracking($order_id, $shipment['id'], $trackingRef);
 
         set_flash('Shipment booked! Tracking reference: ' . $trackingRef, 'success');
         header('Location: ' . BASE_URL . 'seller/orders/detail?id=' . $order_id);

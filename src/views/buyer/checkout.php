@@ -270,6 +270,10 @@ require_once ROOT_PATH . '/views/layouts/header.php'; ?>
                     <div class="order-summary-card mb-4">
                         <h3 class="fw-bold mb-4" style="font-family:'Plus Jakarta Sans',sans-serif; font-size: 1.25rem;">Order Summary</h3>
 
+                        <?php
+                        $items_subtotal   = array_sum(array_column($seller_groups, 'subtotal'));
+                        $shipping_subtotal = array_sum(array_column($seller_groups, 'shipping'));
+                        ?>
                         <?php foreach ($seller_groups as $group): ?>
                             <div class="mb-4">
                                 <div class="seller-divider">
@@ -302,14 +306,30 @@ require_once ROOT_PATH . '/views/layouts/header.php'; ?>
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
+
+                                <?php if ($group['shipping'] > 0): ?>
+                                <div class="d-flex justify-content-between small pb-3 border-bottom" style="color: var(--dd-on-surface-var); border-color: var(--dd-outline-var) !important;">
+                                    <span class="d-flex align-items-center gap-1">
+                                        <span class="material-symbols-outlined" style="font-size: .875rem;">local_shipping</span>
+                                        Shipping (ECO)
+                                    </span>
+                                    <span>R&nbsp;<?= number_format($group['shipping'], 2) ?></span>
+                                </div>
+                                <?php endif; ?>
                             </div>
                         <?php endforeach; ?>
 
                         <div class="border-top pt-3" style="border-color: var(--dd-outline-var) !important;">
                             <div class="d-flex justify-content-between small mb-2" style="color: var(--dd-on-surface-var);">
-                                <span>Subtotal</span>
-                                <span>R&nbsp;<?= number_format($grand_total, 2) ?></span>
+                                <span>Items</span>
+                                <span>R&nbsp;<?= number_format($items_subtotal, 2) ?></span>
                             </div>
+                            <?php if ($shipping_subtotal > 0): ?>
+                            <div class="d-flex justify-content-between small mb-2" style="color: var(--dd-on-surface-var);">
+                                <span>Shipping</span>
+                                <span>R&nbsp;<?= number_format($shipping_subtotal, 2) ?></span>
+                            </div>
+                            <?php endif; ?>
                             <div class="d-flex justify-content-between fw-bold">
                                 <span>Total</span>
                                 <span style="color: var(--dd-primary);">R&nbsp;<?= number_format($grand_total, 2) ?></span>

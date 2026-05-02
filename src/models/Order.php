@@ -8,25 +8,23 @@ class Order
         $this->db = $pdo;
     }
 
-    public function create($buyer_id, $seller_id, $total_amount, $stripe_payment_intent_id, $shipping)
+    public function create($buyer_id, $seller_id, $total_amount, $stripe_payment_intent_id, $shipping, $shipping_cost = null)
     {
         $stmt = $this->db->prepare("INSERT INTO orders
-        (buyer_id, seller_id, status ,total_amount, stripe_payment_intent_id, shipping_name, shipping_street, shipping_city, shipping_province, shipping_postal_code)
-        VALUES (?, ?, 'paid', ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$buyer_id, $seller_id, $total_amount, $stripe_payment_intent_id, $shipping['name'], $shipping['street'], $shipping['city'], $shipping['province'], $shipping['postal_code']]);
+        (buyer_id, seller_id, status, total_amount, stripe_payment_intent_id, shipping_cost, shipping_name, shipping_street, shipping_city, shipping_province, shipping_postal_code)
+        VALUES (?, ?, 'paid', ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$buyer_id, $seller_id, $total_amount, $stripe_payment_intent_id, $shipping_cost, $shipping['name'], $shipping['street'], $shipping['city'], $shipping['province'], $shipping['postal_code']]);
         return $this->db->lastInsertId();
     }
 
     public function createItems($order_id, array $items)
     {
         $stmt = $this->db->prepare("
-        INSERT INTO order_items (order_id,product_id, product_name, unit_price, quantity)
+        INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity)
         VALUES (?, ?, ?, ?, ?)
         ");
-        $stmt2 = $this->db->prepare("UPDATE products SET stock_qty = stock_qty - ? WHERE id = ?");
         foreach ($items as $item) {
             $stmt->execute([$order_id, $item['product_id'], $item['product_name'], $item['unit_price'], $item['quantity']]);
-            $stmt2->execute([$item['quantity'], $item['product_id']]);
         }
     }
 
@@ -48,11 +46,12 @@ class Order
         $stmt->execute([$status, $order_id]);
     }
 
-    public function storeTracking($order_id, $shiplogic_shipment_id, $tracking_reference, $shipping_cost)
+    public function storeTracking($order_id, $shiplogic_shipment_id, $tracking_reference)
     {
-        $stmt = $this->db->prepare('UPDATE orders SET shiplogic_shipment_id = ?, tracking_reference = ?, shipping_cost = ?, status = ? WHERE id = ?');
-        $stmt->execute([$shiplogic_shipment_id, $tracking_reference, $shipping_cost, 'shipped', $order_id]);
+        $stmt = $this->db->prepare('UPDATE orders SET shiplogic_shipment_id = ?, tracking_reference = ?, status = ? WHERE id = ?');
+        $stmt->execute([$shiplogic_shipment_id, $tracking_reference, 'shipped', $order_id]);
     }
+
     public function findById($order_id)
     {
         $stmt = $this->db->prepare('SELECT o.*, sp.shop_name FROM orders o
@@ -67,6 +66,7 @@ class Order
 
         return ['order' => $order, 'items' => $items];
     }
+
     public function findBySeller($seller_id)
     {
         $stmt = $this->db->prepare('SELECT o.*, u.name

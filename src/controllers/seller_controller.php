@@ -3,6 +3,7 @@ require_once ROOT_PATH . '/models/SellerProfile.php';
 require_once ROOT_PATH . '/models/Product.php';
 require_once ROOT_PATH . '/models/Category.php';
 require_once ROOT_PATH . '/helpers/r2.php';
+require_once ROOT_PATH . '/helpers/courier.php';
 
 // ── Onboarding ────────────────────────────────────────────────────────────────
 // Available to any logged-in user — a buyer becomes a seller on submit.
@@ -119,31 +120,45 @@ if ($path === 'seller/onboard') {
         $categories = $categoryModel->getAll();
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $name = trim($_POST['name'] ?? '');
+            $name        = trim($_POST['name'] ?? '');
             $description = trim($_POST['description'] ?? '');
-            $price = (float) ($_POST['price'] ?? 0);
-            $stock_qty = (int) ($_POST['stock_qty'] ?? 0);
+            $price       = (float) ($_POST['price'] ?? 0);
+            $stock_qty   = (int) ($_POST['stock_qty'] ?? 0);
             $category_id = (int) ($_POST['category_id'] ?? 0);
+            $weight_kg   = (float) ($_POST['weight_kg'] ?? 0);
+            $length_cm   = (float) ($_POST['length_cm'] ?? 0);
+            $width_cm    = (float) ($_POST['width_cm'] ?? 0);
+            $height_cm   = (float) ($_POST['height_cm'] ?? 0);
 
             $errors = [];
-            if ($name === '')
-                $errors[] = "Product name is required.";
-            if ($description === '')
-                $errors[] = "Description is required.";
-            if ($price <= 0)
-                $errors[] = "Price must be greater than zero.";
-            if ($stock_qty < 0)
-                $errors[] = "Stock quantity cannot be negative.";
-            if ($category_id <= 0)
-                $errors[] = "Please select a category.";
-            if (empty($_FILES['image']['name']))
-                $errors[] = "A product image is required.";
+            if ($name === '')         $errors[] = "Product name is required.";
+            if ($description === '')  $errors[] = "Description is required.";
+            if ($price <= 0)          $errors[] = "Price must be greater than zero.";
+            if ($stock_qty < 0)       $errors[] = "Stock quantity cannot be negative.";
+            if ($category_id <= 0)    $errors[] = "Please select a category.";
+            if (empty($_FILES['image']['name'])) $errors[] = "A product image is required.";
+            if ($weight_kg <= 0 || $length_cm <= 0 || $width_cm <= 0 || $height_cm <= 0)
+                $errors[] = "Please enter valid package dimensions and weight.";
 
             if (empty($errors)) {
                 try {
+                    $shipping_cost = null;
+                    if (!empty($sellerProfile['street_address'])) {
+                        try {
+                            $shipping_cost = shiplogic_get_rate($sellerProfile, [
+                                'description' => $name,
+                                'weight_kg'   => $weight_kg,
+                                'length_cm'   => $length_cm,
+                                'width_cm'    => $width_cm,
+                                'height_cm'   => $height_cm,
+                            ]);
+                        } catch (RuntimeException $e) {
+                            // Rate fetch failed — save product without estimate
+                        }
+                    }
                     $image_url = upload_to_r2($_FILES['image']);
                     $productModel = new Product($pdo);
-                    $productModel->create($sellerProfile['id'], $category_id, $name, $description, $price, $stock_qty, $image_url);
+                    $productModel->create($sellerProfile['id'], $category_id, $name, $description, $price, $stock_qty, $image_url, $weight_kg, $length_cm, $width_cm, $height_cm, $shipping_cost);
                     set_flash("Product listed successfully. It is pending admin approval before going live.", 'success');
                     header('Location: ' . BASE_URL . 'seller/products');
                     exit();
@@ -177,33 +192,46 @@ if ($path === 'seller/onboard') {
         $categories = $categoryModel->getAll();
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $name = trim($_POST['name'] ?? '');
+            $name        = trim($_POST['name'] ?? '');
             $description = trim($_POST['description'] ?? '');
-            $price = (float) ($_POST['price'] ?? 0);
-            $stock_qty = (int) ($_POST['stock_qty'] ?? 0);
+            $price       = (float) ($_POST['price'] ?? 0);
+            $stock_qty   = (int) ($_POST['stock_qty'] ?? 0);
             $category_id = (int) ($_POST['category_id'] ?? 0);
+            $weight_kg   = (float) ($_POST['weight_kg'] ?? 0);
+            $length_cm   = (float) ($_POST['length_cm'] ?? 0);
+            $width_cm    = (float) ($_POST['width_cm'] ?? 0);
+            $height_cm   = (float) ($_POST['height_cm'] ?? 0);
 
             $errors = [];
-            if ($name === '')
-                $errors[] = "Product name is required.";
-            if ($description === '')
-                $errors[] = "Description is required.";
-            if ($price <= 0)
-                $errors[] = "Price must be greater than zero.";
-            if ($stock_qty < 0)
-                $errors[] = "Stock quantity cannot be negative.";
-            if ($category_id <= 0)
-                $errors[] = "Please select a category.";
+            if ($name === '')        $errors[] = "Product name is required.";
+            if ($description === '') $errors[] = "Description is required.";
+            if ($price <= 0)         $errors[] = "Price must be greater than zero.";
+            if ($stock_qty < 0)      $errors[] = "Stock quantity cannot be negative.";
+            if ($category_id <= 0)   $errors[] = "Please select a category.";
+            if ($weight_kg <= 0 || $length_cm <= 0 || $width_cm <= 0 || $height_cm <= 0)
+                $errors[] = "Please enter valid package dimensions and weight.";
 
             if (empty($errors)) {
                 try {
-                    // Only upload a new image if the seller chose one
+                    $shipping_cost = $product['shipping_cost'];
+                    if (!empty($sellerProfile['street_address'])) {
+                        try {
+                            $shipping_cost = shiplogic_get_rate($sellerProfile, [
+                                'description' => $name,
+                                'weight_kg'   => $weight_kg,
+                                'length_cm'   => $length_cm,
+                                'width_cm'    => $width_cm,
+                                'height_cm'   => $height_cm,
+                            ]);
+                        } catch (RuntimeException $e) {
+                            // Rate fetch failed — keep existing estimate
+                        }
+                    }
                     $image_url = $product['image_url'];
                     if (!empty($_FILES['image']['name'])) {
                         $image_url = upload_to_r2($_FILES['image']);
                     }
-
-                    $productModel->update($productId, $category_id, $name, $description, $price, $stock_qty, $image_url);
+                    $productModel->update($productId, $category_id, $name, $description, $price, $stock_qty, $image_url, $weight_kg, $length_cm, $width_cm, $height_cm, $shipping_cost);
                     set_flash("Product updated successfully.", 'success');
                     header('Location: ' . BASE_URL . 'seller/products');
                     exit();

@@ -86,3 +86,47 @@ function shiplogic_get_shipment($tracking_reference)
 {
     return shiplogic_request('GET', '/shipments?tracking_reference=' . urlencode($tracking_reference));
 }
+
+function shiplogic_get_rate($sellerProfile, $parcel)
+{
+    $body = [
+        'collection_address' => [
+            'type'           => 'business',
+            'company'        => $sellerProfile['shop_name'],
+            'street_address' => $sellerProfile['street_address'],
+            'local_area'     => $sellerProfile['local_area'],
+            'city'           => $sellerProfile['city'],
+            'zone'           => $sellerProfile['zone'],
+            'country'        => 'ZA',
+            'code'           => $sellerProfile['postal_code'],
+        ],
+        'delivery_address' => [
+            'type'           => 'residential',
+            'street_address' => '1 Sandton Drive',
+            'local_area'     => 'Sandton',
+            'city'           => 'Johannesburg',
+            'zone'           => 'Gauteng',
+            'country'        => 'ZA',
+            'code'           => '2196',
+        ],
+        'parcels' => [[
+            'parcel_description'  => $parcel['description'] ?? 'Baked goods',
+            'submitted_length_cm' => (float) $parcel['length_cm'],
+            'submitted_width_cm'  => (float) $parcel['width_cm'],
+            'submitted_height_cm' => (float) $parcel['height_cm'],
+            'submitted_weight_kg' => (float) $parcel['weight_kg'],
+        ]],
+        'service_level_code' => 'ECO',
+    ];
+
+    $data = shiplogic_request('POST', '/rates', $body);
+
+    // Response may be an array of rate objects, or a wrapper with a 'rates' key
+    $rates = $data['rates'] ?? (isset($data[0]) ? $data : []);
+    foreach ($rates as $r) {
+        if (($r['service_level_code'] ?? '') === 'ECO') {
+            return (float) $r['rate'];
+        }
+    }
+    return isset($rates[0]['rate']) ? (float) $rates[0]['rate'] : 0.0;
+}

@@ -147,8 +147,13 @@
                                 <span class="price-tag text-nowrap">R<?= number_format($p['price'], 2) ?></span>
                             </div>
                             <p class="shop-label mb-2"><?= htmlspecialchars($p['shop_name']) ?></p>
-                            <span class="badge mb-3"
-                                style="background: var(--dd-surface-low); color: var(--dd-secondary); font-size: .65rem; width: fit-content;">Free Delivery</span>
+                            <span class="badge mb-3" style="background: var(--dd-surface-low); color: var(--dd-secondary); font-size: .65rem; width: fit-content;">
+                                <?php if (!empty($p['shipping_cost'])): ?>
+                                    Shipping R <?= number_format($p['shipping_cost'], 2) ?>
+                                <?php else: ?>
+                                    Shipping TBD
+                                <?php endif; ?>
+                            </span>
                             <p class="card-text small mb-4 flex-grow-1"
                                 style="color: var(--dd-on-surface-var); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
                                 <?= htmlspecialchars($p['description']) ?>

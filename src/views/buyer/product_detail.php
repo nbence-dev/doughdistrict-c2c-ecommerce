@@ -89,8 +89,13 @@
                     <span style="font-size: 2rem; font-weight: 700; color: var(--dd-secondary);">
                         R <?= number_format($product['price'], 2) ?>
                     </span>
-                    <span class="badge"
-                        style="background: var(--dd-surface-low); color: var(--dd-secondary); font-size: .7rem;">Free Delivery</span>
+                    <span class="badge" style="background: var(--dd-surface-low); color: var(--dd-secondary); font-size: .7rem;">
+                        <?php if (!empty($product['shipping_cost'])): ?>
+                            + R <?= number_format($product['shipping_cost'], 2) ?> shipping
+                        <?php else: ?>
+                            Shipping TBD
+                        <?php endif; ?>
+                    </span>
                 </div>
                 <p class="small mb-4" style="color: var(--dd-outline);">
                     <?= (int) $product['stock_qty'] ?> in stock

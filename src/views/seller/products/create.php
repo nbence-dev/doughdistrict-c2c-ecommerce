@@ -126,6 +126,46 @@ $categories = $categories ?? [];
           </div>
         </section>
 
+        <!-- Package dimensions -->
+        <section class="bg-surface-container-lowest p-6 rounded-2xl shadow-[0px_12px_32px_rgba(48,49,44,0.06)] space-y-5">
+          <div>
+            <h3 class="font-headline font-bold text-on-surface mb-1">Package Dimensions</h3>
+            <p class="text-xs text-on-surface-variant">Used to calculate the shipping cost shown to buyers.</p>
+          </div>
+
+          <div class="grid grid-cols-3 gap-3">
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-bold text-outline uppercase tracking-wider">Length (cm)</label>
+              <input type="number" name="length_cm" min="0.1" step="0.1" required
+                     value="<?= htmlspecialchars($_POST['length_cm'] ?? '') ?>"
+                     placeholder="30"
+                     class="bg-surface-container-low border-none rounded-xl p-3 text-on-surface focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary/40 transition-all"/>
+            </div>
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-bold text-outline uppercase tracking-wider">Width (cm)</label>
+              <input type="number" name="width_cm" min="0.1" step="0.1" required
+                     value="<?= htmlspecialchars($_POST['width_cm'] ?? '') ?>"
+                     placeholder="20"
+                     class="bg-surface-container-low border-none rounded-xl p-3 text-on-surface focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary/40 transition-all"/>
+            </div>
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-bold text-outline uppercase tracking-wider">Height (cm)</label>
+              <input type="number" name="height_cm" min="0.1" step="0.1" required
+                     value="<?= htmlspecialchars($_POST['height_cm'] ?? '') ?>"
+                     placeholder="10"
+                     class="bg-surface-container-low border-none rounded-xl p-3 text-on-surface focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary/40 transition-all"/>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-1">
+            <label class="text-xs font-bold text-outline uppercase tracking-wider">Weight (kg)</label>
+            <input type="number" name="weight_kg" min="0.01" step="0.001" required
+                   value="<?= htmlspecialchars($_POST['weight_kg'] ?? '') ?>"
+                   placeholder="0.500"
+                   class="bg-surface-container-low border-none rounded-xl p-3 w-full text-on-surface focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary/40 transition-all"/>
+          </div>
+        </section>
+
         <!-- Actions -->
         <div class="flex flex-col gap-3">
           <button type="submit"

@@ -61,6 +61,7 @@ function status_badge(int $isActive): string
 </div>
 
 <!-- ── Users Table ── -->
+<p class="scroll-hint">← Scroll to see more →</p>
 <div class="table-card">
     <div class="table-responsive">
         <table class="table table-dd mb-0">

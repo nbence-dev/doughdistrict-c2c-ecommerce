@@ -1,26 +1,31 @@
 <?php
 /**
- * Seller layout — include at the TOP of every seller view (except onboarding).
+ * Seller layout — dark sidebar matching admin style.
+ * Include at the TOP of every seller view (except onboarding).
  * Expects: $pageTitle (string), $sellerProfile (array), current_user() available.
- * Opens: <main class="flex-1 ml-64 ..."> — each view MUST close it.
+ * Opens: <main id="seller-main"> — each view MUST close it + </body></html>
  */
 $pageTitle    = $pageTitle ?? 'Seller Portal';
 $sellerProfile = $sellerProfile ?? [];
+$currentUser  = current_user();
 $currentPath  = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
 
 function seller_nav_link(string $path, string $icon, string $label, string $currentPath): string
 {
-    $active = ($currentPath === $path);
-    $url    = BASE_URL . $path;
-    $base   = 'flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all duration-200 text-sm';
-    $cls    = $active
-        ? "$base bg-surface-container-lowest text-primary font-bold shadow-sm"
-        : "$base text-on-surface-variant hover:text-primary hover:bg-surface-container-lowest/50";
-    return "<a href=\"{$url}\" class=\"{$cls}\"><span class=\"material-symbols-outlined\">{$icon}</span>{$label}</a>";
+    $active = ($currentPath === $path) ? 'active' : '';
+    if ($active === '' && $path !== '' && strpos($currentPath, $path) === 0) {
+        $active = 'active';
+    }
+    $url = BASE_URL . $path;
+    return <<<HTML
+    <a href="{$url}" class="nav-link {$active}">
+        <span class="material-symbols-outlined">{$icon}</span> {$label}
+    </a>
+    HTML;
 }
 
 $shopName = htmlspecialchars($sellerProfile['shop_name'] ?? 'My Shop');
-$userName = htmlspecialchars(current_user()['name'] ?? '');
+$userName = htmlspecialchars($currentUser['name'] ?? '');
 ?>
 <!DOCTYPE html>
 <html lang="en" class="light">
@@ -60,46 +65,279 @@ tailwind.config = {
 }
 </script>
 <style>
-  body { font-family: 'Be Vietnam Pro', sans-serif; }
-  h1,h2,h3,h4 { font-family: 'Plus Jakarta Sans', sans-serif; }
+  body { font-family: 'Be Vietnam Pro', sans-serif; background-color: #fbf9f1; color: #1b1c17; }
+  h1, h2, h3, h4 { font-family: 'Plus Jakarta Sans', sans-serif; }
   .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-  .golden-glow:hover { background: linear-gradient(135deg, #6f4627 0%, #8b5e3c 100%); }
+
+  /* ── Sidebar ─────────────────────────────────────────────── */
+  #seller-sidebar {
+      width: 256px;
+      min-height: 100vh;
+      background-color: #1c1917;
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 1.5rem 0;
+      z-index: 50;
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+  }
+
+  #seller-sidebar .brand {
+      padding: 0 1.5rem 2rem;
+  }
+
+  #seller-sidebar .brand h1 {
+      color: #fef3c7;
+      font-size: 1.125rem;
+      font-weight: 700;
+      margin: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  #seller-sidebar .brand p {
+      color: #78716c;
+      font-size: 0.625rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      margin: 0;
+      font-weight: 600;
+  }
+
+  #seller-sidebar .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.6rem 1rem;
+      margin: 0.1rem 0.5rem;
+      border-radius: 0.5rem;
+      color: #a8a29e;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 500;
+      font-size: 0.875rem;
+      transition: all 0.15s ease;
+      text-decoration: none;
+  }
+
+  #seller-sidebar .nav-link:hover {
+      color: #f5f5f4;
+      background-color: rgba(68, 64, 60, 0.45);
+  }
+
+  #seller-sidebar .nav-link.active {
+      background-color: #292524;
+      color: #fcd34d;
+  }
+
+  #seller-sidebar .sidebar-footer {
+      margin-top: auto;
+      border-top: 1px solid #292524;
+      padding-top: 0.75rem;
+  }
+
+  #seller-sidebar .sidebar-user {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.625rem 1.25rem 0;
+  }
+
+  #seller-sidebar .sidebar-user img {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid #3d3835;
+      flex-shrink: 0;
+  }
+
+  #seller-sidebar .sidebar-user .user-name {
+      color: #fef9f0;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      line-height: 1.2;
+  }
+
+  #seller-sidebar .sidebar-user .user-role {
+      color: #78716c;
+      font-size: 0.675rem;
+      line-height: 1;
+  }
+
+  /* ── New Listing CTA ─────────────────────────────────────── */
+  #seller-sidebar .new-listing-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin: 0 0.75rem 0.75rem;
+      padding: 0.625rem 1rem;
+      background: linear-gradient(135deg, #6f4627 0%, #8b5e3c 100%);
+      color: #fff;
+      border-radius: 0.5rem;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      font-size: 0.8rem;
+      text-decoration: none;
+      transition: all 0.2s;
+  }
+
+  #seller-sidebar .new-listing-btn:hover {
+      box-shadow: 0 4px 16px rgba(111, 70, 39, 0.35);
+      transform: translateY(-1px);
+      color: #fff;
+  }
+
+  /* ── Mobile topbar ───────────────────────────────────────── */
+  #seller-topbar {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
+      background-color: rgba(251, 249, 241, 0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(213, 195, 184, 0.35);
+      align-items: center;
+      padding: 0 1rem;
+      gap: 0.75rem;
+      z-index: 39;
+  }
+
+  #seller-topbar .topbar-brand {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      color: #6f4627;
+      font-size: 1rem;
+      flex: 1;
+  }
+
+  #seller-topbar .icon-btn {
+      background: none;
+      border: none;
+      color: #6f4627;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s;
+  }
+
+  #seller-topbar .icon-btn:hover { background-color: #f5f4ec; }
+
+  /* ── Sidebar overlay ─────────────────────────────────────── */
+  #sidebar-overlay { display: none; }
+
+  /* ── Main canvas ─────────────────────────────────────────── */
+  #seller-main {
+      margin-left: 256px;
+      min-height: 100vh;
+  }
+
+  /* ── Mobile breakpoint ───────────────────────────────────── */
+  @media (max-width: 991.98px) {
+      #seller-sidebar {
+          transform: translateX(-100%);
+          transition: transform 0.25s ease;
+      }
+
+      body.sidebar-open #seller-sidebar {
+          transform: translateX(0);
+      }
+
+      #sidebar-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.45);
+          z-index: 40;
+      }
+
+      body.sidebar-open #sidebar-overlay {
+          display: block;
+      }
+
+      #seller-topbar { display: flex; }
+
+      #seller-main {
+          margin-left: 0;
+          padding-top: 56px;
+      }
+
+      /* Push sticky content headers below mobile topbar */
+      #seller-main header.sticky { top: 56px !important; }
+  }
 </style>
 </head>
-<body class="bg-surface text-on-surface min-h-screen flex">
+<body>
 
-<!-- Sidebar -->
-<aside class="fixed left-0 top-0 h-screen w-64 bg-surface-container-low flex flex-col py-6 gap-1 z-40 border-r border-outline-variant/20">
-  <div class="px-6 mb-8">
-    <h1 class="font-headline text-xl font-black text-primary tracking-tight">DoughDistrict</h1>
-    <p class="text-xs text-on-surface-variant font-medium mt-0.5"><?= $shopName ?></p>
+<!-- ════════ Sidebar ════════ -->
+<aside id="seller-sidebar">
+  <div class="brand">
+    <h1>DoughDistrict</h1>
+    <p><?= $shopName ?></p>
   </div>
 
-  <nav class="flex-1 px-3 space-y-1">
+  <nav style="flex:1;">
     <?= seller_nav_link('seller/dashboard', 'dashboard', 'Dashboard', $currentPath) ?>
     <?= seller_nav_link('seller/products', 'storefront', 'My Products', $currentPath) ?>
     <?= seller_nav_link('seller/orders', 'receipt_long', 'Orders', $currentPath) ?>
     <?= seller_nav_link('seller/stripe', 'payments', 'Payments', $currentPath) ?>
     <?= seller_nav_link('seller/profile', 'settings', 'Shop Profile', $currentPath) ?>
+    <div style="height:1px;background:rgba(255,255,255,0.07);margin:.5rem .75rem;"></div>
+    <?= seller_nav_link('browse', 'explore', 'Browse Shop', $currentPath) ?>
   </nav>
 
-  <div class="px-4 mt-auto space-y-3">
-    <a href="<?= BASE_URL ?>seller/products/create"
-       class="w-full py-3 px-4 bg-primary text-on-primary rounded-xl font-headline font-bold text-sm flex items-center justify-center gap-2 golden-glow transition-all active:scale-95 shadow-sm">
-      <span class="material-symbols-outlined text-sm">add</span> New Listing
+  <a href="<?= BASE_URL ?>seller/products/create" class="new-listing-btn">
+    <span class="material-symbols-outlined" style="font-size:1rem;">add</span> New Listing
+  </a>
+
+  <div class="sidebar-footer">
+    <a href="<?= BASE_URL ?>logout" class="nav-link">
+      <span class="material-symbols-outlined">logout</span> Sign Out
     </a>
-    <div class="border-t border-outline-variant/20 pt-3">
-      <div class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-surface-container-lowest/50 transition-colors">
-        <span class="material-symbols-outlined text-on-surface-variant">account_circle</span>
-        <div class="flex-1 min-w-0">
-          <p class="text-xs font-bold text-on-surface truncate"><?= $userName ?></p>
-          <p class="text-[10px] text-outline">Seller</p>
-        </div>
-        <a href="<?= BASE_URL ?>logout" class="text-[10px] text-outline hover:text-error transition-colors">Logout</a>
+    <div class="sidebar-user">
+      <img src="https://ui-avatars.com/api/?name=<?= urlencode($currentUser['name'] ?? 'Seller') ?>&background=6f4627&color=fff&bold=true&size=64"
+           alt="Avatar">
+      <div>
+        <div class="user-name"><?= $userName ?></div>
+        <div class="user-role">Seller</div>
       </div>
     </div>
   </div>
 </aside>
 
-<!-- Main content — views close this -->
-<main class="flex-1 ml-64 min-h-screen flex flex-col">
+<div id="sidebar-overlay"></div>
+
+<!-- ════════ Mobile topbar ════════ -->
+<header id="seller-topbar">
+  <button class="icon-btn" id="sidebar-toggle" aria-label="Open menu">
+    <span class="material-symbols-outlined">menu</span>
+  </button>
+  <span class="topbar-brand">DoughDistrict</span>
+  <a href="<?= BASE_URL ?>seller/products/create" class="icon-btn" title="New Listing">
+    <span class="material-symbols-outlined">add</span>
+  </a>
+</header>
+
+<script>
+(function () {
+  var toggle  = document.getElementById('sidebar-toggle');
+  var sidebar = document.getElementById('seller-sidebar');
+  var overlay = document.getElementById('sidebar-overlay');
+  if (toggle) toggle.addEventListener('click', function () {
+    document.body.classList.toggle('sidebar-open');
+  });
+  if (overlay) overlay.addEventListener('click', function () {
+    document.body.classList.remove('sidebar-open');
+  });
+})();
+</script>
+
+<!-- ════════ Main Canvas ════════ -->
+<main id="seller-main">

@@ -43,6 +43,7 @@ function product_status_badge(string $status): string
 </div>
 
 <!-- ── Products Table ── -->
+<p class="scroll-hint">← Scroll to see more →</p>
 <div class="table-card">
     <div class="table-responsive">
         <table class="table table-dd mb-0">
@@ -86,6 +87,11 @@ function product_status_badge(string $status): string
                                         <div class="small" style="color:var(--dd-outline)">
                                             Listed: <?= date('d M Y', strtotime($p['created_at'])) ?>
                                         </div>
+                                        <!-- Status + price visible only on mobile (hidden sm+) -->
+                                        <div class="d-sm-none mt-1 d-flex align-items-center gap-2 flex-wrap">
+                                            <?= product_status_badge($p['status'] ?? 'pending') ?>
+                                            <span class="small fw-bold" style="color:var(--dd-secondary)">R <?= number_format((float) $p['price'], 2) ?></span>
+                                        </div>
                                     </div>
                                 </div>
                             </td>
@@ -116,7 +122,7 @@ function product_status_badge(string $status): string
                             <td>
                                 <div class="d-flex justify-content-end gap-1">
                                     <!-- View -->
-                                    <a href="<?= BASE_URL ?>browse/product/<?= (int) $p['id'] ?>"
+                                    <a href="<?= BASE_URL ?>product?id=<?= (int) $p['id'] ?>"
                                         class="action-btn action-btn-view" title="View listing">
                                         <span class="material-symbols-outlined">visibility</span>
                                     </a>

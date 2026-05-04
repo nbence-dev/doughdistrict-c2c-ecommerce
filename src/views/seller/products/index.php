@@ -55,8 +55,11 @@ function product_status_pill(string $status): string
 
   <?php else: ?>
   <!-- Product table -->
-  <div class="bg-surface-container-lowest rounded-2xl shadow-[0px_12px_32px_rgba(48,49,44,0.06)] overflow-hidden">
-    <table class="w-full text-left border-collapse">
+  <p class="text-xs text-outline text-right mb-1 sm:hidden flex items-center justify-end gap-1">
+    <span class="material-symbols-outlined text-sm">swipe</span> Scroll to see more
+  </p>
+  <div class="bg-surface-container-lowest rounded-2xl shadow-[0px_12px_32px_rgba(48,49,44,0.06)] overflow-x-auto">
+    <table class="w-full text-left border-collapse" style="min-width:640px;">
       <thead>
         <tr class="bg-surface-container-low border-none">
           <th class="px-6 py-5 font-headline font-bold text-on-surface-variant text-xs uppercase tracking-wider">Product</th>
@@ -90,7 +93,7 @@ function product_status_pill(string $status): string
             </div>
           </td>
           <td class="px-6 py-5">
-            <span class="px-3 py-1 rounded-full bg-tertiary-container/20 text-tertiary font-medium text-xs">
+            <span class="inline-block px-2.5 py-1 rounded-lg bg-surface-container text-on-surface-variant font-medium text-xs max-w-[140px] truncate" title="<?= htmlspecialchars($product['category_name']) ?>">
               <?= htmlspecialchars($product['category_name']) ?>
             </span>
           </td>

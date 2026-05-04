@@ -53,23 +53,26 @@ switch ($path) {
 
     case 'cart':
         require_login();
+        if (current_user()['role'] === 'admin') { set_flash('Admins cannot use the cart.', 'warning'); header('Location: ' . BASE_URL . 'browse'); exit(); }
         require_once ROOT_PATH . '/controllers/cart_controller.php';
         require_once ROOT_PATH . '/views/buyer/cart.php';
         break;
 
     case 'cart/add':
         require_login();
+        if (current_user()['role'] === 'admin') { header('Location: ' . BASE_URL . 'browse'); exit(); }
         require_once ROOT_PATH . '/controllers/cart_controller.php';
         break;
 
     case 'cart/remove':
         require_login();
+        if (current_user()['role'] === 'admin') { header('Location: ' . BASE_URL . 'browse'); exit(); }
         require_once ROOT_PATH . '/controllers/cart_controller.php';
         break;
 
-
     case 'cart/update':
         require_login();
+        if (current_user()['role'] === 'admin') { header('Location: ' . BASE_URL . 'browse'); exit(); }
         require_once ROOT_PATH . '/controllers/cart_controller.php';
         break;
 
@@ -197,17 +200,20 @@ switch ($path) {
 
     case 'checkout':
         require_login();
+        if (current_user()['role'] === 'admin') { set_flash('Admins cannot place orders.', 'warning'); header('Location: ' . BASE_URL . 'browse'); exit(); }
         require_once ROOT_PATH . '/controllers/checkout_controller.php';
         require_once ROOT_PATH . '/views/buyer/checkout.php';
         break;
 
     case 'checkout/confirm':
         require_login();
+        if (current_user()['role'] === 'admin') { header('Location: ' . BASE_URL . 'browse'); exit(); }
         require_once ROOT_PATH . '/controllers/checkout_controller.php';
         break;
 
     case 'order/confirmation':
         require_login();
+        if (current_user()['role'] === 'admin') { header('Location: ' . BASE_URL . 'browse'); exit(); }
         require_once ROOT_PATH . '/controllers/checkout_controller.php';
         require_once ROOT_PATH . '/views/buyer/order_confirmation.php';
         break;
@@ -215,12 +221,14 @@ switch ($path) {
     // ── Orders (Phase 6) ─────────────────────────────────────────────
     case 'orders':
         require_login();
+        if (current_user()['role'] === 'admin') { set_flash('Admins do not have order history.', 'warning'); header('Location: ' . BASE_URL . 'admin/users'); exit(); }
         require_once ROOT_PATH . '/controllers/order_controller.php';
         require_once ROOT_PATH . '/views/buyer/orders.php';
         break;
 
     case 'orders/detail':
         require_login();
+        if (current_user()['role'] === 'admin') { header('Location: ' . BASE_URL . 'admin/users'); exit(); }
         require_once ROOT_PATH . '/controllers/order_controller.php';
         require_once ROOT_PATH . '/views/buyer/order_detail.php';
         break;

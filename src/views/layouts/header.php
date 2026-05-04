@@ -95,12 +95,12 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="mainNav">
-                <ul class="navbar-nav me-auto">
+                <ul class="navbar-nav me-lg-auto order-1 order-lg-0">
                     <li class="nav-item">
                         <a class="nav-link" href="<?= BASE_URL ?>browse">Browse</a>
                     </li>
                 </ul>
-                <ul class="navbar-nav ms-auto align-items-center gap-2">
+                <ul class="navbar-nav ms-lg-auto align-items-lg-center gap-2 order-0 order-lg-1">
                     <?php if ($currentUser): ?>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
@@ -108,7 +108,7 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
                                 <?php if ($currentUser['role'] === 'admin'): ?>
-                                    <li><a class="dropdown-item" href="<?= BASE_URL ?>admin/dashboard">Admin Panel</a></li>
+                                    <li><a class="dropdown-item" href="<?= BASE_URL ?>admin/users">Admin Panel</a></li>
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
@@ -119,11 +119,13 @@
                                         <hr class="dropdown-divider">
                                     </li>
                                 <?php endif; ?>
+                                <?php if ($currentUser['role'] !== 'admin'): ?>
                                 <li><a class="dropdown-item" href="<?= BASE_URL ?>orders">My Orders</a></li>
                                 <li><a class="dropdown-item" href="<?= BASE_URL ?>cart">Cart</a></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
+                                <?php endif; ?>
                                 <li><a class="dropdown-item text-danger" href="<?= BASE_URL ?>logout">Logout</a></li>
                             </ul>
                         </li>

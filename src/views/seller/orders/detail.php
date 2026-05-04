@@ -1,144 +1,165 @@
-<?php require_once ROOT_PATH . '/views/layouts/header.php'; ?>
-
-<style>
-.status-badge { font-size: .72rem; font-weight: 700; padding: .3rem .9rem; border-radius: 999px; display: inline-block; }
-.status-paid       { background: #e4e3db; color: #51443c; }
-.status-processing { background: #ffdcc4; color: #703800; }
-.status-shipped    { background: #ffdcc5; color: #653d1e; }
-.status-delivered  { background: #dbe9a9; color: #404b1b; }
-.detail-card { background: #fff; border-radius: 1rem; box-shadow: 0 4px 16px rgba(48,49,44,.06); }
-</style>
-
 <?php
-$order = $data['order'];
-$items = $data['items'];
-$statusClass = match($order['status']) {
-    'processing' => 'status-processing',
-    'shipped'    => 'status-shipped',
-    'delivered'  => 'status-delivered',
-    default      => 'status-paid',
-};
-$statuses = ['paid', 'processing', 'shipped', 'delivered'];
+$pageTitle = 'Order Detail';
+include __DIR__ . '/../layout.php';
+
+$flash  = get_flash();
+$order  = $data['order'];
+$items  = $data['items'];
+
+$statusColors = [
+    'paid'       => 'bg-surface-variant text-on-surface-variant',
+    'processing' => 'bg-secondary-container text-on-secondary-container',
+    'shipped'    => 'bg-primary-container text-on-primary-container',
+    'delivered'  => 'bg-tertiary text-on-tertiary',
+];
+$statusCls = $statusColors[$order['status']] ?? 'bg-surface-variant text-on-surface-variant';
+$statuses  = ['paid', 'processing', 'shipped', 'delivered'];
 ?>
 
-<main class="container py-5">
+<!-- Top bar -->
+<header class="sticky top-0 z-30 bg-surface/80 backdrop-blur-md flex items-center gap-3 px-6 lg:px-8 py-4 border-b border-outline-variant/10">
+  <a href="<?= BASE_URL ?>seller/orders"
+     class="p-2 hover:bg-surface-container-low rounded-lg transition-colors text-on-surface-variant flex-shrink-0">
+    <span class="material-symbols-outlined">arrow_back</span>
+  </a>
+  <div class="flex-1 min-w-0">
+    <nav class="flex items-center gap-1 text-outline text-xs mb-0.5">
+      <a href="<?= BASE_URL ?>seller/orders" class="hover:text-primary transition-colors">Orders</a>
+      <span class="material-symbols-outlined text-[10px]">chevron_right</span>
+      <span class="text-primary font-medium">Order #<?= (int) $order['id'] ?></span>
+    </nav>
+    <div class="flex items-center gap-3 flex-wrap">
+      <h2 class="font-headline font-bold text-xl text-on-surface tracking-tight">Order #<?= (int) $order['id'] ?></h2>
+      <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide <?= $statusCls ?>">
+        <?= ucfirst(htmlspecialchars($order['status'])) ?>
+      </span>
+    </div>
+  </div>
+</header>
 
-    <!-- Breadcrumb + Header -->
-    <div class="mb-4">
-        <nav aria-label="breadcrumb" class="mb-2">
-            <ol class="breadcrumb small mb-0">
-                <li class="breadcrumb-item"><a href="<?= BASE_URL ?>seller/orders" style="color: var(--dd-outline);">My Orders</a></li>
-                <li class="breadcrumb-item active" style="color: var(--dd-on-surface-var);">Order #<?= (int) $order['id'] ?></li>
-            </ol>
-        </nav>
-        <div class="d-flex align-items-center gap-3 flex-wrap mt-2">
-            <h1 class="font-headline fw-bold mb-0" style="color: var(--dd-primary);">Order #<?= (int) $order['id'] ?></h1>
-            <span class="status-badge <?= $statusClass ?>"><?= ucfirst(htmlspecialchars($order['status'])) ?></span>
+<div class="p-6 lg:p-8">
+
+  <!-- Flash -->
+  <?php if ($flash): ?>
+  <?php $err = in_array($flash['type'], ['danger', 'error']); ?>
+  <div class="mb-6 px-5 py-4 rounded-2xl flex items-center gap-3 <?= $err ? 'bg-error-container text-error' : 'bg-tertiary-fixed text-on-tertiary-fixed-variant' ?>">
+    <span class="material-symbols-outlined"><?= $err ? 'error' : 'check_circle' ?></span>
+    <p class="text-sm font-medium"><?= htmlspecialchars($flash['message']) ?></p>
+  </div>
+  <?php endif; ?>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- Left: Items + Address -->
+    <div class="lg:col-span-2 space-y-6">
+
+      <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm ring-1 ring-outline-variant/10">
+        <h3 class="font-headline font-bold text-on-surface mb-5">Order Items</h3>
+        <div class="space-y-1">
+          <?php foreach ($items as $item): ?>
+          <div class="flex justify-between items-start py-3 border-b border-surface-container last:border-0">
+            <div>
+              <p class="font-bold text-on-surface text-sm"><?= htmlspecialchars($item['product_name']) ?></p>
+              <p class="text-xs text-outline mt-0.5">
+                Qty: <?= (int) $item['quantity'] ?> &nbsp;·&nbsp; @ R <?= number_format($item['unit_price'], 2) ?> each
+              </p>
+            </div>
+            <span class="font-bold text-secondary text-sm ml-4 flex-shrink-0">
+              R <?= number_format($item['unit_price'] * $item['quantity'], 2) ?>
+            </span>
+          </div>
+          <?php endforeach; ?>
         </div>
-        <p class="mt-1 mb-0" style="color: var(--dd-on-surface-var);">
-            Placed on <?= htmlspecialchars(date('d M Y', strtotime($order['created_at']))) ?>
+
+        <!-- Totals -->
+        <div class="mt-4 pt-4 border-t border-outline-variant/10 space-y-2">
+          <?php if (!empty($order['shipping_cost'])): ?>
+          <div class="flex justify-between text-sm text-on-surface-variant">
+            <span>Items subtotal</span>
+            <span>R <?= number_format($order['total_amount'], 2) ?></span>
+          </div>
+          <div class="flex justify-between text-sm text-on-surface-variant">
+            <span>Shipping (Shiplogic)</span>
+            <span>R <?= number_format($order['shipping_cost'], 2) ?></span>
+          </div>
+          <div class="flex justify-between pt-2 border-t border-outline-variant/10">
+            <span class="font-headline font-bold text-on-surface">Total</span>
+            <span class="font-headline font-bold text-secondary text-xl">R <?= number_format($order['total_amount'] + $order['shipping_cost'], 2) ?></span>
+          </div>
+          <?php else: ?>
+          <div class="flex justify-between">
+            <span class="font-headline font-bold text-on-surface">Total</span>
+            <span class="font-headline font-bold text-secondary text-xl">R <?= number_format($order['total_amount'], 2) ?></span>
+          </div>
+          <?php endif; ?>
+        </div>
+      </div>
+
+      <!-- Shipping Address -->
+      <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm ring-1 ring-outline-variant/10">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="material-symbols-outlined text-primary">local_shipping</span>
+          <h3 class="font-headline font-bold text-on-surface">Shipping Address</h3>
+        </div>
+        <p class="font-bold text-on-surface mb-1"><?= htmlspecialchars($order['shipping_name']) ?></p>
+        <p class="text-on-surface-variant text-sm leading-relaxed">
+          <?= htmlspecialchars($order['shipping_street']) ?><br>
+          <?= htmlspecialchars($order['shipping_city']) ?>, <?= htmlspecialchars($order['shipping_province']) ?><br>
+          <?= htmlspecialchars($order['shipping_postal_code']) ?>
         </p>
-    </div>
-
-    <div class="row g-4">
-
-        <!-- Left: Items + Shipping -->
-        <div class="col-lg-8">
-
-            <!-- Order Items -->
-            <div class="detail-card p-4 mb-4">
-                <h2 class="h5 fw-bold mb-4" style="color: var(--dd-primary);">Order Items</h2>
-                <?php foreach ($items as $item): ?>
-                    <div class="d-flex justify-content-between align-items-center py-3 border-bottom">
-                        <div>
-                            <p class="fw-bold mb-0"><?= htmlspecialchars($item['product_name']) ?></p>
-                            <p class="small mb-0" style="color: var(--dd-on-surface-var);">
-                                Qty: <?= (int) $item['quantity'] ?> &nbsp;&middot;&nbsp; @ R&nbsp;<?= number_format($item['unit_price'], 2) ?> each
-                            </p>
-                        </div>
-                        <div class="text-end">
-                            <p class="fw-bold mb-0" style="color: var(--dd-secondary);">R&nbsp;<?= number_format($item['unit_price'] * $item['quantity'], 2) ?></p>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-                <?php if (!empty($order['shipping_cost'])): ?>
-                <div class="d-flex justify-content-between align-items-center pt-3 mt-2 border-top">
-                    <span class="small" style="color: var(--dd-on-surface-var);">Items subtotal</span>
-                    <span class="small" style="color: var(--dd-on-surface-var);">R&nbsp;<?= number_format($order['total_amount'], 2) ?></span>
-                </div>
-                <div class="d-flex justify-content-between align-items-center pt-2">
-                    <span class="small" style="color: var(--dd-on-surface-var);">Shipping (Shiplogic)</span>
-                    <span class="small" style="color: var(--dd-on-surface-var);">R&nbsp;<?= number_format($order['shipping_cost'], 2) ?></span>
-                </div>
-                <div class="d-flex justify-content-between align-items-center pt-2 mt-1">
-                    <span class="fw-bold fs-5" style="color: var(--dd-on-surface);">Total</span>
-                    <span class="fw-bold fs-4" style="color: var(--dd-secondary);">R&nbsp;<?= number_format($order['total_amount'] + $order['shipping_cost'], 2) ?></span>
-                </div>
-                <?php else: ?>
-                <div class="d-flex justify-content-between align-items-center pt-3 mt-2">
-                    <span class="fw-bold fs-5" style="color: var(--dd-on-surface);">Total</span>
-                    <span class="fw-bold fs-4" style="color: var(--dd-secondary);">R&nbsp;<?= number_format($order['total_amount'], 2) ?></span>
-                </div>
-                <?php endif; ?>
-            </div>
-
-            <!-- Shipping Address -->
-            <div class="detail-card p-4">
-                <h3 class="h6 fw-bold mb-3 d-flex align-items-center gap-2" style="color: var(--dd-primary);">
-                    <span class="material-symbols-outlined">local_shipping</span> Shipping Address
-                </h3>
-                <p class="fw-bold mb-1"><?= htmlspecialchars($order['shipping_name']) ?></p>
-                <p class="mb-0" style="color: var(--dd-on-surface-var); line-height: 1.7;">
-                    <?= htmlspecialchars($order['shipping_street']) ?><br>
-                    <?= htmlspecialchars($order['shipping_city']) ?>, <?= htmlspecialchars($order['shipping_province']) ?><br>
-                    <?= htmlspecialchars($order['shipping_postal_code']) ?>
-                </p>
-            </div>
-
-        </div>
-
-        <!-- Right: Fulfillment Panel -->
-        <div class="col-lg-4">
-            <div class="detail-card p-4 sticky-top" style="top: 80px;">
-                <h3 class="h6 fw-bold mb-4" style="color: var(--dd-on-surface);">Fulfillment</h3>
-
-                <!-- Status Update Form -->
-                <form method="POST" action="<?= BASE_URL ?>seller/orders/detail?id=<?= (int) $order['id'] ?>">
-                    <label class="form-label fw-semibold small text-uppercase" style="letter-spacing:.08em; color: var(--dd-outline);">Update Status</label>
-                    <select name="status" class="form-select mb-3" style="border-color: var(--dd-outline-var); border-radius: .75rem;">
-                        <?php foreach ($statuses as $s): ?>
-                            <option value="<?= $s ?>" <?= $order['status'] === $s ? 'selected' : '' ?>>
-                                <?= ucfirst($s) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                    <button type="submit" class="btn btn-dd-primary w-100">Save Status</button>
-                </form>
-
-                <?php if (in_array($order['status'], ['paid', 'processing'])): ?>
-                <hr style="border-color: var(--dd-outline-var);">
-                <a href="<?= BASE_URL ?>seller/orders/ship?id=<?= (int) $order['id'] ?>"
-                   class="btn btn-dd-primary w-100 d-flex align-items-center justify-content-center gap-2">
-                    <span class="material-symbols-outlined" style="font-size: 1.1rem;">local_shipping</span>
-                    Ship This Order
-                </a>
-                <?php elseif (!empty($order['tracking_reference'])): ?>
-                <hr style="border-color: var(--dd-outline-var);">
-                <div class="rounded-3 p-3" style="background: var(--dd-surface-low);">
-                    <p class="text-uppercase fw-bold mb-1" style="font-size: .65rem; letter-spacing: .1em; color: var(--dd-outline);">Tracking Reference</p>
-                    <p class="fw-bold mb-0" style="color: var(--dd-primary);"><?= htmlspecialchars($order['tracking_reference']) ?></p>
-                </div>
-                <?php endif; ?>
-
-                <hr style="border-color: var(--dd-outline-var);">
-
-                <a href="<?= BASE_URL ?>seller/orders" class="btn w-100" style="border: 1px solid var(--dd-outline-var); color: var(--dd-primary);">
-                    &larr; Back to Orders
-                </a>
-            </div>
-        </div>
+      </div>
 
     </div>
+
+    <!-- Right: Fulfillment Panel -->
+    <div>
+      <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm ring-1 ring-outline-variant/10 lg:sticky" style="top: 88px;">
+        <h3 class="font-headline font-bold text-on-surface mb-5">Fulfillment</h3>
+
+        <form method="POST" action="<?= BASE_URL ?>seller/orders/detail?id=<?= (int) $order['id'] ?>">
+          <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Update Status</label>
+          <div class="relative mb-3">
+            <select name="status"
+                    class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3 text-on-surface appearance-none focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all">
+              <?php foreach ($statuses as $s): ?>
+              <option value="<?= $s ?>" <?= $order['status'] === $s ? 'selected' : '' ?>><?= ucfirst($s) ?></option>
+              <?php endforeach; ?>
+            </select>
+            <span class="material-symbols-outlined absolute right-3 top-3 text-outline pointer-events-none">expand_more</span>
+          </div>
+          <button type="submit"
+                  class="w-full py-3 bg-primary text-on-primary rounded-xl font-headline font-bold text-sm hover:opacity-90 transition-all active:scale-95">
+            Save Status
+          </button>
+        </form>
+
+        <?php if (in_array($order['status'], ['paid', 'processing'])): ?>
+        <div class="h-px bg-outline-variant/10 my-4"></div>
+        <a href="<?= BASE_URL ?>seller/orders/ship?id=<?= (int) $order['id'] ?>"
+           class="w-full py-3 flex items-center justify-center gap-2 bg-secondary text-on-secondary rounded-xl font-headline font-bold text-sm hover:opacity-90 transition-all active:scale-95">
+          <span class="material-symbols-outlined text-lg">local_shipping</span>
+          Ship This Order
+        </a>
+        <?php elseif (!empty($order['tracking_reference'])): ?>
+        <div class="h-px bg-outline-variant/10 my-4"></div>
+        <div class="bg-surface-container-low rounded-xl p-4">
+          <p class="text-xs font-bold text-outline uppercase tracking-wider mb-1">Tracking Reference</p>
+          <p class="font-bold text-primary"><?= htmlspecialchars($order['tracking_reference']) ?></p>
+        </div>
+        <?php endif; ?>
+
+        <div class="h-px bg-outline-variant/10 my-4"></div>
+        <a href="<?= BASE_URL ?>seller/orders"
+           class="w-full py-3 flex items-center justify-center border border-outline-variant/30 text-primary rounded-xl font-headline font-semibold text-sm hover:bg-surface-container-low transition-all">
+          ← Back to Orders
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
 </main>
-
-<?php require_once ROOT_PATH . '/views/layouts/footer.php'; ?>
+</body>
+</html>

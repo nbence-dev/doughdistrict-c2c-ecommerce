@@ -23,6 +23,9 @@ Thumbs.db
 # Claude Code — local machine settings (permissions, allowlists)
 .claude/settings.local.json
 
+# Claude Code — conversation memory (machine-local, never commit)
+memory/
+
 # Cloudflare tunnel secrets and active machine config (machine-specific, never commit)
 cloudflared/creds.json
 cloudflared/config.yml

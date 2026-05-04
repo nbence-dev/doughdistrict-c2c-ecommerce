@@ -27,7 +27,9 @@ function shiplogic_request($method, $endpoint, $body = null)
     $data = json_decode($response, true);
 
     if ($status >= 400) {
-        $message = $data['message'] ?? $data['error'] ?? 'Unknown error';
+        $message = $data['message']
+            ?? $data['error']
+            ?? (is_array($data) ? json_encode($data) : substr($response, 0, 500));
         throw new RuntimeException('Shiplogic error (' . $status . '): ' . $message);
     }
 
@@ -55,15 +57,15 @@ function shiplogic_create_shipment($order, $seller_profile, $seller_user, $buyer
         'delivery_address' => [
             'type'           => 'residential',
             'street_address' => $order['shipping_street'],
+            'local_area'     => $order['shipping_city'],
             'city'           => $order['shipping_city'],
             'zone'           => $order['shipping_province'],
             'country'        => 'ZA',
             'code'           => $order['shipping_postal_code'],
         ],
         'delivery_contact' => [
-            'name'          => $order['shipping_name'],
-            'mobile_number' => '',
-            'email'         => $buyer_user['email'],
+            'name'  => $order['shipping_name'],
+            'email' => $buyer_user['email'],
         ],
         'parcels' => [
             [
@@ -74,9 +76,8 @@ function shiplogic_create_shipment($order, $seller_profile, $seller_user, $buyer
                 'submitted_weight_kg'  => (float) $parcel['weight_kg'],
             ],
         ],
-        'service_level_code'  => 'ECO',
-        'customer_reference'  => 'Order #' . $order['id'],
-        'mute_notifications'  => false,
+        'service_level_code' => 'ECO',
+        'customer_reference' => 'Order #' . $order['id'],
     ];
 
     return shiplogic_request('POST', '/shipments', $body);

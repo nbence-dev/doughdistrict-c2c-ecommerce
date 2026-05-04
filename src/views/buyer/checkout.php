@@ -5,7 +5,7 @@
  * @var array[]   $addresses       Buyer's saved shipping addresses
  * @var float     $grand_total     Sum of all seller subtotals
  */
-require_once ROOT_PATH . '/views/layouts/header.php'; ?>
+include __DIR__ . '/layout.php'; ?>
 
 <style>
     .checkout-section-card {
@@ -178,15 +178,15 @@ require_once ROOT_PATH . '/views/layouts/header.php'; ?>
                                     <label class="dd-label" for="province">Province</label>
                                     <select name="province" id="province" class="dd-field">
                                         <option value="" disabled selected>Select Province</option>
-                                        <option>Eastern Cape</option>
-                                        <option>Free State</option>
-                                        <option>Gauteng</option>
-                                        <option>KwaZulu-Natal</option>
-                                        <option>Limpopo</option>
-                                        <option>Mpumalanga</option>
-                                        <option>North West</option>
-                                        <option>Northern Cape</option>
-                                        <option>Western Cape</option>
+                                        <option value="EC">Eastern Cape</option>
+                                        <option value="FS">Free State</option>
+                                        <option value="GP">Gauteng</option>
+                                        <option value="KZN">KwaZulu-Natal</option>
+                                        <option value="LP">Limpopo</option>
+                                        <option value="MP">Mpumalanga</option>
+                                        <option value="NW">North West</option>
+                                        <option value="NC">Northern Cape</option>
+                                        <option value="WC">Western Cape</option>
                                     </select>
                                 </div>
                                 <div class="col-sm-6">
@@ -218,15 +218,15 @@ require_once ROOT_PATH . '/views/layouts/header.php'; ?>
                                     <label class="dd-label" for="province">Province</label>
                                     <select name="province" id="province" class="dd-field">
                                         <option value="" disabled selected>Select Province</option>
-                                        <option>Eastern Cape</option>
-                                        <option>Free State</option>
-                                        <option>Gauteng</option>
-                                        <option>KwaZulu-Natal</option>
-                                        <option>Limpopo</option>
-                                        <option>Mpumalanga</option>
-                                        <option>North West</option>
-                                        <option>Northern Cape</option>
-                                        <option>Western Cape</option>
+                                        <option value="EC">Eastern Cape</option>
+                                        <option value="FS">Free State</option>
+                                        <option value="GP">Gauteng</option>
+                                        <option value="KZN">KwaZulu-Natal</option>
+                                        <option value="LP">Limpopo</option>
+                                        <option value="MP">Mpumalanga</option>
+                                        <option value="NW">North West</option>
+                                        <option value="NC">Northern Cape</option>
+                                        <option value="WC">Western Cape</option>
                                     </select>
                                 </div>
                                 <div class="col-sm-6">
@@ -359,4 +359,8 @@ require_once ROOT_PATH . '/views/layouts/header.php'; ?>
 <script src="https://js.stripe.com/v3/"></script>
 <script src="<?= JS_URL ?>checkout.js"></script>
 
-<?php require_once ROOT_PATH . '/views/layouts/footer.php'; ?>
+</div><!-- /#buyer-main -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</body>
+</html>

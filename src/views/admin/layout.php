@@ -501,6 +501,20 @@ function admin_nav_link(string $path, string $icon, string $label, string $curre
             box-shadow: 0 2px 8px rgba(48, 49, 44, 0.04);
         }
 
+        /* Visible horizontal scrollbar on tables */
+        .table-responsive::-webkit-scrollbar { height: 6px; }
+        .table-responsive::-webkit-scrollbar-track { background: var(--dd-surface-low); }
+        .table-responsive::-webkit-scrollbar-thumb { background: var(--dd-outline-var); border-radius: 3px; }
+        .table-responsive { scrollbar-width: thin; scrollbar-color: var(--dd-outline-var) var(--dd-surface-low); }
+        .scroll-hint {
+            display: none;
+            font-size: 0.7rem;
+            color: var(--dd-outline);
+            text-align: right;
+            margin-bottom: 0.25rem;
+        }
+        @media (max-width: 767.98px) { .scroll-hint { display: block; } }
+
         /* ── Sidebar toggle (mobile) ── */
         #sidebar-toggle {
             display: none;
@@ -583,6 +597,8 @@ function admin_nav_link(string $path, string $icon, string $label, string $curre
             <?= admin_nav_link('admin/users', 'group', 'Users', $currentPath) ?>
             <?= admin_nav_link('admin/products', 'inventory_2', 'Products', $currentPath) ?>
             <?= admin_nav_link('admin/categories', 'category', 'Categories', $currentPath) ?>
+            <div style="height:1px;background:rgba(255,255,255,0.07);margin:.5rem .75rem;"></div>
+            <?= admin_nav_link('browse', 'explore', 'Browse Shop', $currentPath) ?>
         </nav>
 
         <div class="sidebar-footer">

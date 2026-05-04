@@ -124,7 +124,7 @@ $accountId = $sellerProfile['stripe_account_id'] ?? null;
         <ul class="space-y-4">
           <?php
           $benefits = [
-            ['paid_in_full', 'Direct payouts',      'Funds go straight into your bank — no middleman holds your money.'],
+            ['account_balance', 'Direct payouts',      'Funds go straight into your bank — no middleman holds your money.'],
             ['security',     'Secure & compliant',  'Stripe handles PCI compliance, fraud detection, and encryption.'],
             ['schedule',     'Flexible payouts',    'Set your own payout schedule — daily, weekly, or monthly.'],
             ['public',       'Trusted by millions', 'Stripe powers payments for millions of businesses worldwide.'],

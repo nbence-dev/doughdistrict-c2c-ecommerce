@@ -1,4 +1,4 @@
-<?php require_once ROOT_PATH . '/views/layouts/header.php'; ?>
+<?php include __DIR__ . '/layout.php'; ?>
 
 <style>
 .status-badge { font-size: .72rem; font-weight: 700; padding: .3rem .9rem; border-radius: 999px; display: inline-block; }
@@ -112,4 +112,8 @@ $statusClass = match($order['status']) {
     </div>
 </main>
 
-<?php require_once ROOT_PATH . '/views/layouts/footer.php'; ?>
+</div><!-- /#buyer-main -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</body>
+</html>

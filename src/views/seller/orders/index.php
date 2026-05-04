@@ -1,69 +1,93 @@
-<?php require_once ROOT_PATH . '/views/layouts/header.php'; ?>
+<?php
+$pageTitle = 'My Orders';
+include __DIR__ . '/../layout.php';
 
-<style>
-.status-badge { font-size: .7rem; font-weight: 700; padding: .25rem .75rem; border-radius: 999px; display: inline-block; }
-.status-paid       { background: #e4e3db; color: #51443c; }
-.status-processing { background: #ffdcc4; color: #703800; }
-.status-shipped    { background: #ffdcc5; color: #653d1e; }
-.status-delivered  { background: #dbe9a9; color: #404b1b; }
-.order-row:hover   { background: var(--dd-surface-low); }
-</style>
+$flash  = get_flash();
+$orders = $orders ?? [];
 
-<main class="container py-5">
+function order_status_pill(string $status): string
+{
+    return match ($status) {
+        'processing' => '<span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide bg-secondary-container text-on-secondary-container">Processing</span>',
+        'shipped'    => '<span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide bg-primary-container text-on-primary-container">Shipped</span>',
+        'delivered'  => '<span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide bg-tertiary text-on-tertiary">Delivered</span>',
+        default      => '<span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide bg-surface-variant text-on-surface-variant">Paid</span>',
+    };
+}
+?>
 
-    <div class="d-flex justify-content-between align-items-end mb-5 flex-wrap gap-3">
-        <div>
-            <h1 class="font-headline fw-bold mb-1" style="color: var(--dd-on-surface);">My Orders</h1>
-            <p class="mb-0" style="color: var(--dd-on-surface-var);">Manage incoming orders and customer shipments.</p>
-        </div>
-    </div>
+<!-- Top bar -->
+<header class="sticky top-0 z-30 bg-surface/80 backdrop-blur-md flex items-center px-6 lg:px-8 py-4 border-b border-outline-variant/10">
+  <div>
+    <h2 class="font-headline font-bold text-2xl text-on-surface tracking-tight">My Orders</h2>
+    <p class="text-sm text-on-surface-variant">Manage incoming orders and customer shipments</p>
+  </div>
+</header>
 
-    <?php if (empty($orders)): ?>
-        <div class="text-center py-5">
-            <span class="material-symbols-outlined d-block mb-3" style="font-size: 3rem; color: var(--dd-outline);">shopping_bag</span>
-            <p style="color: var(--dd-on-surface-var);">No orders yet — share your shop to get started!</p>
-        </div>
-    <?php else: ?>
-        <div class="bg-white rounded-4 shadow-sm overflow-hidden">
-            <div class="table-responsive">
-                <table class="table mb-0 align-middle">
-                    <thead style="background: var(--dd-surface-low);">
-                        <tr>
-                            <th class="px-4 py-3 fw-bold text-uppercase" style="font-size:.7rem; letter-spacing:.12em; color: var(--dd-outline);">Order #</th>
-                            <th class="px-4 py-3 fw-bold text-uppercase" style="font-size:.7rem; letter-spacing:.12em; color: var(--dd-outline);">Buyer</th>
-                            <th class="px-4 py-3 fw-bold text-uppercase" style="font-size:.7rem; letter-spacing:.12em; color: var(--dd-outline);">Date</th>
-                            <th class="px-4 py-3 fw-bold text-uppercase" style="font-size:.7rem; letter-spacing:.12em; color: var(--dd-outline);">Total</th>
-                            <th class="px-4 py-3 fw-bold text-uppercase" style="font-size:.7rem; letter-spacing:.12em; color: var(--dd-outline);">Status</th>
-                            <th class="px-4 py-3 fw-bold text-uppercase" style="font-size:.7rem; letter-spacing:.12em; color: var(--dd-outline);">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($orders as $o): ?>
-                            <?php
-                                $statusClass = match($o['status']) {
-                                    'processing' => 'status-processing',
-                                    'shipped'    => 'status-shipped',
-                                    'delivered'  => 'status-delivered',
-                                    default      => 'status-paid',
-                                };
-                            ?>
-                            <tr class="order-row border-bottom">
-                                <td class="px-4 py-4 fw-bold" style="color: var(--dd-primary);">#<?= (int) $o['id'] ?></td>
-                                <td class="px-4 py-4 fw-semibold"><?= htmlspecialchars($o['name']) ?></td>
-                                <td class="px-4 py-4" style="color: var(--dd-on-surface-var);"><?= htmlspecialchars(date('d M Y', strtotime($o['created_at']))) ?></td>
-                                <td class="px-4 py-4 fw-bold" style="color: var(--dd-secondary);">R&nbsp;<?= number_format($o['total_amount'], 2) ?></td>
-                                <td class="px-4 py-4"><span class="status-badge <?= $statusClass ?>"><?= ucfirst(htmlspecialchars($o['status'])) ?></span></td>
-                                <td class="px-4 py-4">
-                                    <a href="<?= BASE_URL ?>seller/orders/detail?id=<?= (int) $o['id'] ?>" class="fw-bold text-decoration-none" style="color: var(--dd-primary);">View Details</a>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    <?php endif; ?>
+<div class="p-6 lg:p-8">
+
+  <!-- Flash -->
+  <?php if ($flash): ?>
+  <?php $err = in_array($flash['type'], ['danger', 'error']); ?>
+  <div class="mb-6 px-5 py-4 rounded-2xl flex items-center gap-3 <?= $err ? 'bg-error-container text-error' : 'bg-tertiary-fixed text-on-tertiary-fixed-variant' ?>">
+    <span class="material-symbols-outlined"><?= $err ? 'error' : 'check_circle' ?></span>
+    <p class="text-sm font-medium"><?= htmlspecialchars($flash['message']) ?></p>
+  </div>
+  <?php endif; ?>
+
+  <?php if (empty($orders)): ?>
+  <div class="flex flex-col items-center justify-center p-16 border-2 border-dashed border-outline-variant/30 rounded-3xl">
+    <span class="material-symbols-outlined text-5xl mb-4 text-primary/40">receipt_long</span>
+    <p class="font-headline font-semibold text-xl text-on-surface mb-2">No orders yet</p>
+    <p class="text-on-surface-variant text-sm text-center max-w-sm">
+      Share your shop link to start receiving orders from buyers.
+    </p>
+  </div>
+
+  <?php else: ?>
+  <p class="text-xs text-outline text-right mb-1 flex items-center justify-end gap-1 sm:hidden">
+    <span class="material-symbols-outlined text-sm">swipe</span> Scroll to see more
+  </p>
+  <div class="bg-surface-container-lowest rounded-2xl shadow-[0px_12px_32px_rgba(48,49,44,0.06)] overflow-x-auto">
+    <table class="w-full text-left border-collapse" style="min-width:560px;">
+      <thead>
+        <tr class="bg-surface-container-low">
+          <th class="px-6 py-5 font-headline font-bold text-on-surface-variant text-xs uppercase tracking-wider">Order</th>
+          <th class="px-6 py-5 font-headline font-bold text-on-surface-variant text-xs uppercase tracking-wider hidden sm:table-cell">Buyer</th>
+          <th class="px-6 py-5 font-headline font-bold text-on-surface-variant text-xs uppercase tracking-wider hidden md:table-cell">Date</th>
+          <th class="px-6 py-5 font-headline font-bold text-on-surface-variant text-xs uppercase tracking-wider text-right">Total</th>
+          <th class="px-6 py-5 font-headline font-bold text-on-surface-variant text-xs uppercase tracking-wider text-center">Status</th>
+          <th class="px-6 py-5 font-headline font-bold text-on-surface-variant text-xs uppercase tracking-wider text-right">Action</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-surface-container-low">
+        <?php foreach ($orders as $o): ?>
+        <tr class="hover:bg-surface/30 transition-colors">
+          <td class="px-6 py-5">
+            <span class="font-headline font-bold text-primary">#<?= (int) $o['id'] ?></span>
+            <p class="text-xs text-outline mt-0.5 sm:hidden"><?= htmlspecialchars($o['name']) ?></p>
+          </td>
+          <td class="px-6 py-5 hidden sm:table-cell text-on-surface font-medium text-sm"><?= htmlspecialchars($o['name']) ?></td>
+          <td class="px-6 py-5 hidden md:table-cell text-on-surface-variant text-sm"><?= date('d M Y', strtotime($o['created_at'])) ?></td>
+          <td class="px-6 py-5 text-right font-bold text-secondary text-sm">
+            R <?= number_format($o['total_amount'], 2) ?>
+          </td>
+          <td class="px-6 py-5 text-center"><?= order_status_pill($o['status']) ?></td>
+          <td class="px-6 py-5 text-right">
+            <a href="<?= BASE_URL ?>seller/orders/detail?id=<?= (int) $o['id'] ?>"
+               class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-surface-container hover:bg-primary hover:text-on-primary transition-colors text-primary text-xs font-bold">
+              View <span class="material-symbols-outlined text-sm">arrow_forward</span>
+            </a>
+          </td>
+        </tr>
+        <?php endforeach; ?>
+      </tbody>
+    </table>
+  </div>
+  <?php endif; ?>
+
+</div>
 
 </main>
-
-<?php require_once ROOT_PATH . '/views/layouts/footer.php'; ?>
+</body>
+</html>

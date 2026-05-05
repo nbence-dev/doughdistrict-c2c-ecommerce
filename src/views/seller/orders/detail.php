@@ -144,8 +144,28 @@ $statuses  = ['paid', 'processing', 'shipped', 'delivered'];
         <div class="h-px bg-outline-variant/10 my-4"></div>
         <div class="bg-surface-container-low rounded-xl p-4">
           <p class="text-xs font-bold text-outline uppercase tracking-wider mb-1">Tracking Reference</p>
-          <p class="font-bold text-primary"><?= htmlspecialchars($order['tracking_reference']) ?></p>
+          <p class="font-bold text-primary font-mono"><?= htmlspecialchars($order['tracking_reference']) ?></p>
         </div>
+        <?php if (!empty($order['estimated_collection'])): ?>
+        <div class="bg-surface-container-low rounded-xl p-4 mt-3">
+          <p class="text-xs font-bold text-outline uppercase tracking-wider mb-1">Driver Pickup</p>
+          <p class="font-bold text-on-surface"><?= (new DateTime($order['estimated_collection']))->format('d M Y, H:i') ?></p>
+        </div>
+        <?php endif; ?>
+        <div class="h-px bg-outline-variant/10 my-4"></div>
+        <a href="https://sandbox.shiplogic.com/track?S&ref=<?= urlencode($order['tracking_reference']) ?>" target="_blank" rel="noopener"
+           class="w-full py-3 flex items-center justify-center gap-2 bg-primary text-on-primary rounded-xl font-headline font-bold text-sm hover:opacity-90 transition-all active:scale-95">
+          <span class="material-symbols-outlined text-lg">travel_explore</span>
+          Track Shipment
+        </a>
+        <?php if (!empty($order['shiplogic_shipment_id'])): ?>
+        <div class="h-px bg-outline-variant/10 my-4"></div>
+        <a href="<?= BASE_URL ?>seller/orders/waybill?id=<?= (int) $order['id'] ?>" target="_blank" rel="noopener"
+           class="w-full py-3 flex items-center justify-center gap-2 bg-tertiary text-on-tertiary rounded-xl font-headline font-bold text-sm hover:opacity-90 transition-all active:scale-95">
+          <span class="material-symbols-outlined text-lg">print</span>
+          Print Waybill
+        </a>
+        <?php endif; ?>
         <?php endif; ?>
 
         <div class="h-px bg-outline-variant/10 my-4"></div>

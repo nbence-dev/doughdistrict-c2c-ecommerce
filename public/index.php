@@ -251,6 +251,11 @@ switch ($path) {
         require_once ROOT_PATH . '/views/seller/orders/ship.php';
         break;
 
+    case 'seller/orders/waybill':
+        require_role('seller');
+        require_once ROOT_PATH . '/controllers/waybill_controller.php';
+        break;
+
     default:
         http_response_code(404);
         require_once ROOT_PATH . '/views/errors/404.php';

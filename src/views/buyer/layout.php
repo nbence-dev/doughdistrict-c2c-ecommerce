@@ -4,7 +4,7 @@
  * Include at the TOP of every buyer view.
  * Opens: <div id="buyer-main"> — each view MUST close it + add scripts + </body></html>
  */
-$pageTitle   = $pageTitle ?? 'DoughDistrict';
+$pageTitle = $pageTitle ?? 'DoughDistrict';
 $currentUser = current_user();
 $currentPath = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
 
@@ -26,14 +26,18 @@ $_flash = get_flash();
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($pageTitle) ?> — DoughDistrict</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         /* ── Design tokens ─────────────────────────────────── */
@@ -51,6 +55,7 @@ $_flash = get_flash();
             --dd-on-surface-var: #51443c;
             --dd-outline: #83746b;
             --dd-outline-var: #d5c3b8;
+            --dd-on-primary: #fff;
         }
 
         body {
@@ -59,7 +64,13 @@ $_flash = get_flash();
             color: var(--dd-on-surface);
         }
 
-        h1, h2, h3, h4, h5, h6, .font-headline {
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        .font-headline {
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
@@ -211,7 +222,9 @@ $_flash = get_flash();
         }
 
         /* ── Sidebar overlay ────────────────────────────────── */
-        #sidebar-overlay { display: none; }
+        #sidebar-overlay {
+            display: none;
+        }
 
         /* ── Main canvas ────────────────────────────────────── */
         #buyer-main {
@@ -242,9 +255,19 @@ $_flash = get_flash();
             position: relative;
         }
 
-        .table-scroll::-webkit-scrollbar { height: 5px; }
-        .table-scroll::-webkit-scrollbar-track { background: var(--dd-surface-low); border-radius: 3px; }
-        .table-scroll::-webkit-scrollbar-thumb { background: var(--dd-outline-var); border-radius: 3px; }
+        .table-scroll::-webkit-scrollbar {
+            height: 5px;
+        }
+
+        .table-scroll::-webkit-scrollbar-track {
+            background: var(--dd-surface-low);
+            border-radius: 3px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb {
+            background: var(--dd-outline-var);
+            border-radius: 3px;
+        }
 
         /* ── Mobile breakpoint ──────────────────────────────── */
         @media (max-width: 991.98px) {
@@ -279,6 +302,7 @@ $_flash = get_flash();
         }
     </style>
 </head>
+
 <body>
 
     <!-- ════════ Sidebar ════════ -->
@@ -307,14 +331,14 @@ $_flash = get_flash();
                 <span class="material-symbols-outlined">logout</span> Sign Out
             </a>
             <?php if ($currentUser): ?>
-            <div class="sidebar-user">
-                <img src="https://ui-avatars.com/api/?name=<?= urlencode($currentUser['name'] ?? 'User') ?>&background=6f4627&color=fff&bold=true&size=64"
-                    alt="Avatar">
-                <div>
-                    <div class="user-name"><?= htmlspecialchars($currentUser['name'] ?? '') ?></div>
-                    <div class="user-role"><?= ucfirst($currentUser['role'] ?? 'Buyer') ?></div>
+                <div class="sidebar-user">
+                    <img src="https://ui-avatars.com/api/?name=<?= urlencode($currentUser['name'] ?? 'User') ?>&background=6f4627&color=fff&bold=true&size=64"
+                        alt="Avatar">
+                    <div>
+                        <div class="user-name"><?= htmlspecialchars($currentUser['name'] ?? '') ?></div>
+                        <div class="user-role"><?= ucfirst($currentUser['role'] ?? 'Buyer') ?></div>
+                    </div>
                 </div>
-            </div>
             <?php endif; ?>
         </div>
     </aside>
@@ -333,25 +357,27 @@ $_flash = get_flash();
     </header>
 
     <script>
-    (function () {
-        var toggle  = document.getElementById('sidebar-toggle');
-        var overlay = document.getElementById('sidebar-overlay');
-        if (toggle) toggle.addEventListener('click', function () {
-            document.body.classList.toggle('sidebar-open');
-        });
-        if (overlay) overlay.addEventListener('click', function () {
-            document.body.classList.remove('sidebar-open');
-        });
-    })();
+        (function () {
+            var toggle = document.getElementById('sidebar-toggle');
+            var overlay = document.getElementById('sidebar-overlay');
+            if (toggle) toggle.addEventListener('click', function () {
+                document.body.classList.toggle('sidebar-open');
+            });
+            if (overlay) overlay.addEventListener('click', function () {
+                document.body.classList.remove('sidebar-open');
+            });
+        })();
     </script>
 
     <!-- ════════ Main Canvas ════════ -->
     <div id="buyer-main">
-    <?php if ($_flash): ?>
-    <div class="container pt-3">
-        <div class="alert alert-<?= htmlspecialchars($_flash['type']) ?> alert-dismissible fade show py-2 small mb-0" role="alert">
-            <?= htmlspecialchars($_flash['message']) ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" style="top:50%;transform:translateY(-50%);"></button>
-        </div>
-    </div>
-    <?php endif; ?>
+        <?php if ($_flash): ?>
+            <div class="container pt-3">
+                <div class="alert alert-<?= htmlspecialchars($_flash['type']) ?> alert-dismissible fade show py-2 small mb-0"
+                    role="alert">
+                    <?= htmlspecialchars($_flash['message']) ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                        style="top:50%;transform:translateY(-50%);"></button>
+                </div>
+            </div>
+        <?php endif; ?>

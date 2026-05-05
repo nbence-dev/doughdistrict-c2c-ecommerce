@@ -55,6 +55,7 @@ function order_status_pill(string $status): string
           <th class="px-6 py-5 font-headline font-bold text-on-surface-variant text-xs uppercase tracking-wider">Order</th>
           <th class="px-6 py-5 font-headline font-bold text-on-surface-variant text-xs uppercase tracking-wider hidden sm:table-cell">Buyer</th>
           <th class="px-6 py-5 font-headline font-bold text-on-surface-variant text-xs uppercase tracking-wider hidden md:table-cell">Date</th>
+          <th class="px-6 py-5 font-headline font-bold text-on-surface-variant text-xs uppercase tracking-wider hidden lg:table-cell">Pickup</th>
           <th class="px-6 py-5 font-headline font-bold text-on-surface-variant text-xs uppercase tracking-wider text-right">Total</th>
           <th class="px-6 py-5 font-headline font-bold text-on-surface-variant text-xs uppercase tracking-wider text-center">Status</th>
           <th class="px-6 py-5 font-headline font-bold text-on-surface-variant text-xs uppercase tracking-wider text-right">Action</th>
@@ -69,6 +70,21 @@ function order_status_pill(string $status): string
           </td>
           <td class="px-6 py-5 hidden sm:table-cell text-on-surface font-medium text-sm"><?= htmlspecialchars($o['name']) ?></td>
           <td class="px-6 py-5 hidden md:table-cell text-on-surface-variant text-sm"><?= date('d M Y', strtotime($o['created_at'])) ?></td>
+          <td class="px-6 py-5 hidden lg:table-cell text-sm">
+            <?php if (!empty($o['estimated_collection'])): ?>
+              <?php
+                $pickup = new DateTime($o['estimated_collection']);
+                $now    = new DateTime();
+                $isPast = $pickup < $now;
+              ?>
+              <span class="inline-flex items-center gap-1 <?= $isPast ? 'text-on-surface-variant' : 'text-primary font-bold' ?>">
+                <span class="material-symbols-outlined text-sm"><?= $isPast ? 'check_circle' : 'schedule' ?></span>
+                <?= $pickup->format('d M Y') ?>
+              </span>
+            <?php else: ?>
+              <span class="text-outline">—</span>
+            <?php endif; ?>
+          </td>
           <td class="px-6 py-5 text-right font-bold text-secondary text-sm">
             R <?= number_format($o['total_amount'], 2) ?>
           </td>

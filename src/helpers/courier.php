@@ -88,6 +88,12 @@ function shiplogic_get_shipment($tracking_reference)
     return shiplogic_request('GET', '/shipments?tracking_reference=' . urlencode($tracking_reference));
 }
 
+function shiplogic_get_label_url($shipment_id)
+{
+    $data = shiplogic_request('GET', '/shipments/label?id=' . (int) $shipment_id);
+    return $data['url'] ?? null;
+}
+
 function shiplogic_get_rate($sellerProfile, $parcel)
 {
     $body = [

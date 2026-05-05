@@ -46,10 +46,10 @@ class Order
         $stmt->execute([$status, $order_id]);
     }
 
-    public function storeTracking($order_id, $shiplogic_shipment_id, $tracking_reference)
+    public function storeTracking($order_id, $shiplogic_shipment_id, $tracking_reference, $estimated_collection = null)
     {
-        $stmt = $this->db->prepare('UPDATE orders SET shiplogic_shipment_id = ?, tracking_reference = ?, status = ? WHERE id = ?');
-        $stmt->execute([$shiplogic_shipment_id, $tracking_reference, 'shipped', $order_id]);
+        $stmt = $this->db->prepare('UPDATE orders SET shiplogic_shipment_id = ?, tracking_reference = ?, estimated_collection = ?, status = ? WHERE id = ?');
+        $stmt->execute([$shiplogic_shipment_id, $tracking_reference, $estimated_collection, 'shipped', $order_id]);
     }
 
     public function findById($order_id)
@@ -74,7 +74,10 @@ class Order
         JOIN users u ON u.id = o.buyer_id
         JOIN seller_profiles sp ON sp.id = o.seller_id
         WHERE sp.user_id = ?
-        ORDER BY o.created_at DESC');
+        ORDER BY
+            CASE WHEN o.estimated_collection IS NOT NULL THEN 0 ELSE 1 END ASC,
+            o.estimated_collection ASC,
+            o.created_at DESC');
         $stmt->execute([$seller_id]);
         return $stmt->fetchAll();
     }

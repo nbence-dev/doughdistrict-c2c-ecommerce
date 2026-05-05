@@ -79,6 +79,7 @@ CREATE TABLE orders (
     stripe_payment_intent_id VARCHAR(100) NULL DEFAULT NULL,
     shiplogic_shipment_id INT NULL DEFAULT NULL,
     tracking_reference VARCHAR(50) NULL DEFAULT NULL,
+    estimated_collection DATETIME NULL DEFAULT NULL,
     shipping_cost DECIMAL(8,2) NULL DEFAULT NULL,
     -- Snapshot of shipping address at time of order (survives address deletion)
     shipping_name VARCHAR(150) NOT NULL,

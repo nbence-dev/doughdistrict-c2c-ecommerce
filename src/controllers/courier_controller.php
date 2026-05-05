@@ -99,7 +99,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $trackingRef = $shipment['custom_tracking_reference'] ?? $shipment['short_tracking_reference'];
 
-        $orderModel->storeTracking($order_id, $shipment['id'], $trackingRef);
+        // Shiplogic returns estimated_collection as an ISO datetime — store as MySQL DATETIME
+        $estimatedCollection = null;
+        if (!empty($shipment['estimated_collection'])) {
+            $dt = DateTime::createFromFormat(DateTime::ATOM, $shipment['estimated_collection'])
+               ?: DateTime::createFromFormat('Y-m-d\TH:i:s.uZ', $shipment['estimated_collection'])
+               ?: new DateTime($shipment['estimated_collection']);
+            $estimatedCollection = $dt ? $dt->format('Y-m-d H:i:s') : null;
+        }
+
+        $orderModel->storeTracking($order_id, $shipment['id'], $trackingRef, $estimatedCollection);
 
         set_flash('Shipment booked! Tracking reference: ' . $trackingRef, 'success');
         header('Location: ' . BASE_URL . 'seller/orders/detail?id=' . $order_id);

@@ -147,20 +147,35 @@
                                 <span class="price-tag text-nowrap">R<?= number_format($p['price'], 2) ?></span>
                             </div>
                             <p class="shop-label mb-2"><?= htmlspecialchars($p['shop_name']) ?></p>
-                            <span class="badge mb-3" style="background: var(--dd-surface-low); color: var(--dd-secondary); font-size: .65rem; width: fit-content;">
-                                <?php if (!empty($p['shipping_cost'])): ?>
-                                    Shipping R <?= number_format($p['shipping_cost'], 2) ?>
+                            <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+                                <span class="badge" style="background: var(--dd-surface-low); color: var(--dd-secondary); font-size: .65rem;">
+                                    <?php if (!empty($p['shipping_cost'])): ?>
+                                        Shipping R <?= number_format($p['shipping_cost'], 2) ?>
+                                    <?php else: ?>
+                                        Shipping TBD
+                                    <?php endif; ?>
+                                </span>
+                                <?php if ((int) $p['stock_qty'] === 0): ?>
+                                    <span class="badge" style="background: #f5e6e6; color: #8b1a1a; font-size: .65rem;">Out of stock</span>
+                                <?php elseif ((int) $p['stock_qty'] <= 5): ?>
+                                    <span class="badge" style="background: #fff3e0; color: #7c4700; font-size: .65rem;">Only <?= (int) $p['stock_qty'] ?> left!</span>
                                 <?php else: ?>
-                                    Shipping TBD
+                                    <span class="badge" style="background: var(--dd-surface-low); color: var(--dd-outline); font-size: .65rem;"><?= (int) $p['stock_qty'] ?> in stock</span>
                                 <?php endif; ?>
-                            </span>
+                            </div>
                             <p class="card-text small mb-4 flex-grow-1"
                                 style="color: var(--dd-on-surface-var); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
                                 <?= htmlspecialchars($p['description']) ?>
                             </p>
+                            <?php if ((int) $p['stock_qty'] === 0): ?>
+                            <span class="btn w-100 mt-auto disabled" style="background: var(--dd-surface-low); color: var(--dd-outline); cursor: not-allowed;">
+                                Out of Stock
+                            </span>
+                            <?php else: ?>
                             <a href="<?= BASE_URL ?>product?id=<?= $p['id'] ?>" class="btn btn-dd-primary w-100 mt-auto">
                                 View Product
                             </a>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>

@@ -1,10 +1,12 @@
 <?php
 /** @var string $path injected by index.php before require_once */
 require_once ROOT_PATH . '/helpers/stripe.php';
+require_once ROOT_PATH . '/helpers/emails.php';
 require_once ROOT_PATH . '/models/Product.php';
 require_once ROOT_PATH . '/models/Address.php';
 require_once ROOT_PATH . '/models/SellerProfile.php';
 require_once ROOT_PATH . '/models/Order.php';
+require_once ROOT_PATH . '/models/User.php';
 
 if ($path === 'checkout') {
     if (empty($_SESSION['cart'])) {
@@ -136,6 +138,9 @@ if ($path === 'checkout') {
     }
 
     $order_ids = [];
+    $userModel = new User($pdo);
+    $buyer     = current_user();
+
     try {
         foreach ($_SESSION['pending_payment_intents'] as $seller_id => $pi) {
             $intent   = \Stripe\PaymentIntent::retrieve($pi['id']);
@@ -151,7 +156,7 @@ if ($path === 'checkout') {
             $items_total = array_sum(array_map(fn($i) => $i['product']['price'] * $i['quantity'], $items));
 
             $order_id = $orderModel->create(
-                current_user()['id'],
+                $buyer['id'],
                 $seller_id,
                 $items_total,
                 $intent->id,
@@ -174,6 +179,20 @@ if ($path === 'checkout') {
                     ->execute([$item['quantity'], $item['product']['id']]);
             }
 
+            // Notify seller of new order
+            $sellerProfile = $sellerModel->findById($seller_id);
+            $sellerUser    = $sellerProfile ? $userModel->find($sellerProfile['user_id']) : null;
+            if ($sellerUser) {
+                email_new_order(
+                    $sellerUser['email'],
+                    $sellerUser['name'],
+                    $order_id,
+                    $buyer['name'],
+                    $order_items,
+                    $items_total + $shipping_cost
+                );
+            }
+
             $order_ids[] = $order_id;
         }
     } catch (Exception $e) {
@@ -181,6 +200,9 @@ if ($path === 'checkout') {
         header('Location: ' . BASE_URL . 'checkout');
         exit();
     }
+
+    // Notify buyer their order is confirmed
+    email_order_confirmed($buyer['email'], $buyer['name'], $order_ids);
 
     unset($_SESSION['cart'], $_SESSION['pending_payment_intents']);
     $_SESSION['confirmed_order_ids'] = $order_ids;

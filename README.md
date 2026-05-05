@@ -6,13 +6,14 @@ DoughDistrict is a consumer-to-consumer (C2C) e-commerce platform for home-baked
 
 **Buyer**
 - Browse, search, and filter products by category
+- Stock badges with urgency indicators — "Only X left!" or "Out of stock"
 - View product detail pages with images, pricing, and seller information
 - Session-based shopping cart (add, update quantity, remove)
 - Checkout with Stripe card payment — one PaymentIntent per seller
 - Save and select shipping addresses at checkout
 - View order history with status badges
 - View order detail with line items and shipping address snapshot
-- Leave star ratings and reviews on delivered products
+- Track shipments via Shiplogic tracking link with pre-filled reference
 
 **Seller**
 - Self-service shop onboarding — any buyer can upgrade their account
@@ -20,8 +21,9 @@ DoughDistrict is a consumer-to-consumer (C2C) e-commerce platform for home-baked
 - Product CRUD with image upload to Cloudflare R2
 - Connect a Stripe account via OAuth to receive payments directly
 - View and manage incoming orders, update fulfilment status
+- Orders sorted by upcoming driver pickup date (soonest first)
 - Book shipments via The Courier Guy (Shiplogic API) with parcel dimensions
-- Tracking reference stored and displayed after shipment is booked
+- Tracking reference, estimated driver pickup date, and Print Waybill stored after booking
 
 **Admin**
 - Manage all users: activate/deactivate, promote buyer→admin or demote admin→buyer
@@ -61,14 +63,21 @@ doughdistrict-c2c-ecommerce/
 │   │   ├── flash.php        ← one-time session messages
 │   │   ├── r2.php           ← Cloudflare R2 upload via AWS SDK
 │   │   ├── stripe.php       ← Stripe SDK boot + PaymentIntent helpers
-│   │   └── courier.php      ← Shiplogic API wrapper (create shipment, get tracking)
+│   │   └── courier.php      ← Shiplogic API wrapper (create shipment, label URL, rates)
 │   ├── models/              ← PDO data-access classes (one per table)
+│   │   ├── User.php
+│   │   ├── SellerProfile.php
+│   │   ├── Product.php
+│   │   ├── Category.php
+│   │   ├── Order.php
+│   │   ├── Address.php
+│   │   └── Review.php
 │   ├── controllers/         ← request handlers (one file per domain)
 │   └── views/
 │       ├── layouts/         ← header.php + footer.php (Bootstrap 5, shared nav)
 │       ├── auth/            ← login, register
 │       ├── admin/           ← admin panel layout, users, products, categories
-│       ├── seller/          ← onboarding, dashboard, profile, products, orders, stripe, ship
+│       ├── seller/          ← onboarding, dashboard, profile, products, orders, ship
 │       ├── buyer/           ← browse, product detail, cart, checkout, orders, reviews
 │       └── errors/          ← 404
 ├── sql/
@@ -76,7 +85,7 @@ doughdistrict-c2c-ecommerce/
 │   └── seed.sql             ← admin user, categories, sample data
 ├── docker-compose.yml       ← base services (app, db, phpmyadmin, tunnel)
 ├── docker-compose.prod.yml  ← prod override (tunnel always-on)
-├── Dockerfile               ← PHP 8 + Apache image
+├── Dockerfile               ← PHP 8.4 + Apache image
 └── .env.example             ← required environment variables
 ```
 
@@ -100,7 +109,7 @@ Edit `.env` and fill in all required values (see [Environment Variables](#enviro
 docker compose up -d
 ```
 
-The app will be available at `http://localhost` (port 80).  
+The app will be available at `http://localhost` (port 80).
 phpMyAdmin is available at `http://localhost:8080`.
 
 The database schema and seed data are applied automatically on first start via `docker-entrypoint-initdb.d`. The seed file creates the default admin account and product categories.
@@ -135,8 +144,8 @@ Key tables in `sql/schema.sql`:
 | `seller_profiles` | Shop name, bio, collection address, Stripe Connect account ID and onboarding status |
 | `addresses` | Buyer shipping addresses with label and default flag |
 | `categories` | Admin-managed product categories |
-| `products` | Seller listings. `image_url` stores R2 CDN URL. Status: `pending/active/rejected`. Includes dimension fields for courier. |
-| `orders` | One row per seller per checkout. Shipping address snapshotted at purchase. Stores Stripe PaymentIntent ID and Shiplogic tracking reference. |
+| `products` | Seller listings. `image_url` stores R2 CDN URL. Status: `pending/active/rejected`. Includes dimension and shipping cost fields. |
+| `orders` | One row per seller per checkout. Shipping address snapshotted at purchase. Stores Stripe PaymentIntent ID, Shiplogic shipment ID, tracking reference, and estimated driver collection date. |
 | `order_items` | Line items. Product name and unit price snapshotted at purchase time. |
 | `reviews` | One review per buyer per product per order. Rating 1–5 + comment. |
 
@@ -160,6 +169,8 @@ Key tables in `sql/schema.sql`:
 | `STRIPE_CONNECT_CLIENT_ID` | Stripe Connect OAuth client ID (`ca_...`) |
 | `SHIPLOGIC_API_KEY` | Shiplogic (The Courier Guy) API key |
 | `SHIPLOGIC_API_URL` | Shiplogic base URL (`https://api.shiplogic.com`) |
+| `RESEND_API_KEY` | Resend transactional email API key |
+| `MAIL_FROM` | From address for outgoing emails (e.g. `orders@doughdistrict.co.za`) |
 
 ## Deployment
 
@@ -202,6 +213,6 @@ Tunnel credentials (`cloudflared/config.yml` and `cloudflared/creds.json`) are g
 | 4 | Buyer: browse, search, category filter, product detail, session cart | Done |
 | 5 | Checkout + Stripe payment (destination charges), order creation | Done |
 | 6 | Order management (buyer history, seller fulfilment, status updates) | Done |
-| 7 | Shiplogic (The Courier Guy) integration — shipment booking, tracking reference | Done |
+| 7 | Shiplogic (The Courier Guy) integration — shipment booking, tracking, waybill | Done |
 | 8 | Reviews (post-delivery, per product per order, rating 1–5) | Pending |
-| 9 | Polish: stock validation, shipping cost display, package tracking timeline, seed data, mobile QA | Pending |
+| 9 | Email notifications (Resend), admin dashboard, polish, seed data | Pending |

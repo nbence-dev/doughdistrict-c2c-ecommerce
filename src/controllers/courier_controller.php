@@ -13,6 +13,7 @@ require_once ROOT_PATH . '/models/Order.php';
 require_once ROOT_PATH . '/models/User.php';
 require_once ROOT_PATH . '/models/SellerProfile.php';
 require_once ROOT_PATH . '/helpers/courier.php';
+require_once ROOT_PATH . '/helpers/emails.php';
 
 $user = current_user();
 $orderModel = new Order($pdo);
@@ -109,6 +110,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $orderModel->storeTracking($order_id, $shipment['id'], $trackingRef, $estimatedCollection);
+
+        // Notify buyer their order has shipped
+        email_order_shipped($buyerUser['email'], $buyerUser['name'], $order_id, $trackingRef);
 
         set_flash('Shipment booked! Tracking reference: ' . $trackingRef, 'success');
         header('Location: ' . BASE_URL . 'seller/orders/detail?id=' . $order_id);

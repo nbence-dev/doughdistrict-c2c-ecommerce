@@ -2,6 +2,8 @@
 /** @var string $path injected by index.php before require_once */
 require_once ROOT_PATH . '/models/Order.php';
 require_once ROOT_PATH . '/models/SellerProfile.php';
+require_once ROOT_PATH . '/models/User.php';
+require_once ROOT_PATH . '/helpers/emails.php';
 
 $user = current_user();
 $order = new Order($pdo);
@@ -39,7 +41,16 @@ if ($path === 'orders') {
         exit();
     }
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $order->updateStatus($id, $_POST['status']);
+        $newStatus = $_POST['status'] ?? '';
+
+        $order->updateStatus($id, $newStatus);
+        if ($newStatus === 'delivered') {
+            $userModel = new User($pdo);
+            $buyerUser = $userModel->find($data['order']['buyer_id']);
+            if ($buyerUser) {
+                email_order_delivered($buyerUser['email'], $buyerUser['name'], $id);
+            }
+        }
         set_flash('Status successfully updated', 'success');
         header('Location: ' . BASE_URL . 'seller/orders/detail?id=' . $id);
         exit();

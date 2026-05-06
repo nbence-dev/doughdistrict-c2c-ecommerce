@@ -1,5 +1,6 @@
 <?php
 // Register
+
 if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['register'])) {
 
     $name = trim($_POST['name']) ?? '';
@@ -66,6 +67,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
     if ($user && password_verify($password, $user['password'])) {
         session_regenerate_id(true);
         $_SESSION['user_id'] = $user['id'];
+
+        if ($user['must_change_password']) {
+            set_flash('Please set a new password to continue.', 'warning');
+            header('Location: ' . BASE_URL . 'account/change-password');
+            exit();
+        }
+
         set_flash("Welcome back, " . htmlspecialchars($user['name']) . "!", 'success');
         if ($user['role'] === 'admin') {
             header('Location: ' . BASE_URL . 'admin/users');
@@ -80,5 +88,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
         header('Location: ' . BASE_URL . 'login');
         exit();
     }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
+    $new = $_POST['new_password'] ?? '';
+    $confirm = $_POST['confirm_password'] ?? '';
+
+    if (strlen($new) < 8) {
+        set_flash('Password must be at least 8 characters.', 'danger');
+        header('Location: ' . BASE_URL . 'account/change-password');
+        exit();
+    }
+    if ($new != $confirm) {
+        set_flash('Passwords do not match.', 'danger');
+        header('Location: ' . BASE_URL . 'account/change-password');
+        exit();
+    }
+
+    $userModel = new User($pdo);
+    $userModel->setPassword(current_user()['id'], $new);
+
+    // Refresh session so must_change_password is no longer set
+    $_SESSION['user_id'] = current_user()['id'];
+
+    set_flash('Password updated successfully.', 'success');
+    $role = current_user()['role'];
+    header('Location: ' . BASE_URL . ($role === 'admin' ? 'admin/users' :
+        ($role === 'seller' ? 'seller/dashboard' : 'browse')));
+    exit();
 }
 ?>

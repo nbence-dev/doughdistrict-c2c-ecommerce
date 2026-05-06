@@ -1,11 +1,11 @@
-<?php $flash = get_flash(); ?>
+<?php $flash = get_flash(); $user = current_user(); ?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login — DoughDistrict</title>
+    <title>Set New Password — DoughDistrict</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -27,29 +27,22 @@
             background-color: var(--dd-surface);
         }
 
-        .font-headline {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
+        .font-headline { font-family: 'Plus Jakarta Sans', sans-serif; }
 
-        /* Brand panel */
         .brand-panel {
             background: linear-gradient(160deg, #6f4627 0%, #4a2c15 100%);
             min-height: 100vh;
         }
 
         @media (max-width: 991.98px) {
-            .brand-panel {
-                min-height: 160px;
-            }
+            .brand-panel { min-height: 160px; }
         }
 
-        /* Form panel */
         .form-panel {
             background-color: #ffffff;
             min-height: 100vh;
         }
 
-        /* Inputs */
         .input-carved {
             background-color: var(--dd-surface-low);
             border: 1px solid transparent;
@@ -67,7 +60,6 @@
             outline: none;
         }
 
-        /* CTA button */
         .btn-golden {
             background: linear-gradient(135deg, #6f4627 0%, #8b5e3c 100%);
             color: #ffffff;
@@ -85,19 +77,7 @@
             color: #ffffff;
         }
 
-        .link-warm {
-            color: var(--dd-secondary);
-            text-decoration: none;
-        }
-
-        .link-warm:hover {
-            color: var(--dd-primary);
-            text-decoration: underline;
-        }
-
-        .pw-wrapper {
-            position: relative;
-        }
+        .pw-wrapper { position: relative; }
 
         .btn-pw-toggle {
             position: absolute;
@@ -114,6 +94,12 @@
         }
 
         .btn-pw-toggle:hover { opacity: 1; }
+
+        .requirement {
+            font-size: 0.8rem;
+            color: var(--dd-on-surface-var);
+            opacity: 0.7;
+        }
     </style>
 </head>
 
@@ -122,15 +108,13 @@
         <div class="row g-0 min-vh-100">
 
             <!-- Brand Panel -->
-            <div
-                class="col-lg-6 brand-panel d-flex flex-column justify-content-center align-items-center text-white p-5">
+            <div class="col-lg-6 brand-panel d-flex flex-column justify-content-center align-items-center text-white p-5">
                 <div class="text-center">
-                    <div class="mb-3" style="font-size: 3.5rem;">🥐</div>
+                    <div class="mb-3" style="font-size: 3.5rem;">🔒</div>
                     <h1 class="font-headline fw-bold display-5 text-white mb-2">DoughDistrict</h1>
-                    <p class="fs-5 fw-light mb-0" style="opacity: 0.75;">South Africa's Artisanal Hearth</p>
-                    <hr class="border-white my-4"
-                        style="opacity: 0.2; width: 60px; margin-left: auto; margin-right: auto;">
-                    <p class="small fst-italic" style="opacity: 0.5;">"Baked with heart, sold with pride."</p>
+                    <p class="fs-5 fw-light mb-0" style="opacity: 0.75;">Secure your account</p>
+                    <hr class="border-white my-4" style="opacity: 0.2; width: 60px; margin-left: auto; margin-right: auto;">
+                    <p class="small fst-italic" style="opacity: 0.5;">"Your account security matters."</p>
                 </div>
             </div>
 
@@ -138,8 +122,14 @@
             <div class="col-lg-6 form-panel d-flex align-items-center justify-content-center p-4 p-md-5">
                 <div class="w-100" style="max-width: 420px;">
 
-                    <h2 class="font-headline fw-bold mb-1" style="color: var(--dd-on-surface);">Welcome back.</h2>
-                    <p class="mb-4" style="color: var(--dd-on-surface-var);">Sign in to your account to continue.</p>
+                    <h2 class="font-headline fw-bold mb-1" style="color: var(--dd-on-surface);">Set a new password.</h2>
+                    <p class="mb-4" style="color: var(--dd-on-surface-var);">
+                        <?php if ($user && $user['must_change_password']): ?>
+                            You signed in with a temporary password. Choose a permanent one to continue.
+                        <?php else: ?>
+                            Enter and confirm your new password below.
+                        <?php endif; ?>
+                    </p>
 
                     <?php if ($flash): ?>
                         <div class="alert alert-<?= htmlspecialchars($flash['type']) ?> py-2 small" role="alert">
@@ -147,40 +137,43 @@
                         </div>
                     <?php endif; ?>
 
-                    <form method="POST" action="<?= BASE_URL ?>login" novalidate>
+                    <form method="POST" action="<?= BASE_URL ?>account/change-password" novalidate>
                         <div class="mb-3">
-                            <label for="email" class="form-label small fw-semibold"
+                            <label for="new_password" class="form-label small fw-semibold"
                                 style="color: var(--dd-on-surface-var);">
-                                Email Address
+                                New Password
                             </label>
-                            <input type="email" id="email" name="email" class="form-control input-carved"
-                                placeholder="you@example.com" autocomplete="email" required>
+                            <div class="pw-wrapper">
+                                <input type="password" id="new_password" name="new_password"
+                                    class="form-control input-carved pe-5"
+                                    placeholder="At least 8 characters" autocomplete="new-password" required>
+                                <button type="button" class="btn-pw-toggle" onclick="togglePw('new_password', this)" aria-label="Toggle password visibility">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/><path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/></svg>
+                                </button>
+                            </div>
+                            <p class="requirement mt-1 mb-0">Minimum 8 characters.</p>
                         </div>
 
                         <div class="mb-4">
-                            <label for="password" class="form-label small fw-semibold"
+                            <label for="confirm_password" class="form-label small fw-semibold"
                                 style="color: var(--dd-on-surface-var);">
-                                Password
+                                Confirm New Password
                             </label>
                             <div class="pw-wrapper">
-                                <input type="password" id="password" name="password" class="form-control input-carved pe-5"
-                                    placeholder="••••••••" autocomplete="current-password" required>
-                                <button type="button" class="btn-pw-toggle" onclick="togglePw('password', this)" aria-label="Toggle password visibility">
-                                    <svg id="eye-password" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/><path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/></svg>
+                                <input type="password" id="confirm_password" name="confirm_password"
+                                    class="form-control input-carved pe-5"
+                                    placeholder="••••••••" autocomplete="new-password" required>
+                                <button type="button" class="btn-pw-toggle" onclick="togglePw('confirm_password', this)" aria-label="Toggle password visibility">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16"><path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/><path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/></svg>
                                 </button>
                             </div>
                         </div>
 
-                        <div class="d-grid mb-4">
-                            <button type="submit" name="login" class="btn btn-golden">
-                                Sign In
+                        <div class="d-grid mb-3">
+                            <button type="submit" name="change_password" class="btn btn-golden">
+                                Set Password
                             </button>
                         </div>
-
-                        <p class="text-center small mb-0" style="color: var(--dd-on-surface-var);">
-                            Don't have an account?
-                            <a href="<?= BASE_URL ?>register" class="link-warm fw-semibold">Join the District</a>
-                        </p>
                     </form>
 
                 </div>

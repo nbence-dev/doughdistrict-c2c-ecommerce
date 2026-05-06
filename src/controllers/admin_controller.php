@@ -1,6 +1,7 @@
 <?php
 require_once ROOT_PATH . '/models/Product.php';
 require_once ROOT_PATH . '/models/Category.php';
+require_once ROOT_PATH . '/helpers/emails.php';
 
 // Views for each page (users, products, categories) will be included in the main admin view
 if ($path === 'admin/users') {
@@ -9,12 +10,12 @@ if ($path === 'admin/users') {
     $allowedFilters = ['all', 'admin', 'seller', 'buyer', 'inactive'];
     $filter = in_array($_GET['filter'] ?? '', $allowedFilters) ? $_GET['filter'] : 'all';
 
-    $perPage    = 15;
-    $page       = max(1, (int) ($_GET['page'] ?? 1));
-    $total      = $userModel->countAllUsers($filter);
+    $perPage = 15;
+    $page = max(1, (int) ($_GET['page'] ?? 1));
+    $total = $userModel->countAllUsers($filter);
     $totalPages = (int) ceil($total / $perPage);
-    $page       = min($page, max(1, $totalPages));
-    $users      = $userModel->getPaginated($perPage, ($page - 1) * $perPage, $filter);
+    $page = min($page, max(1, $totalPages));
+    $users = $userModel->getPaginated($perPage, ($page - 1) * $perPage, $filter);
 
 } elseif ($path === 'admin/products') {
     $productModel = new Product($pdo);
@@ -22,12 +23,12 @@ if ($path === 'admin/users') {
     $allowedFilters = ['all', 'pending', 'active', 'rejected'];
     $filter = in_array($_GET['filter'] ?? '', $allowedFilters) ? $_GET['filter'] : 'all';
 
-    $perPage    = 15;
-    $page       = max(1, (int) ($_GET['page'] ?? 1));
-    $total      = $productModel->countAll($filter);
+    $perPage = 15;
+    $page = max(1, (int) ($_GET['page'] ?? 1));
+    $total = $productModel->countAll($filter);
     $totalPages = (int) ceil($total / $perPage);
-    $page       = min($page, max(1, $totalPages));
-    $products   = $productModel->getPaginated($perPage, ($page - 1) * $perPage, $filter);
+    $page = min($page, max(1, $totalPages));
+    $products = $productModel->getPaginated($perPage, ($page - 1) * $perPage, $filter);
 
 
 } else if ($path === 'admin/categories') {
@@ -46,6 +47,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === 'admin/users/toggle' && i
     $userModel = new User($pdo);
     $user = $userModel->find($userId);
     if ($user) {
+        if ($userId === current_user()['id']) {
+            set_flash("You cannot deactivate your own account.", 'danger');
+            header('Location: ' . BASE_URL . 'admin/users');
+            exit();
+        }
         $newStatus = !$user['is_active'];
         $userModel->setActive($userId, $newStatus);
         set_flash("User " . ($newStatus ? "activated" : "deactivated") . " successfully.", 'success');
@@ -140,5 +146,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === 'admin/categories/delete'
     exit();
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === 'admin/users/invite') {
+    $name = trim($_POST['name'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+
+    if (empty($name) || empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        set_flash('Please provide a valid name and email.', 'danger');
+        header('Location: ' . BASE_URL . 'admin/users');
+        exit();
+    }
+
+    $tempPassword = strtoupper(bin2hex(random_bytes(4))) . strtolower(bin2hex(random_bytes(3)));
+
+    $userModel = new User($pdo);
+    $created = $userModel->invite($name, $email, $tempPassword);
+
+    if (!$created) {
+        set_flash('That email address is already registered.', 'danger');
+        header('Location: ' . BASE_URL . 'admin/users');
+        exit();
+    }
+
+    email_admin_invite($email, $name, $tempPassword);
+    set_flash('Invitation sent to ' . htmlspecialchars($email) . '.', 'success');
+    header('Location: ' . BASE_URL . 'admin/users');
+    exit();
+
+}
 
 ?>

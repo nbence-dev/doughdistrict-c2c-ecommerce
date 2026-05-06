@@ -4,7 +4,7 @@ require_once __DIR__ . '/mailer.php';
 
 function email_base_url(): string
 {
-    $host   = $_SERVER['HTTP_HOST'] ?? 'doughdistrict.co.za';
+    $host = $_SERVER['HTTP_HOST'] ?? 'doughdistrict.co.za';
     $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
     return $scheme . '://' . $host . '/';
 }
@@ -47,7 +47,7 @@ function email_wrap(string $content): string
 function email_order_confirmed(string $buyer_email, string $buyer_name, array $order_ids): void
 {
     $base = email_base_url();
-    $ids  = implode(', ', array_map(fn($id) => '#' . $id, $order_ids));
+    $ids = implode(', ', array_map(fn($id) => '#' . $id, $order_ids));
     $html = email_wrap('
       <h2 style="color:#6f4627;margin-top:0;">Your order is confirmed!</h2>
       <p style="color:#51443c;">Hi ' . htmlspecialchars($buyer_name) . ',</p>
@@ -64,7 +64,7 @@ function email_order_confirmed(string $buyer_email, string $buyer_name, array $o
 // ── 2. Buyer: order shipped ───────────────────────────────────────────────────
 function email_order_shipped(string $buyer_email, string $buyer_name, int $order_id, string $tracking_ref): void
 {
-    $base         = email_base_url();
+    $base = email_base_url();
     $tracking_url = 'https://sandbox.shiplogic.com/track?S&ref=' . urlencode($tracking_ref);
     $html = email_wrap('
       <h2 style="color:#6f4627;margin-top:0;">Your order is on its way!</h2>
@@ -83,7 +83,7 @@ function email_order_shipped(string $buyer_email, string $buyer_name, int $order
 // ── 3. Buyer: order delivered ─────────────────────────────────────────────────
 function email_order_delivered(string $buyer_email, string $buyer_name, int $order_id): void
 {
-    $base       = email_base_url();
+    $base = email_base_url();
     $review_url = $base . 'orders/detail?id=' . $order_id;
     $html = email_wrap('
       <h2 style="color:#6f4627;margin-top:0;">Your order has been delivered!</h2>
@@ -98,7 +98,7 @@ function email_order_delivered(string $buyer_email, string $buyer_name, int $ord
 // ── 4. Seller: new order received ─────────────────────────────────────────────
 function email_new_order(string $seller_email, string $seller_name, int $order_id, string $buyer_name, array $items, float $total): void
 {
-    $base      = email_base_url();
+    $base = email_base_url();
     $order_url = $base . 'seller/orders/detail?id=' . $order_id;
 
     $rows = '';
@@ -123,4 +123,28 @@ function email_new_order(string $seller_email, string $seller_name, int $order_i
       <a href="' . $order_url . '" style="display:inline-block;background:#6f4627;color:#fff;padding:12px 28px;border-radius:999px;text-decoration:none;font-weight:700;margin-top:8px;">View Order</a>
     ');
     send_email($seller_email, $seller_name, 'New order #' . $order_id . ' — DoughDistrict', $html);
+}
+
+// ── 5. Admin invite ───────────────────────────────────────────────────────────
+function email_admin_invite(string $to_email, string $to_name, string $temp_password): void
+{
+    $base       = email_base_url();
+    $configured = getenv('MAIL_FROM') ?: ($_ENV['MAIL_FROM'] ?? '');
+    preg_match('/@([a-zA-Z0-9.\-]+)/', $configured, $m);
+    $domain = $m[1] ?? 'doughdistrict.co.za';
+    $from   = 'DoughDistrict <no-reply@' . $domain . '>';
+
+    $html = email_wrap('
+      <h2 style="color:#6f4627;margin-top:0;">You\'ve been invited to DoughDistrict</h2>
+      <p style="color:#51443c;">Hi ' . htmlspecialchars($to_name) . ',</p>
+      <p style="color:#51443c;">An admin account has been created for you on DoughDistrict. Use the temporary password below to sign in — you\'ll be asked to set a new password immediately.</p>
+      <div style="background:#f5f4ec;border-radius:10px;padding:16px 20px;margin:24px 0;">
+        <p style="margin:0;font-size:13px;color:#83746b;">Temporary password</p>
+        <p style="margin:4px 0 0;font-size:22px;font-weight:700;color:#6f4627;letter-spacing:.1em;">' . htmlspecialchars($temp_password) . '</p>
+      </div>
+      <a href="' . $base . 'login" style="display:inline-block;background:#6f4627;color:#fff;padding:12px 28px;border-radius:999px;text-decoration:none;font-weight:700;">Sign In</a>
+      <p style="color:#83746b;font-size:12px;margin-top:24px;">If you were not expecting this invitation, you can safely ignore this email.</p>
+    ');
+
+    send_email($to_email, $to_name, 'Your DoughDistrict admin invitation', $html, $from);
 }

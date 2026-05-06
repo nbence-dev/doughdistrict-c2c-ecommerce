@@ -32,9 +32,16 @@
             header('Location: ' . BASE_URL . 'login');
             exit();
         }
+        $user         = current_user();
+        $current_path = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
+        if ($user && ($user['must_change_password'] ?? 0) && $current_path !== 'account/change-password') {
+            header('Location: ' . BASE_URL . 'account/change-password');
+            exit();
+        }
     }
 
     function require_role($role) {
+        require_login();
         $user = current_user();
         if (!$user || $user['role'] !== $role) {
             header('Location: ' . BASE_URL . 'login');

@@ -94,5 +94,28 @@ class User
         $stmt = $this->db->prepare('UPDATE users SET role = ? WHERE id = ?');
         return $stmt->execute([$role, $user_id]);
     }
+
+    public function invite(string $name, string $email, string $tempPassword): bool
+    {
+        $hash = password_hash($tempPassword, PASSWORD_DEFAULT);
+        try {
+
+            $stmt = $this->db->prepare('INSERT INTO users (name, email, password, role, must_change_password) VALUES (?,?,?,?,1)');
+            $stmt->execute([$name, $email, $hash, 'admin']);
+            return true;
+
+        } catch (PDOException $e) {
+            if ($e->getCode() === 23000)
+                return false; // duplicate email
+            throw $e;
+        }
+    }
+
+    public function setPassword(int $id, string $newPassword): void
+    {
+        $hash = password_hash($newPassword, PASSWORD_DEFAULT);
+        $stmt = $this->db->prepare('UPDATE users set PASSWORD = ?, must_change_password = 0 WHERE id = ?');
+        $stmt->execute([$hash, $id]);
+    }
 }
 ?>

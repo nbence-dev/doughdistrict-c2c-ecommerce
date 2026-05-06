@@ -45,8 +45,9 @@ function status_badge(int $isActive): string
         <h2 class="page-heading mb-1">Manage Users</h2>
         <p class="page-subheading mb-0">Oversee the community of bakers and buyers within DoughDistrict.</p>
     </div>
-    <button class="btn btn-dd d-flex align-items-center gap-2 px-4 py-2">
-        <span class="material-symbols-outlined" style="font-size:1rem">add</span> Invite New User
+    <button class="btn btn-dd d-flex align-items-center gap-2 px-4 py-2"
+            data-bs-toggle="modal" data-bs-target="#inviteModal">
+        <span class="material-symbols-outlined" style="font-size:1rem">add</span> Invite New Admin
     </button>
 </div>
 
@@ -148,7 +149,8 @@ function status_badge(int $isActive): string
                                             </ul>
                                         </div>
                                     <?php endif; /* sellers: no role button */ ?>
-                                    <!-- Toggle active/inactive -->
+                                    <!-- Toggle active/inactive (cannot self-deactivate) -->
+                                    <?php if ($u['id'] !== current_user()['id']): ?>
                                     <form method="POST" action="<?= BASE_URL ?>admin/users/toggle">
                                         <input type="hidden" name="user_id" value="<?= (int) $u['id'] ?>">
                                         <?php if ($u['is_active']): ?>
@@ -161,6 +163,7 @@ function status_badge(int $isActive): string
                                             </button>
                                         <?php endif; ?>
                                     </form>
+                                    <?php endif; ?>
                                 </div>
                             </td>
                         </tr>
@@ -241,6 +244,42 @@ if ($totalPages <= 7) {
         </ul>
     </nav>
     <?php endif; ?>
+</div>
+
+<!-- ── Invite Admin Modal ── -->
+<div class="modal fade" id="inviteModal" tabindex="-1" aria-labelledby="inviteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="inviteModalLabel" style="color:var(--dd-on-surface)">
+                    Invite New Admin
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="<?= BASE_URL ?>admin/users/invite">
+                <div class="modal-body pt-2">
+                    <p class="small mb-4" style="color:var(--dd-outline)">
+                        A temporary password will be generated and emailed to this person.
+                        They will be prompted to change it on first login.
+                    </p>
+                    <div class="mb-3">
+                        <label for="invite_name" class="form-label small fw-semibold" style="color:var(--dd-on-surface-var)">Full Name</label>
+                        <input type="text" id="invite_name" name="name" class="form-control"
+                            placeholder="Jane Dough" required autocomplete="off">
+                    </div>
+                    <div class="mb-1">
+                        <label for="invite_email" class="form-label small fw-semibold" style="color:var(--dd-on-surface-var)">Email Address</label>
+                        <input type="email" id="invite_email" name="email" class="form-control"
+                            placeholder="admin@example.com" required autocomplete="off">
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-dd btn-sm px-4">Send Invite</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 </div><!-- /.admin-content -->

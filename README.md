@@ -14,6 +14,7 @@ DoughDistrict is a consumer-to-consumer (C2C) e-commerce platform for home-baked
 - View order history with status badges
 - View order detail with line items and shipping address snapshot
 - Track shipments via Shiplogic tracking link with pre-filled reference
+- Transactional email notifications: order confirmed, shipped, and delivered
 
 **Seller**
 - Self-service shop onboarding — any buyer can upgrade their account
@@ -24,6 +25,7 @@ DoughDistrict is a consumer-to-consumer (C2C) e-commerce platform for home-baked
 - Orders sorted by upcoming driver pickup date (soonest first)
 - Book shipments via The Courier Guy (Shiplogic API) with parcel dimensions
 - Tracking reference, estimated driver pickup date, and Print Waybill stored after booking
+- Email notification sent to seller on every new order received
 
 **Admin**
 - Manage all users: activate/deactivate, promote buyer→admin or demote admin→buyer
@@ -40,6 +42,7 @@ DoughDistrict is a consumer-to-consumer (C2C) e-commerce platform for home-baked
 | **Object Storage** | Cloudflare R2 (S3-compatible, via AWS SDK for PHP) |
 | **Payments** | Stripe Connect (destination charges — no platform fee) |
 | **Courier** | The Courier Guy via Shiplogic REST API |
+| **Email** | Resend (transactional email via PHP SDK) |
 | **Infrastructure** | Docker, docker-compose, Ubuntu Server VM |
 | **Tunnels** | Cloudflare Named Tunnels |
 | **CI/CD** | GitHub Actions (SSH deploy) |
@@ -63,7 +66,9 @@ doughdistrict-c2c-ecommerce/
 │   │   ├── flash.php        ← one-time session messages
 │   │   ├── r2.php           ← Cloudflare R2 upload via AWS SDK
 │   │   ├── stripe.php       ← Stripe SDK boot + PaymentIntent helpers
-│   │   └── courier.php      ← Shiplogic API wrapper (create shipment, label URL, rates)
+│   │   ├── courier.php      ← Shiplogic API wrapper (create shipment, label URL, rates)
+│   │   ├── mailer.php       ← send_email() wrapper using Resend PHP SDK
+│   │   └── emails.php       ← branded HTML email templates (order confirmed, shipped, delivered, new order)
 │   ├── models/              ← PDO data-access classes (one per table)
 │   │   ├── User.php
 │   │   ├── SellerProfile.php
@@ -215,4 +220,5 @@ Tunnel credentials (`cloudflared/config.yml` and `cloudflared/creds.json`) are g
 | 6 | Order management (buyer history, seller fulfilment, status updates) | Done |
 | 7 | Shiplogic (The Courier Guy) integration — shipment booking, tracking, waybill | Done |
 | 8 | Reviews (post-delivery, per product per order, rating 1–5) | Pending |
-| 9 | Email notifications (Resend), admin dashboard, polish, seed data | Pending |
+| 9 | Email notifications (Resend) — order confirmed, shipped, delivered, new order | Done |
+| 10 | Admin dashboard stats, polish, seed data verification | Pending |

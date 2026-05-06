@@ -2,10 +2,10 @@
 
 require_once dirname(ROOT_PATH) . '/vendor/autoload.php';
 
-function send_email(string $to_email, string $to_name, string $subject, string $html): bool
+function send_email(string $to_email, string $to_name, string $subject, string $html, ?string $from = null): bool
 {
     $api_key = getenv('RESEND_API_KEY') ?: ($_ENV['RESEND_API_KEY'] ?? '');
-    $from    = getenv('MAIL_FROM')      ?: ($_ENV['MAIL_FROM']      ?? '');
+    $from    = $from ?? (getenv('MAIL_FROM') ?: ($_ENV['MAIL_FROM'] ?? ''));
 
     if (!$api_key || !$from) {
         error_log('[mailer] RESEND_API_KEY or MAIL_FROM not set — email skipped');

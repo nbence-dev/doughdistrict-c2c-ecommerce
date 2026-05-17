@@ -48,7 +48,7 @@ Includes a separate admin website with RBAC (required by university deliverable)
 | Table | Purpose |
 |---|---|
 | `users` | All users. `role` ENUM controls access. `is_active` for admin deactivation. |
-| `seller_profiles` | Shop name, bio, Stripe Connect account ID, onboarding status |
+| `seller_profiles` | Shop name, bio, collection address, Stripe Connect account ID and onboarding status |
 | `addresses` | Buyer shipping addresses (label, default flag) |
 | `categories` | Product categories (admin-managed) |
 | `products` | Seller listings. `image_url` = Cloudflare R2 CDN URL. |
@@ -73,7 +73,10 @@ DoughDistrict/
 │   │   ├── auth.php            ← require_login(), require_role(), current_user()
 │   │   ├── flash.php           ← one-time session messages
 │   │   ├── r2.php              ← Cloudflare R2 upload helper
-│   │   └── stripe.php          ← Stripe SDK wrapper
+│   │   ├── stripe.php          ← Stripe SDK wrapper
+│   │   ├── courier.php         ← Shiplogic API wrapper (create shipment, rates, label URL)
+│   │   ├── mailer.php          ← send_email() wrapper using Resend PHP SDK
+│   │   └── emails.php          ← branded HTML email templates
 │   ├── models/
 │   │   ├── User.php
 │   │   ├── SellerProfile.php
@@ -89,6 +92,7 @@ DoughDistrict/
 │   │   ├── checkout_controller.php
 │   │   ├── order_controller.php
 │   │   ├── courier_controller.php
+│   │   ├── waybill_controller.php
 │   │   └── review_controller.php
 │   └── views/
 │       ├── layouts/
@@ -106,6 +110,7 @@ DoughDistrict/
 │       ├── seller/
 │       │   ├── onboarding.php
 │       │   ├── dashboard.php
+│       │   ├── profile.php
 │       │   ├── stripe_connect.php
 │       │   ├── products/
 │       │   │   ├── index.php
@@ -117,6 +122,8 @@ DoughDistrict/
 │       │       └── ship.php
 │       ├── errors/
 │       │   └── 404.php             ← branded 404 page
+│       ├── account/
+│       │   └── change_password.php
 │       └── buyer/
 │           ├── browse.php
 │           ├── product_detail.php
@@ -143,19 +150,19 @@ DoughDistrict/
 | 0 | Folder structure, Docker, schema.sql | Done |
 | 1 | Auth + RBAC (register, login, logout, role guards, seed admin) | Done |
 | 2 | Admin panel (user management, categories, product moderation) | Done |
-| 3 | Seller: shop onboarding, product CRUD, R2 image upload, Stripe Connect | Done (Stripe Connect OAuth stub only — needs `stripe.php`) |
+| 3 | Seller: shop onboarding, product CRUD, R2 image upload, Stripe Connect | Done |
 | 4 | Buyer: browse, search, category filter, product detail, session cart | Done |
-| 5 | Checkout + Stripe payment, order creation | **Next** |
-| 6 | Order management (buyer history, seller fulfilment, status updates) | Pending |
-| 7 | The Courier Guy API integration (shipment creation, tracking) | Pending |
-| 8 | Reviews (post-delivery, per product per order) | Pending |
-| 9 | Polish, mobile check, seed data, Cloudflare tunnel verification | Pending |
+| 5 | Checkout + Stripe payment (destination charges), order creation | Done |
+| 6 | Order management (buyer history, seller fulfilment, status updates) | Done |
+| 7 | Shiplogic (The Courier Guy) — shipment booking, tracking, waybill | Done |
+| 8 | Reviews (post-delivery, per product per order, rating 1–5) | Done |
+| 9 | Email notifications (Resend) — order confirmed, shipped, delivered, new order | Done |
+| 10 | Admin dashboard stats, polish, seed data verification | **Next** |
 
 ## Current phase
-**Phase 5 — Checkout + Stripe Payment.**
-Phase 4 is complete. All buyer browse, product detail, and cart views are built and wired.
-Next: `src/helpers/stripe.php`, `src/controllers/checkout_controller.php`, `src/views/buyer/checkout.php`, `src/views/buyer/order_confirmation.php`, `src/models/Order.php`.
-See `PLAN.md` for the detailed task list.
+**Phase 10 — Admin dashboard stats, polish, and seed data verification.**
+Phases 1–9 are complete. All core buyer, seller, and courier flows are built and wired.
+Next: admin dashboard with summary stats (user count, order count, revenue), final polish, and seed data review.
 
 ## Rules for Claude
 - Do not scaffold an entire phase unprompted. Work one task at a time.

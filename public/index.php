@@ -297,6 +297,16 @@ switch ($path) {
         require_once ROOT_PATH . '/views/account/change_password.php';
         break;
 
+    case 'reviews/create':
+        require_login();
+        if (current_user()['role'] === 'admin') {
+            header('Location: ' . BASE_URL . 'browse');
+            exit();
+        }
+        require_once ROOT_PATH . '/controllers/review_controller.php';
+        break;
+
+
     default:
         http_response_code(404);
         require_once ROOT_PATH . '/views/errors/404.php';

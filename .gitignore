@@ -31,3 +31,9 @@ cloudflared/creds.json
 cloudflared/config.yml
 cloudflared/dev-creds.json
 cloudflared/prod-creds.json
+
+# Working notes (local only)
+POLISH.md
+QA_PLAN.md
+changes.md
+DIAGRAMS.md

@@ -143,7 +143,9 @@ class Product
         $where = 'WHERE ' . implode(' AND ', $conditions);
 
         $stmt = $this->db->prepare(
-            "SELECT p.*, c.name AS category_name, sp.shop_name, u.name AS seller_name
+            "SELECT p.*, c.name AS category_name, sp.shop_name, u.name AS seller_name,
+                    (SELECT AVG(r.rating) FROM reviews r WHERE r.product_id = p.id) AS avg_rating,
+                    (SELECT COUNT(*) FROM reviews r WHERE r.product_id = p.id) AS review_count
              FROM products p
              JOIN categories c ON p.category_id = c.id
              JOIN seller_profiles sp ON p.seller_id = sp.id

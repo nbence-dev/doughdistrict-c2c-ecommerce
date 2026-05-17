@@ -175,6 +175,103 @@
             </div>
         </div>
 
+        <!-- ── Reviews ───────────────────────────────────────────────── -->
+        <section class="mt-5 pt-4" style="border-top: 1px solid var(--dd-outline-var);">
+            <div class="row g-4">
+
+                <!-- Left col: rating summary + review form -->
+                <div class="col-lg-4">
+
+                    <!-- Rating summary card -->
+                    <div class="p-4 rounded-4 mb-4 shadow-sm" style="background: var(--dd-surface-low);">
+                        <h3 class="fw-bold mb-3" style="font-size: 1.05rem; color: var(--dd-on-surface);">Customer Ratings</h3>
+                        <?php if ($reviewCount > 0): ?>
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <span style="font-size: 3rem; font-weight: 700; color: var(--dd-on-surface); line-height: 1;">
+                                <?= number_format($avgRating, 1) ?>
+                            </span>
+                            <div>
+                                <div class="d-flex gap-1 mb-1">
+                                    <?php for ($i = 1; $i <= 5; $i++): ?>
+                                    <span class="material-symbols-outlined"
+                                          style="font-size:1.1rem;color:var(--dd-secondary);font-variation-settings:'FILL' <?= $i <= round($avgRating) ? '1' : '0' ?>;">star</span>
+                                    <?php endfor; ?>
+                                </div>
+                                <span class="small" style="color: var(--dd-outline);">
+                                    Based on <?= $reviewCount ?> review<?= $reviewCount !== 1 ? 's' : '' ?>
+                                </span>
+                            </div>
+                        </div>
+                        <?php else: ?>
+                        <p class="small mb-0" style="color: var(--dd-outline);">No reviews yet. Be the first!</p>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- Review form (eligible buyers only) -->
+                    <?php if (!empty($eligibleOrderIds)): ?>
+                        <?php include __DIR__ . '/review_form.php'; ?>
+                    <?php endif; ?>
+
+                </div>
+
+                <!-- Right col: review cards -->
+                <div class="col-lg-8">
+                    <h3 class="fw-bold mb-4" style="font-size: 1.05rem; color: var(--dd-on-surface);">
+                        Reviews
+                        <?php if ($reviewCount > 0): ?>
+                        <span class="fw-normal small ms-1" style="color: var(--dd-outline);">(<?= $reviewCount ?>)</span>
+                        <?php endif; ?>
+                    </h3>
+
+                    <?php if (empty($reviews)): ?>
+                    <p style="color: var(--dd-outline);">No reviews yet for this product.</p>
+                    <?php else: ?>
+                    <div class="d-flex flex-column gap-3">
+                        <?php foreach ($reviews as $r): ?>
+                        <?php
+                            $nameParts = explode(' ', trim($r['reviewer_name']));
+                            $initials  = strtoupper(
+                                substr($nameParts[0], 0, 1) .
+                                (count($nameParts) > 1 ? substr($nameParts[1], 0, 1) : '')
+                            );
+                        ?>
+                        <div class="p-4 rounded-4" style="background: var(--dd-surface-low);">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold flex-shrink-0"
+                                         style="width:44px;height:44px;background:var(--dd-surface);color:var(--dd-primary);font-size:.8rem;">
+                                        <?= htmlspecialchars($initials) ?>
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold small" style="color: var(--dd-on-surface);">
+                                            <?= htmlspecialchars($r['reviewer_name']) ?>
+                                        </div>
+                                        <div class="small" style="color: var(--dd-outline);">
+                                            Verified Buyer &middot; <?= date('M j, Y', strtotime($r['created_at'])) ?>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-1 flex-shrink-0">
+                                    <?php for ($i = 1; $i <= 5; $i++): ?>
+                                    <span class="material-symbols-outlined"
+                                          style="font-size:.9rem;color:var(--dd-secondary);font-variation-settings:'FILL' <?= $i <= (int) $r['rating'] ? '1' : '0' ?>;">star</span>
+                                    <?php endfor; ?>
+                                </div>
+                            </div>
+                            <?php if (!empty($r['comment'])): ?>
+                            <p class="mb-0 small" style="color: var(--dd-on-surface-var); line-height: 1.65;">
+                                "<?= htmlspecialchars($r['comment']) ?>"
+                            </p>
+                            <?php endif; ?>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                    <?php endif; ?>
+                </div>
+
+            </div>
+        </section>
+
     <?php endif; ?>
 
 </div>

@@ -219,6 +219,6 @@ Tunnel credentials (`cloudflared/config.yml` and `cloudflared/creds.json`) are g
 | 5 | Checkout + Stripe payment (destination charges), order creation | Done |
 | 6 | Order management (buyer history, seller fulfilment, status updates) | Done |
 | 7 | Shiplogic (The Courier Guy) integration — shipment booking, tracking, waybill | Done |
-| 8 | Reviews (post-delivery, per product per order, rating 1–5) | Pending |
+| 8 | Reviews (post-delivery, per product per order, rating 1–5) | Done |
 | 9 | Email notifications (Resend) — order confirmed, shipped, delivered, new order | Done |
 | 10 | Admin dashboard stats, polish, seed data verification | Pending |

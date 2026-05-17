@@ -147,6 +147,14 @@
                                 <span class="price-tag text-nowrap">R<?= number_format($p['price'], 2) ?></span>
                             </div>
                             <p class="shop-label mb-2"><?= htmlspecialchars($p['shop_name']) ?></p>
+                            <?php if (!empty($p['avg_rating'])): ?>
+                            <div class="d-flex align-items-center gap-1 mb-2">
+                                <span class="material-symbols-outlined"
+                                      style="font-size:.9rem;color:var(--dd-secondary);font-variation-settings:'FILL' 1;">star</span>
+                                <span class="small fw-semibold" style="color:var(--dd-secondary);"><?= number_format($p['avg_rating'], 1) ?></span>
+                                <span class="small" style="color:var(--dd-outline);">(<?= (int) $p['review_count'] ?>)</span>
+                            </div>
+                            <?php endif; ?>
                             <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
                                 <span class="badge" style="background: var(--dd-surface-low); color: var(--dd-secondary); font-size: .65rem;">
                                     <?php if (!empty($p['shipping_cost'])): ?>

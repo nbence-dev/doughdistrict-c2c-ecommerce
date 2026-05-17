@@ -135,7 +135,7 @@
                     </div>
                     <div class="d-flex justify-content-between mb-2" style="color:var(--dd-on-surface-var);">
                         <span>Shipping</span>
-                        <span class="fw-semibold" style="color:var(--dd-on-surface);">Calculated at checkout</span>
+                        <span class="fst-italic small" style="color:var(--dd-outline);">Calculated at checkout</span>
                     </div>
 
                     <hr style="border-color: var(--dd-outline-var);">

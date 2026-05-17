@@ -107,7 +107,7 @@ function status_badge(int $isActive): string
                             </td>
                             <td>
                                 <div class="d-flex justify-content-end gap-1">
-                                    <!-- Change role (buyer↔admin only; sellers locked) -->
+                                    <!-- Change role (buyer→admin only; sellers and admins locked) -->
                                     <?php if ($u['role'] === 'buyer'): ?>
                                         <div class="dropdown">
                                             <button class="action-btn action-btn-edit dropdown-toggle" data-bs-toggle="dropdown"
@@ -128,27 +128,7 @@ function status_badge(int $isActive): string
                                                 </li>
                                             </ul>
                                         </div>
-                                    <?php elseif ($u['role'] === 'admin'): ?>
-                                        <div class="dropdown">
-                                            <button class="action-btn action-btn-edit dropdown-toggle" data-bs-toggle="dropdown"
-                                                style="border-radius:.45rem" title="Change role">
-                                                <span class="material-symbols-outlined">manage_accounts</span>
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0"
-                                                style="font-size:.8125rem">
-                                                <li><span class="dropdown-item-text text-muted"
-                                                        style="font-size:.675rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em">Set
-                                                        Role</span></li>
-                                                <li>
-                                                    <form method="POST" action="<?= BASE_URL ?>admin/users/role">
-                                                        <input type="hidden" name="user_id" value="<?= (int) $u['id'] ?>">
-                                                        <input type="hidden" name="role" value="buyer">
-                                                        <button class="dropdown-item">Make Buyer</button>
-                                                    </form>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    <?php endif; /* sellers: no role button */ ?>
+                                    <?php endif; /* admins and sellers: no role button */ ?>
                                     <!-- Toggle active/inactive (cannot self-deactivate) -->
                                     <?php if ($u['id'] !== current_user()['id']): ?>
                                     <form method="POST" action="<?= BASE_URL ?>admin/users/toggle">

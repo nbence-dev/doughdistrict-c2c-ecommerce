@@ -9,21 +9,19 @@ class User
     }
 
     // Register new user
-    public function create($name, $email, $password, $role = 'buyer')
+    public function create($name, $email, $password, $role = 'buyer', $phone_number = null)
     {
-        // Hash password
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
         try {
-            $stmt = $this->db->prepare('INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)');
-            $stmt->execute([$name, $email, $hashed_password, $role]);
+            $stmt = $this->db->prepare('INSERT INTO users (name, email, password, role, phone_number) VALUES (?, ?, ?, ?, ?)');
+            $stmt->execute([$name, $email, $hashed_password, $role, $phone_number ?: null]);
             return true;
         } catch (PDOException $e) {
-            // Handle duplicate email
             if ($e->getCode() == 23000) {
-                return false; // User already exists
+                return false;
             }
-            throw $e; // Rethrow other exceptions
+            throw $e;
         }
     }
 

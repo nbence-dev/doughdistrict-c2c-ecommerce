@@ -258,11 +258,13 @@ function admin_nav_link(string $path, string $icon, string $label, string $curre
             margin-left: 256px;
             padding-top: 64px;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         .admin-content {
             padding: 2.5rem 2rem;
             max-width: 1360px;
+            min-width: 0;
         }
 
         /* ── Reusable components ─────────────────────── */

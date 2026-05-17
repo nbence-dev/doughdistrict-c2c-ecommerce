@@ -66,6 +66,14 @@ class Category
         return (int) $stmt->fetchColumn() > 0;
     }
 
+    public function findBySlug(string $slug): ?array
+    {
+        $stmt = $this->db->prepare('SELECT * FROM categories WHERE slug = ?');
+        $stmt->execute([$slug]);
+        $row = $stmt->fetch();
+        return $row ?: null;
+    }
+
     public function nameExists($name, $excludeId = null)
     {
         if ($excludeId) {

@@ -81,16 +81,27 @@ function email_order_shipped(string $buyer_email, string $buyer_name, int $order
 }
 
 // ── 3. Buyer: order delivered ─────────────────────────────────────────────────
-function email_order_delivered(string $buyer_email, string $buyer_name, int $order_id): void
+function email_order_delivered(string $buyer_email, string $buyer_name, int $order_id, array $items = []): void
 {
     $base = email_base_url();
-    $review_url = $base . 'orders/detail?id=' . $order_id;
+
+    $review_buttons = '';
+    foreach ($items as $item) {
+        if (!empty($item['product_id'])) {
+            $url = $base . 'product?id=' . (int) $item['product_id'];
+            $review_buttons .= '<a href="' . $url . '" style="display:inline-block;background:#924c00;color:#fff;padding:10px 22px;border-radius:999px;text-decoration:none;font-weight:700;margin:4px 4px 4px 0;font-size:14px;">Review: ' . htmlspecialchars($item['product_name']) . '</a> ';
+        }
+    }
+    if (!$review_buttons) {
+        $review_buttons = '<a href="' . $base . 'orders/detail?id=' . $order_id . '" style="display:inline-block;background:#924c00;color:#fff;padding:12px 28px;border-radius:999px;text-decoration:none;font-weight:700;">Leave a Review</a>';
+    }
+
     $html = email_wrap('
       <h2 style="color:#6f4627;margin-top:0;">Your order has been delivered!</h2>
       <p style="color:#51443c;">Hi ' . htmlspecialchars($buyer_name) . ',</p>
       <p style="color:#51443c;">Order <strong>#' . (int) $order_id . '</strong> has been marked as delivered. We hope you love what you received!</p>
       <p style="color:#51443c;">If you enjoyed your order, please take a moment to leave a review — it means a lot to the home baker who made it.</p>
-      <a href="' . $review_url . '" style="display:inline-block;background:#924c00;color:#fff;padding:12px 28px;border-radius:999px;text-decoration:none;font-weight:700;">Leave a Review</a>
+      <div style="margin-top:16px;">' . $review_buttons . '</div>
     ');
     send_email($buyer_email, $buyer_name, 'Your DoughDistrict order has arrived — how was it?', $html);
 }

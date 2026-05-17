@@ -6,9 +6,14 @@ $productModel = new Product($pdo);
 $categoryModel = new Category($pdo);
 
 if ($path === 'browse') {
-    $search = trim($_GET['q'] ?? '');
-    $category_id = intval($_GET['category'] ?? 0) ?: null;
-    $products = $productModel->getBrowse($search, $category_id);
+    $search        = trim($_GET['q'] ?? '');
+    $category_slug = trim($_GET['category'] ?? '');
+    $category_id   = null;
+    if ($category_slug) {
+        $resolved    = $categoryModel->findBySlug($category_slug);
+        $category_id = $resolved ? (int) $resolved['id'] : null;
+    }
+    $products   = $productModel->getBrowse($search, $category_id);
     $categories = $categoryModel->getAll();
 }
 

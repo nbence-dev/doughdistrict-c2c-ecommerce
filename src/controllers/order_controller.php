@@ -48,7 +48,7 @@ if ($path === 'orders') {
             $userModel = new User($pdo);
             $buyerUser = $userModel->find($data['order']['buyer_id']);
             if ($buyerUser) {
-                email_order_delivered($buyerUser['email'], $buyerUser['name'], $id);
+                email_order_delivered($buyerUser['email'], $buyerUser['name'], $id, $data['items']);
             }
         }
         set_flash('Status successfully updated', 'success');

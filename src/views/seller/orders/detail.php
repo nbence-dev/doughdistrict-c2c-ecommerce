@@ -13,7 +13,7 @@ $statusColors = [
     'delivered'  => 'bg-tertiary text-on-tertiary',
 ];
 $statusCls = $statusColors[$order['status']] ?? 'bg-surface-variant text-on-surface-variant';
-$statuses  = ['paid', 'processing', 'shipped', 'delivered'];
+$statuses  = ['paid', 'shipped', 'delivered'];
 ?>
 
 <!-- Top bar -->

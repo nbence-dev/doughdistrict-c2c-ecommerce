@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === 'admin/users/role' && iss
     $userModel = new User($pdo);
     $user = $userModel->find($userId);
     if ($user) {
-        $allowed = ['buyer' => 'admin', 'admin' => 'buyer'];
+        $allowed = ['buyer' => 'admin'];
         if (!array_key_exists($user['role'], $allowed) || $allowed[$user['role']] !== $newRole || $user['id'] === current_user()['id']) {
             set_flash("Role change not permitted.", 'danger');
             header('Location: ' . BASE_URL . 'admin/users');

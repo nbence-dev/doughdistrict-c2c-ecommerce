@@ -91,46 +91,11 @@ $categories = $categories ?? [];
           </div>
         </section>
 
-      </div>
-
-      <!-- Right: image + stock -->
-      <div class="space-y-6">
-
-        <!-- Image upload -->
-        <section class="bg-surface-container-lowest p-6 rounded-2xl shadow-[0px_12px_32px_rgba(48,49,44,0.06)] border-2 border-dashed border-outline-variant/30 hover:border-primary/40 transition-colors">
-          <label for="image" class="flex flex-col items-center justify-center text-center cursor-pointer h-56 group">
-            <div class="bg-surface-container-low w-16 h-16 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-              <span class="material-symbols-outlined text-primary text-3xl">add_a_photo</span>
-            </div>
-            <h3 class="font-headline font-bold text-on-surface mb-1">Upload Product Image</h3>
-            <p class="text-on-surface-variant text-xs px-4">JPG, PNG, or WebP · Max 10 MB</p>
-          </label>
-          <input type="file" id="image" name="image" accept="image/*" required class="sr-only"
-                 onchange="document.getElementById('file-name').textContent = this.files[0]?.name ?? ''"/>
-          <p id="file-name" class="text-center text-xs text-outline mt-2 font-medium"></p>
-        </section>
-
-        <!-- Stock & actions -->
-        <section class="bg-surface-container-lowest p-6 rounded-2xl shadow-[0px_12px_32px_rgba(48,49,44,0.06)] space-y-6">
-          <div class="flex flex-col gap-2">
-            <label for="stock_qty" class="font-headline font-bold text-on-surface">Stock Quantity</label>
-            <input type="number" id="stock_qty" name="stock_qty"
-                   min="0" value="<?= htmlspecialchars($_POST['stock_qty'] ?? '1') ?>"
-                   class="bg-surface-container-low border-none rounded-xl p-4 text-on-surface focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary/40 transition-all"/>
-          </div>
-
-          <div class="p-4 rounded-2xl bg-tertiary-fixed/30 border border-tertiary/10">
-            <p class="text-xs text-on-tertiary-fixed-variant leading-relaxed">
-              <span class="font-bold text-tertiary">Note:</span> New products require admin approval before appearing in the marketplace. This usually takes under 24 hours.
-            </p>
-          </div>
-        </section>
-
-        <!-- Package dimensions -->
-        <section class="bg-surface-container-lowest p-6 rounded-2xl shadow-[0px_12px_32px_rgba(48,49,44,0.06)] space-y-5">
+        <!-- Package Dimensions (moved here so it's visible alongside product info) -->
+        <section class="bg-surface-container-lowest p-8 rounded-2xl shadow-[0px_12px_32px_rgba(48,49,44,0.06)] space-y-5">
           <div>
             <h3 class="font-headline font-bold text-on-surface mb-1">Package Dimensions</h3>
-            <p class="text-xs text-on-surface-variant">Used to calculate the shipping cost shown to buyers.</p>
+            <p class="text-xs text-on-surface-variant">Used to calculate the shipping cost shown to buyers and to book courier collection.</p>
           </div>
 
           <div class="grid grid-cols-3 gap-3">
@@ -166,12 +131,49 @@ $categories = $categories ?? [];
           </div>
         </section>
 
+      </div>
+
+      <!-- Right: image + stock -->
+      <div class="space-y-6">
+
+        <!-- Image upload with preview -->
+        <section class="bg-surface-container-lowest p-6 rounded-2xl shadow-[0px_12px_32px_rgba(48,49,44,0.06)] border-2 border-dashed border-outline-variant/30 hover:border-primary/40 transition-colors">
+          <label for="image" id="image-label" class="flex flex-col items-center justify-center text-center cursor-pointer min-h-56 group overflow-hidden rounded-xl">
+            <img id="image-preview" src="" alt="Preview" class="hidden w-full object-cover rounded-xl" style="max-height:224px;"/>
+            <div id="image-placeholder" class="flex flex-col items-center py-10">
+              <div class="bg-surface-container-low w-16 h-16 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <span class="material-symbols-outlined text-primary text-3xl">add_a_photo</span>
+              </div>
+              <h3 class="font-headline font-bold text-on-surface mb-1">Upload Product Image</h3>
+              <p class="text-on-surface-variant text-xs px-4">JPG, PNG, or WebP · Max 10 MB</p>
+            </div>
+          </label>
+          <input type="file" id="image" name="image" accept="image/*" required class="sr-only"/>
+          <p id="file-name" class="text-center text-xs text-outline mt-2 font-medium"></p>
+        </section>
+
+        <!-- Stock -->
+        <section class="bg-surface-container-lowest p-6 rounded-2xl shadow-[0px_12px_32px_rgba(48,49,44,0.06)] space-y-6">
+          <div class="flex flex-col gap-2">
+            <label for="stock_qty" class="font-headline font-bold text-on-surface">Stock Quantity</label>
+            <input type="number" id="stock_qty" name="stock_qty"
+                   min="0" value="<?= htmlspecialchars($_POST['stock_qty'] ?? '1') ?>"
+                   class="bg-surface-container-low border-none rounded-xl p-4 text-on-surface focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary/40 transition-all"/>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-tertiary-fixed/30 border border-tertiary/10">
+            <p class="text-xs text-on-tertiary-fixed-variant leading-relaxed">
+              <span class="font-bold text-tertiary">Note:</span> New products require admin approval before appearing in the marketplace. This usually takes under 24 hours.
+            </p>
+          </div>
+        </section>
+
         <!-- Actions -->
         <div class="flex flex-col gap-3">
           <button type="submit"
-                  class="w-full py-4 bg-primary text-on-primary font-headline font-bold rounded-xl hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-md active:scale-[0.98]">
-            Save Product
-            <span class="material-symbols-outlined">check</span>
+                  class="w-full py-5 bg-primary text-on-primary font-headline font-bold text-lg rounded-2xl hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-lg active:scale-[0.98]">
+            <span class="material-symbols-outlined" style="font-size:1.4rem;">check_circle</span>
+            Save &amp; List Product
           </button>
           <a href="<?= BASE_URL ?>seller/products"
              class="w-full py-4 text-center bg-transparent border-2 border-outline-variant/40 text-primary font-headline font-bold rounded-xl hover:bg-surface-container-low transition-all">
@@ -186,5 +188,23 @@ $categories = $categories ?? [];
 </div><!-- /p-8 -->
 
 </main>
+<script>
+document.getElementById('image').addEventListener('change', function () {
+    var file = this.files[0];
+    var preview = document.getElementById('image-preview');
+    var placeholder = document.getElementById('image-placeholder');
+    var fileName = document.getElementById('file-name');
+    if (file) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            preview.src = e.target.result;
+            preview.classList.remove('hidden');
+            placeholder.classList.add('hidden');
+        };
+        reader.readAsDataURL(file);
+        fileName.textContent = file.name;
+    }
+});
+</script>
 </body>
 </html>

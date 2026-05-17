@@ -58,18 +58,10 @@ tailwind.config = {
   </div>
   <?php endif; ?>
 
-  <!-- Progress -->
+  <!-- Page header -->
   <div class="w-full max-w-2xl mb-12">
-    <div class="flex justify-between items-end mb-4">
-      <div>
-        <h2 class="text-secondary font-headline font-bold text-sm tracking-widest uppercase">Step 1 of 2</h2>
-        <h1 class="text-3xl font-headline font-extrabold text-primary tracking-tight mt-1">Shop Profile</h1>
-      </div>
-      <div class="text-outline font-label text-sm">50% Complete</div>
-    </div>
-    <div class="h-2 w-full bg-surface-container-high rounded-full overflow-hidden">
-      <div class="h-full w-1/2 bg-gradient-to-r from-primary to-primary-container rounded-full"></div>
-    </div>
+    <h1 class="text-3xl font-headline font-extrabold text-primary tracking-tight">Create Your Shop</h1>
+    <p class="text-on-surface-variant mt-2">Fill in your shop details and collection address to get started.</p>
   </div>
 
   <!-- Two-column layout -->

@@ -3,16 +3,15 @@
 
 if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['register'])) {
 
-    $name = trim($_POST['name']) ?? '';
-    $email = trim($_POST['email']) ?? '';
-    $password = $_POST['password'] ?? '';
+    $name             = trim($_POST['name']) ?? '';
+    $email            = trim($_POST['email']) ?? '';
+    $password         = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
-
-    // validdation checks
+    $phone_number     = trim($_POST['phone_number'] ?? '');
 
     $error = null;
 
-    if (empty($name) || empty($email) || empty($password) || empty($confirm_password)) {
+    if (empty($name) || empty($email) || empty($password) || empty($confirm_password) || empty($phone_number)) {
         $error = "All fields are required.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = "Invalid email format.";
@@ -31,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['register'])) {
 
     // validation passed, create user
     $userModel = new User($pdo);
-    $created = $userModel->create($name, $email, $password);
+    $created = $userModel->create($name, $email, $password, 'buyer', $phone_number);
     if ($created) {
         set_flash("Registration successful! Please log in.", 'success');
         header('Location: ' . BASE_URL . 'login');

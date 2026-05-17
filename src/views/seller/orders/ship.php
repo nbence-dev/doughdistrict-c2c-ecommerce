@@ -113,17 +113,8 @@ $flash = get_flash();
                    class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3 text-on-surface focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all"/>
           </div>
 
-          <!-- Weight + Collection -->
+          <!-- Collection from + dimensions summary (read-only, pulled from product listings) -->
           <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label for="weight_kg" class="flex items-center gap-2 text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">
-                <span class="material-symbols-outlined" style="font-size:1rem;">weight</span>
-                Weight (kg)
-              </label>
-              <input type="number" id="weight_kg" name="weight_kg" step="0.1" min="0.1" required
-                     placeholder="0.0"
-                     class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3 text-on-surface focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all"/>
-            </div>
             <div>
               <label class="flex items-center gap-2 text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">
                 <span class="material-symbols-outlined" style="font-size:1rem;">storefront</span>
@@ -133,31 +124,39 @@ $flash = get_flash();
                      value="<?= htmlspecialchars(($sellerProfile['city'] ?? '') . ', ' . ($sellerProfile['zone'] ?? '')) ?>"
                      class="w-full bg-surface-container border-0 rounded-xl px-4 py-3 text-outline cursor-not-allowed"/>
             </div>
+            <div>
+              <label class="flex items-center gap-2 text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">
+                <span class="material-symbols-outlined" style="font-size:1rem;">weight</span>
+                Total Weight
+              </label>
+              <input type="text" disabled
+                     value="<?= number_format($parcelDimensions['weight_kg'], 3) ?> kg"
+                     class="w-full bg-surface-container border-0 rounded-xl px-4 py-3 text-outline cursor-not-allowed"/>
+            </div>
           </div>
-
-          <!-- Dimensions -->
           <div>
-            <label class="flex items-center gap-2 text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-3">
+            <label class="flex items-center gap-2 text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2">
               <span class="material-symbols-outlined" style="font-size:1rem;">straighten</span>
-              Parcel Dimensions (cm)
+              Parcel Dimensions (from product listings)
             </label>
             <div class="grid grid-cols-3 gap-3">
               <div>
                 <label class="block text-[10px] font-semibold text-outline uppercase mb-1">Length</label>
-                <input type="number" name="length_cm" step="0.1" min="0.1" required placeholder="L"
-                       class="w-full bg-surface-container-low border-0 rounded-xl px-3 py-3 text-on-surface text-center focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all"/>
+                <input type="text" disabled value="<?= number_format($parcelDimensions['length_cm'], 1) ?> cm"
+                       class="w-full bg-surface-container border-0 rounded-xl px-3 py-3 text-outline text-center cursor-not-allowed"/>
               </div>
               <div>
                 <label class="block text-[10px] font-semibold text-outline uppercase mb-1">Width</label>
-                <input type="number" name="width_cm" step="0.1" min="0.1" required placeholder="W"
-                       class="w-full bg-surface-container-low border-0 rounded-xl px-3 py-3 text-on-surface text-center focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all"/>
+                <input type="text" disabled value="<?= number_format($parcelDimensions['width_cm'], 1) ?> cm"
+                       class="w-full bg-surface-container border-0 rounded-xl px-3 py-3 text-outline text-center cursor-not-allowed"/>
               </div>
               <div>
                 <label class="block text-[10px] font-semibold text-outline uppercase mb-1">Height</label>
-                <input type="number" name="height_cm" step="0.1" min="0.1" required placeholder="H"
-                       class="w-full bg-surface-container-low border-0 rounded-xl px-3 py-3 text-on-surface text-center focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all"/>
+                <input type="text" disabled value="<?= number_format($parcelDimensions['height_cm'], 1) ?> cm"
+                       class="w-full bg-surface-container border-0 rounded-xl px-3 py-3 text-outline text-center cursor-not-allowed"/>
               </div>
             </div>
+            <p class="text-[10px] text-outline mt-2">Dimensions sourced from your product listings. Update them on the product edit page if needed.</p>
           </div>
 
           <!-- Tracking placeholder -->

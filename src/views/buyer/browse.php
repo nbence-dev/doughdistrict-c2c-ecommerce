@@ -91,7 +91,7 @@
             <select name="category" class="form-select dd-select" onchange="this.form.submit()">
                 <option value="">All Categories</option>
                 <?php foreach ($categories as $cat): ?>
-                    <option value="<?= $cat['id'] ?>" <?= ($category_id == $cat['id']) ? 'selected' : '' ?>>
+                    <option value="<?= htmlspecialchars($cat['slug']) ?>" <?= ($category_slug === $cat['slug']) ? 'selected' : '' ?>>
                         <?= htmlspecialchars($cat['name']) ?>
                     </option>
                 <?php endforeach; ?>
@@ -100,7 +100,7 @@
         <div class="col-md-2">
             <button type="submit" class="btn btn-dd-primary w-100">Search</button>
         </div>
-        <?php if ($search || $category_id): ?>
+        <?php if ($search || $category_slug): ?>
             <div class="col-md-1">
                 <a href="<?= BASE_URL ?>browse" class="btn btn-outline-secondary w-100" title="Clear filters">✕</a>
             </div>
@@ -113,8 +113,8 @@
         <?php if ($search): ?>
             for <strong>"<?= htmlspecialchars($search) ?>"</strong>
         <?php endif; ?>
-        <?php if ($category_id): ?>
-            <?php $selCat = array_filter($categories, fn($c) => $c['id'] == $category_id); ?>
+        <?php if ($category_slug && $category_id): ?>
+            <?php $selCat = array_filter($categories, fn($c) => $c['slug'] === $category_slug); ?>
             <?php if ($selCat): ?>
                 in <strong><?= htmlspecialchars(array_values($selCat)[0]['name']) ?></strong>
             <?php endif; ?>

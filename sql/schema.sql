@@ -9,6 +9,7 @@ CREATE TABLE users (
     name VARCHAR(100) NOT NULL,
     email VARCHAR(150) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
+    phone_number VARCHAR(20) NULL,
     must_change_password TINYINT(1) NOT NULL DEFAULT 0,
     role ENUM('admin', 'seller', 'buyer') NOT NULL DEFAULT 'buyer',
     is_active BOOLEAN DEFAULT TRUE,

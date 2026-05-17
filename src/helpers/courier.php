@@ -64,8 +64,9 @@ function shiplogic_create_shipment($order, $seller_profile, $seller_user, $buyer
             'code'           => $order['shipping_postal_code'],
         ],
         'delivery_contact' => [
-            'name'  => $order['shipping_name'],
-            'email' => $buyer_user['email'],
+            'name'          => $order['shipping_name'],
+            'mobile_number' => $buyer_user['phone_number'] ?? '',
+            'email'         => $buyer_user['email'],
         ],
         'parcels' => [
             [

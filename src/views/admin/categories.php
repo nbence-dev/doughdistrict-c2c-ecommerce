@@ -33,17 +33,17 @@ $flash = get_flash();
                 style="font-size:.7rem;letter-spacing:.14em;color:var(--dd-tertiary)">Quick Create</p>
             <form method="POST" action="<?= BASE_URL ?>admin/categories/create"
                 class="d-flex flex-column flex-md-row gap-3 align-items-md-end">
-                <div class="flex-grow-1">
+                <div class="flex-grow-1 min-width-0" style="min-width:0">
                     <label class="form-label small fw-semibold" style="color:var(--dd-outline)">Category Name</label>
                     <input type="text" name="name" id="quickCreateName" class="form-control" placeholder="e.g. Artisanal Sourdough" required
                         style="background:var(--dd-surface-low);border:none;border-radius:.5rem;font-size:.875rem;color:var(--dd-on-surface)">
                     <div id="quickCreateNameError" class="text-danger mt-1" style="font-size:.8rem;display:none"></div>
                 </div>
-                <div>
+                <div class="flex-shrink-0" style="min-width:0;max-width:160px">
                     <label class="form-label small fw-semibold" style="color:var(--dd-outline)">Slug <span
                             class="text-muted">(auto)</span></label>
                     <input type="text" name="slug" id="quickCreateSlug" class="form-control" placeholder="auto-generated" readonly
-                        style="background:var(--dd-surface-low);border:none;border-radius:.5rem;font-size:.875rem;color:var(--dd-on-surface);opacity:.65;cursor:default">
+                        style="background:var(--dd-surface-low);border:none;border-radius:.5rem;font-size:.875rem;color:var(--dd-on-surface);opacity:.65;cursor:default;overflow:hidden;text-overflow:ellipsis">
                 </div>
                 <button type="submit" class="btn btn-dd d-flex align-items-center gap-2 px-4 py-2 text-nowrap">
                     <span class="material-symbols-outlined" style="font-size:1rem">add</span> Save Category

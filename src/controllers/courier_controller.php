@@ -66,10 +66,38 @@ if (!$addressComplete) {
 }
 
 // ── 3. Load buyer and seller user rows ───────────────────────────────────────
-// Shiplogic needs email addresses for both collection_contact and delivery_contact.
 
-$buyerUser = $userModel->find($order['buyer_id']);
+$buyerUser  = $userModel->find($order['buyer_id']);
 $sellerUser = $userModel->find($user['id']);
+
+// ── 3b. Compute combined parcel dimensions from stored product data ───────────
+// Sum weight across all items; use max of each spatial dimension.
+
+require_once ROOT_PATH . '/models/Product.php';
+$productModel = new Product($pdo);
+
+$totalWeight = 0.0;
+$maxLength   = 0.0;
+$maxWidth    = 0.0;
+$maxHeight   = 0.0;
+
+foreach ($items as $item) {
+    if (empty($item['product_id'])) continue;
+    $prod = $productModel->find($item['product_id']);
+    if (!$prod) continue;
+    $qty          = (int) $item['quantity'];
+    $totalWeight += (float) $prod['weight_kg'] * $qty;
+    $maxLength    = max($maxLength, (float) $prod['length_cm']);
+    $maxWidth     = max($maxWidth,  (float) $prod['width_cm']);
+    $maxHeight    = max($maxHeight, (float) $prod['height_cm']);
+}
+
+$parcelDimensions = [
+    'weight_kg' => $totalWeight > 0 ? $totalWeight : 0.5,
+    'length_cm' => $maxLength  > 0 ? $maxLength  : 30,
+    'width_cm'  => $maxWidth   > 0 ? $maxWidth   : 20,
+    'height_cm' => $maxHeight  > 0 ? $maxHeight  : 10,
+];
 
 // ── 4. Handle POST — submit shipment to Shiplogic ────────────────────────────
 
@@ -77,21 +105,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $parcel = [
         'description' => trim($_POST['parcel_description'] ?? 'Baked goods'),
-        'length_cm' => (float) ($_POST['length_cm'] ?? 0),
-        'width_cm' => (float) ($_POST['width_cm'] ?? 0),
-        'height_cm' => (float) ($_POST['height_cm'] ?? 0),
-        'weight_kg' => (float) ($_POST['weight_kg'] ?? 0),
+        'length_cm'   => $parcelDimensions['length_cm'],
+        'width_cm'    => $parcelDimensions['width_cm'],
+        'height_cm'   => $parcelDimensions['height_cm'],
+        'weight_kg'   => $parcelDimensions['weight_kg'],
     ];
-
-    // All dimensions must be positive numbers
-    if (
-        $parcel['length_cm'] <= 0 || $parcel['width_cm'] <= 0
-        || $parcel['height_cm'] <= 0 || $parcel['weight_kg'] <= 0
-    ) {
-        set_flash('Please enter valid parcel dimensions and weight.', 'danger');
-        header('Location: ' . BASE_URL . 'seller/orders/ship?id=' . $order_id);
-        exit();
-    }
 
     try {
         // Call the Shiplogic API — on success returns a shipment object with

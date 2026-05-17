@@ -166,6 +166,15 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="phone_number" class="form-label small fw-semibold"
+                                style="color: var(--dd-on-surface-var);">
+                                Phone Number
+                            </label>
+                            <input type="tel" id="phone_number" name="phone_number" class="form-control input-carved"
+                                placeholder="e.g. 0821234567" autocomplete="tel" required>
+                        </div>
+
+                        <div class="mb-3">
                             <label for="password" class="form-label small fw-semibold"
                                 style="color: var(--dd-on-surface-var);">
                                 Password

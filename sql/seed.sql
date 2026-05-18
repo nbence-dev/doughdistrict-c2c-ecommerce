@@ -36,14 +36,14 @@ INSERT INTO categories (name, slug) VALUES
 -- -------------------------------------------------------
 -- Products  (seller_id references seller_profiles.id)
 -- -------------------------------------------------------
-INSERT INTO products (seller_id, category_id, name, description, price, stock_qty, status, image_url, weight_g, length_cm, width_cm, height_cm) VALUES
+INSERT INTO products (seller_id, category_id, name, description, price, stock_qty, status, image_url, weight_kg, length_cm, width_cm, height_cm) VALUES
     -- Sarah (seller_profiles.id = 1)
-    (1, 2, 'Red Velvet Cake',      'Classic red velvet with cream cheese frosting. Whole 20 cm cake.',  320.00, 5,  'active', 'https://picsum.photos/seed/redvelvet/400/400',  1200, 25, 25, 12),
-    (1, 3, 'Double Choc Brownies', 'Fudgy brownies, box of 12. Rich Belgian chocolate.',                 95.00, 20, 'active', 'https://picsum.photos/seed/brownies/400/400',   400,  20, 15,  5),
-    (1, 2, 'Lemon Drizzle Cake',   'Zesty lemon sponge with a sweet glaze. 18 cm loaf.',                180.00, 8,  'active', 'https://picsum.photos/seed/lemondrizzle/400/400', 800, 22, 10, 10),
+    (1, 2, 'Red Velvet Cake',      'Classic red velvet with cream cheese frosting. Whole 20 cm cake.',  320.00, 5,  'active', 'https://picsum.photos/seed/redvelvet/400/400',  1.20, 25, 25, 12),
+    (1, 3, 'Double Choc Brownies', 'Fudgy brownies, box of 12. Rich Belgian chocolate.',                 95.00, 20, 'active', 'https://picsum.photos/seed/brownies/400/400',   0.40, 20, 15,  5),
+    (1, 2, 'Lemon Drizzle Cake',   'Zesty lemon sponge with a sweet glaze. 18 cm loaf.',                180.00, 8,  'active', 'https://picsum.photos/seed/lemondrizzle/400/400', 0.80, 22, 10, 10),
     -- Liam (seller_profiles.id = 2)
-    (2, 1, 'Country Sourdough',    'Long-fermented sourdough. 800 g round loaf. Crispy crust.',         110.00, 10, 'active', 'https://picsum.photos/seed/sourdough/400/400',  800, 22, 22, 10),
-    (2, 1, 'Seeded Rye Loaf',      'Dense rye with sunflower and pumpkin seeds. 700 g loaf.',            95.00, 8,  'active', 'https://picsum.photos/seed/ryeloaf/400/400',    700, 24, 12,  8);
+    (2, 1, 'Country Sourdough',    'Long-fermented sourdough. 800 g round loaf. Crispy crust.',         110.00, 10, 'active', 'https://picsum.photos/seed/sourdough/400/400',  0.80, 22, 22, 10),
+    (2, 1, 'Seeded Rye Loaf',      'Dense rye with sunflower and pumpkin seeds. 700 g loaf.',            95.00, 8,  'active', 'https://picsum.photos/seed/ryeloaf/400/400',    0.70, 24, 12,  8);
 
 -- -------------------------------------------------------
 -- Buyer addresses

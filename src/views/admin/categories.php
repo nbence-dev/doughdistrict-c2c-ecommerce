@@ -27,8 +27,8 @@ $flash = get_flash();
 <!-- ── Quick Create + Stats ── -->
 <div class="row g-4 mb-5">
     <!-- Quick Create form -->
-    <div class="col-lg-8">
-        <div class="table-card p-4">
+    <div class="col-lg-8 d-flex">
+        <div class="table-card p-4 w-100">
             <p class="mb-3 text-uppercase fw-bold"
                 style="font-size:.7rem;letter-spacing:.14em;color:var(--dd-tertiary)">Quick Create</p>
             <form method="POST" action="<?= BASE_URL ?>admin/categories/create"
@@ -55,7 +55,7 @@ $flash = get_flash();
     <!-- Stats cards -->
     <div class="col-lg-4">
         <div class="row g-3">
-            <div class="col-6">
+            <div class="col-12">
                 <div class="stat-card">
                     <div class="stat-icon">
                         <span class="material-symbols-outlined">grid_view</span>
@@ -66,7 +66,7 @@ $flash = get_flash();
                     </div>
                 </div>
             </div>
-            <div class="col-6">
+            <div class="col-12">
                 <div class="stat-card">
                     <div class="stat-icon">
                         <span class="material-symbols-outlined">inventory_2</span>

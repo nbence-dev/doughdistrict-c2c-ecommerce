@@ -83,8 +83,7 @@ $flash = get_flash();
               <label for="zone" class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Province</label>
               <div class="relative">
                 <select id="zone" name="zone"
-                        style="-webkit-appearance:none;-moz-appearance:none;"
-                        class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3 text-on-surface appearance-none focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all">
+                        class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3 text-on-surface appearance-none bg-none focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all">
                   <option value="">Select province</option>
                   <?php
                   $provinces = [

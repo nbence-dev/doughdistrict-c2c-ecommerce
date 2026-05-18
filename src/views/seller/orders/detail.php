@@ -120,7 +120,7 @@ $statuses  = ['paid', 'shipped', 'delivered'];
           <label class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Update Status</label>
           <div class="relative mb-3">
             <select name="status"
-                    class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3 text-on-surface appearance-none focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all">
+                    class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3 text-on-surface appearance-none bg-none focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all">
               <?php foreach ($statuses as $s): ?>
               <option value="<?= $s ?>" <?= $order['status'] === $s ? 'selected' : '' ?>><?= ucfirst($s) ?></option>
               <?php endforeach; ?>

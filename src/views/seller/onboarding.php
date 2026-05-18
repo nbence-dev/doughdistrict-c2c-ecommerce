@@ -59,7 +59,7 @@ tailwind.config = {
   <?php endif; ?>
 
   <!-- Page header -->
-  <div class="w-full max-w-2xl mb-12">
+  <div class="w-full max-w-6xl mb-12">
     <h1 class="text-3xl font-headline font-extrabold text-primary tracking-tight">Create Your Shop</h1>
     <p class="text-on-surface-variant mt-2">Fill in your shop details and collection address to get started.</p>
   </div>
@@ -68,7 +68,7 @@ tailwind.config = {
   <div class="grid grid-cols-1 md:grid-cols-12 gap-12 w-full max-w-6xl">
 
     <!-- Left: editorial content -->
-    <div class="md:col-span-5 flex flex-col justify-center">
+    <div class="md:col-span-5 flex flex-col justify-start">
       <div class="relative mb-8">
         <div class="absolute -top-4 -left-4 w-24 h-24 bg-tertiary-fixed-dim/20 rounded-full blur-3xl"></div>
         <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800"

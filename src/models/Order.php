@@ -75,8 +75,7 @@ class Order
         JOIN seller_profiles sp ON sp.id = o.seller_id
         WHERE sp.user_id = ?
         ORDER BY
-            CASE WHEN o.estimated_collection IS NOT NULL THEN 0 ELSE 1 END ASC,
-            o.estimated_collection ASC,
+            FIELD(o.status, \'paid\', \'processing\', \'shipped\', \'delivered\') ASC,
             o.created_at DESC');
         $stmt->execute([$seller_id]);
         return $stmt->fetchAll();

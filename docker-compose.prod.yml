@@ -2,4 +2,3 @@ services:
   cloudflare-tunnel:
     restart: always
     profiles: []
-    command: tunnel --no-autoupdate --config /etc/cloudflared/prod-config.yml run

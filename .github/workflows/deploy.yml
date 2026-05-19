@@ -26,6 +26,7 @@ jobs:
       - name: Restore Cloudflare tunnel credentials
         run: |
           mkdir -p cloudflared
+          cp ~/cloudflared-backup/config.yml cloudflared/config.yml
           cp ~/cloudflared-backup/creds.json cloudflared/creds.json
 
       - name: Docker Deploy

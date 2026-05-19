@@ -7,5 +7,5 @@ ingress:
   - hostname: www.doughdistrict.co.za
     service: http://dough-app:80
   - hostname: db.doughdistrict.co.za
-    service: http://localhost:8080
+    service: http://dough-pma:80
   - service: http_status:404

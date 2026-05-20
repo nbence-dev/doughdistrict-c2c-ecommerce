@@ -88,7 +88,9 @@ tailwind.config = {
     <!-- Right: form -->
     <div class="md:col-span-7">
       <div class="bg-surface-container-lowest p-8 md:p-12 rounded-[2rem] shadow-[0px_12px_32px_rgba(48,49,44,0.06)]">
-        <form method="POST" action="<?= BASE_URL ?>seller/onboard" class="space-y-8">
+        <form method="POST" action="<?= BASE_URL ?>seller/onboard" class="space-y-8"
+              id="onboarding-form"
+              data-maps-key="<?= htmlspecialchars(getenv('ADDRESS_API_KEY') ?: '') ?>">
 
           <!-- Shop Name -->
           <div class="space-y-2">
@@ -221,5 +223,62 @@ tailwind.config = {
     <p class="text-outline text-xs font-label uppercase tracking-[0.2em]">DoughDistrict • Handcrafted in South Africa</p>
   </footer>
 </main>
+
+<script>
+function initOnboardingAutocomplete() {
+    const streetInput = document.getElementById('street_address');
+    if (!streetInput) return;
+
+    const provinceMap = {
+        'Gauteng': 'GP', 'Western Cape': 'WC', 'Eastern Cape': 'EC',
+        'KwaZulu-Natal': 'KZN', 'Limpopo': 'LP', 'Mpumalanga': 'MP',
+        'North West': 'NW', 'Northern Cape': 'NC', 'Free State': 'FS'
+    };
+
+    const autocomplete = new google.maps.places.Autocomplete(streetInput, {
+        componentRestrictions: { country: 'za' },
+        fields: ['address_components'],
+        types: ['address']
+    });
+
+    autocomplete.addListener('place_changed', function () {
+        const place = autocomplete.getPlace();
+        if (!place.address_components) return;
+
+        let streetNumber = '', route = '', suburb = '', city = '', province = '', postalCode = '';
+        for (const c of place.address_components) {
+            if (c.types.includes('street_number'))               streetNumber = c.long_name;
+            if (c.types.includes('route'))                       route        = c.long_name;
+            if (c.types.includes('sublocality_level_1') || c.types.includes('sublocality') || (c.types.includes('neighborhood') && !suburb)) suburb = c.long_name;
+            if (c.types.includes('locality'))                    city         = c.long_name;
+            if (c.types.includes('administrative_area_level_1')) province     = c.long_name;
+            if (c.types.includes('postal_code'))                 postalCode   = c.long_name;
+        }
+
+        streetInput.value = streetNumber ? streetNumber + ' ' + route : route;
+
+        const suburbEl   = document.getElementById('local_area');
+        const cityEl     = document.getElementById('city');
+        const provinceEl = document.getElementById('zone');
+        const postalEl   = document.getElementById('postal_code');
+
+        if (suburbEl && suburb)  suburbEl.value   = suburb;
+        if (cityEl)              cityEl.value     = city;
+        if (postalEl)            postalEl.value   = postalCode;
+        if (provinceEl && provinceMap[province]) provinceEl.value = provinceMap[province];
+    });
+}
+</script>
+<script>
+(function () {
+    const key = document.getElementById('onboarding-form')?.dataset.mapsKey;
+    if (!key) return;
+    const s = document.createElement('script');
+    s.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(key) + '&libraries=places&callback=initOnboardingAutocomplete';
+    s.async = true; s.defer = true;
+    document.head.appendChild(s);
+})();
+</script>
+
 </body>
 </html>

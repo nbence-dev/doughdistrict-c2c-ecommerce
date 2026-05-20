@@ -121,7 +121,8 @@ include __DIR__ . '/layout.php'; ?>
           action="<?= BASE_URL ?>checkout/confirm"
           method="POST"
           data-pk="<?= htmlspecialchars(getenv('STRIPE_PUBLISHABLE_KEY') ?: '') ?>"
-          data-secrets="<?= htmlspecialchars(json_encode($client_secrets)) ?>">
+          data-secrets="<?= htmlspecialchars(json_encode($client_secrets)) ?>"
+          data-maps-key="<?= htmlspecialchars(getenv('ADDRESS_API_KEY') ?: '') ?>">
 
         <div class="row g-4 g-lg-5">
 
@@ -145,7 +146,7 @@ include __DIR__ . '/layout.php'; ?>
                                 <div>
                                     <div class="fw-semibold small"><?= htmlspecialchars($addr['label']) ?></div>
                                     <div class="small mt-1" style="color: var(--dd-on-surface-var);">
-                                        <?= htmlspecialchars($addr['street']) ?>,
+                                        <?= htmlspecialchars($addr['street']) ?><?= !empty($addr['local_area']) ? ', ' . htmlspecialchars($addr['local_area']) : '' ?>,
                                         <?= htmlspecialchars($addr['city']) ?>,
                                         <?= htmlspecialchars($addr['province']) ?>
                                         <?= htmlspecialchars($addr['postal_code']) ?>
@@ -168,11 +169,15 @@ include __DIR__ . '/layout.php'; ?>
                                 </div>
                                 <div class="col-12">
                                     <label class="dd-label" for="street">Street Address</label>
-                                    <input type="text" name="street" id="street" class="dd-field" placeholder="123 Protea Heights">
+                                    <input type="text" name="street" id="street" class="dd-field" placeholder="2 Protea Heights">
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="dd-label" for="local_area">Suburb</label>
+                                    <input type="text" name="local_area" id="local_area" class="dd-field" placeholder="Bellairs">
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="dd-label" for="city">City</label>
-                                    <input type="text" name="city" id="city" class="dd-field" placeholder="Stellenbosch">
+                                    <input type="text" name="city" id="city" class="dd-field" placeholder="Johannesburg">
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="dd-label" for="province">Province</label>
@@ -191,7 +196,7 @@ include __DIR__ . '/layout.php'; ?>
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="dd-label" for="postal_code">Postal Code</label>
-                                    <input type="text" name="postal_code" id="postal_code" class="dd-field" placeholder="7600">
+                                    <input type="text" name="postal_code" id="postal_code" class="dd-field" placeholder="2188">
                                 </div>
                             </div>
                         </div>
@@ -208,11 +213,15 @@ include __DIR__ . '/layout.php'; ?>
                                 </div>
                                 <div class="col-12">
                                     <label class="dd-label" for="street">Street Address</label>
-                                    <input type="text" name="street" id="street" class="dd-field" placeholder="123 Protea Heights">
+                                    <input type="text" name="street" id="street" class="dd-field" placeholder="2 Protea Heights">
+                                </div>
+                                <div class="col-sm-6">
+                                    <label class="dd-label" for="local_area">Suburb</label>
+                                    <input type="text" name="local_area" id="local_area" class="dd-field" placeholder="Bellairs">
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="dd-label" for="city">City</label>
-                                    <input type="text" name="city" id="city" class="dd-field" placeholder="Stellenbosch">
+                                    <input type="text" name="city" id="city" class="dd-field" placeholder="Johannesburg">
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="dd-label" for="province">Province</label>
@@ -231,7 +240,7 @@ include __DIR__ . '/layout.php'; ?>
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="dd-label" for="postal_code">Postal Code</label>
-                                    <input type="text" name="postal_code" id="postal_code" class="dd-field" placeholder="7600">
+                                    <input type="text" name="postal_code" id="postal_code" class="dd-field" placeholder="2188">
                                 </div>
                             </div>
                         </div>
@@ -358,6 +367,75 @@ include __DIR__ . '/layout.php'; ?>
 
 <script src="https://js.stripe.com/v3/"></script>
 <script src="<?= JS_URL ?>checkout.js"></script>
+
+<script>
+function initAddressAutocomplete() {
+    const streetInput = document.getElementById('street');
+    if (!streetInput) return;
+
+    const provinceMap = {
+        'Gauteng': 'GP', 'Western Cape': 'WC', 'Eastern Cape': 'EC',
+        'KwaZulu-Natal': 'KZN', 'Limpopo': 'LP', 'Mpumalanga': 'MP',
+        'North West': 'NW', 'Northern Cape': 'NC', 'Free State': 'FS'
+    };
+
+    let autocomplete = null;
+
+    function attachAutocomplete() {
+        if (autocomplete) return;
+        autocomplete = new google.maps.places.Autocomplete(streetInput, {
+            componentRestrictions: { country: 'za' },
+            fields: ['address_components'],
+            types: ['address']
+        });
+        autocomplete.addListener('place_changed', function () {
+            const place = autocomplete.getPlace();
+            if (!place.address_components) return;
+
+            let streetNumber = '', route = '', suburb = '', city = '', province = '', postalCode = '';
+            for (const c of place.address_components) {
+                if (c.types.includes('street_number'))               streetNumber = c.long_name;
+                if (c.types.includes('route'))                       route        = c.long_name;
+                if (c.types.includes('sublocality_level_1') || c.types.includes('sublocality') || (c.types.includes('neighborhood') && !suburb)) suburb = c.long_name;
+                if (c.types.includes('locality'))                    city         = c.long_name;
+                if (c.types.includes('administrative_area_level_1')) province     = c.long_name;
+                if (c.types.includes('postal_code'))                 postalCode   = c.long_name;
+            }
+
+            streetInput.value = streetNumber ? streetNumber + ' ' + route : route;
+
+            const suburbEl   = document.getElementById('local_area');
+            const cityEl     = document.getElementById('city');
+            const provinceEl = document.getElementById('province');
+            const postalEl   = document.getElementById('postal_code');
+
+            if (suburbEl)   suburbEl.value   = suburb;
+            if (cityEl)     cityEl.value     = city;
+            if (postalEl)   postalEl.value   = postalCode;
+            if (provinceEl && provinceMap[province]) provinceEl.value = provinceMap[province];
+        });
+    }
+
+    // If field is already visible (no saved addresses), attach now.
+    // Otherwise defer to first focus so positioning is correct when the
+    // hidden new-address section is revealed.
+    if (streetInput.offsetParent !== null) {
+        attachAutocomplete();
+    } else {
+        streetInput.addEventListener('focus', attachAutocomplete, { once: true });
+    }
+}
+</script>
+<script>
+(function () {
+    const key = document.getElementById('checkout-form')?.dataset.mapsKey;
+    if (!key) return;
+    const s = document.createElement('script');
+    s.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(key) + '&libraries=places&callback=initAddressAutocomplete';
+    s.async = true; s.defer = true;
+    document.head.appendChild(s);
+})();
+</script>
 
 </div><!-- /#buyer-main -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

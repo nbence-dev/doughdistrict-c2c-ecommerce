@@ -1,5 +1,6 @@
 <?php
 /** @var string $path injected by index.php before require_once */
+require_once ROOT_PATH . '/helpers/maps.php';
 require_once ROOT_PATH . '/helpers/stripe.php';
 require_once ROOT_PATH . '/helpers/emails.php';
 require_once ROOT_PATH . '/models/Product.php';
@@ -106,6 +107,7 @@ if ($path === 'checkout') {
     } else {
         $label       = trim($_POST['label'] ?? 'Home');
         $street      = trim($_POST['street'] ?? '');
+        $local_area  = trim($_POST['local_area'] ?? '');
         $city        = trim($_POST['city'] ?? '');
         $province    = trim($_POST['province'] ?? '');
         $postal_code = trim($_POST['postal_code'] ?? '');
@@ -115,7 +117,14 @@ if ($path === 'checkout') {
             header('Location: ' . BASE_URL . 'checkout');
             exit();
         }
-        $new_id  = $addressModel->create(current_user()['id'], $label, $street, $city, $province, $postal_code);
+
+        if (!validate_za_address($street, $city, $province, $postal_code, $local_area)) {
+            set_flash('The address you entered could not be verified. Please use a valid South African address.', 'danger');
+            header('Location: ' . BASE_URL . 'checkout');
+            exit();
+        }
+
+        $new_id  = $addressModel->create(current_user()['id'], $label, $street, $local_area, $city, $province, $postal_code);
         $address = $addressModel->find($new_id);
     }
 

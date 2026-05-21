@@ -119,7 +119,7 @@
                     Admins can browse products but cannot purchase.
                 </div>
                 <?php else: ?>
-                <form method="POST" action="<?= BASE_URL ?>cart/add">
+                <form method="POST" action="<?= BASE_URL ?>cart/add" data-validate>
                     <input type="hidden" name="product_id" value="<?= $product['id'] ?>">
                     <div class="d-flex align-items-center gap-3 mb-4">
                         <label class="fw-medium small" for="qty">Quantity</label>
@@ -279,5 +279,6 @@
 </div><!-- /#buyer-main -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="<?= JS_URL ?>validation.js"></script>
 </body>
 </html>

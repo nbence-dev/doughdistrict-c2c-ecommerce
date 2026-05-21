@@ -89,7 +89,7 @@ tailwind.config = {
     <div class="md:col-span-7">
       <div class="bg-surface-container-lowest p-8 md:p-12 rounded-[2rem] shadow-[0px_12px_32px_rgba(48,49,44,0.06)]">
         <form method="POST" action="<?= BASE_URL ?>seller/onboard" class="space-y-8"
-              id="onboarding-form"
+              id="onboarding-form" data-validate
               data-maps-key="<?= htmlspecialchars(getenv('ADDRESS_API_KEY') ?: '') ?>">
 
           <!-- Shop Name -->
@@ -170,7 +170,7 @@ tailwind.config = {
                   <input type="text" id="postal_code" name="postal_code"
                          placeholder="e.g. 2196"
                          value="<?= htmlspecialchars($_POST['postal_code'] ?? '') ?>"
-                         required maxlength="10"
+                         required maxlength="10" data-rule="postal"
                          class="w-full px-6 py-4 rounded-xl bg-surface-container-low border-none focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all text-on-surface placeholder:text-outline/60"/>
                 </div>
               </div>
@@ -280,5 +280,6 @@ function initOnboardingAutocomplete() {
 })();
 </script>
 
+<script src="<?= JS_URL ?>validation.js"></script>
 </body>
 </html>

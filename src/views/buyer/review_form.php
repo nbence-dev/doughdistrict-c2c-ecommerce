@@ -33,7 +33,7 @@
         </div>
     </div>
 
-    <form method="POST" action="<?= BASE_URL ?>reviews/create">
+    <form method="POST" action="<?= BASE_URL ?>reviews/create" data-validate>
         <input type="hidden" name="product_id" value="<?= (int) $product['id'] ?>">
 
         <!-- Order selector -->

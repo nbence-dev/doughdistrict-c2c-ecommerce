@@ -169,19 +169,19 @@ include __DIR__ . '/layout.php'; ?>
                                 </div>
                                 <div class="col-12">
                                     <label class="dd-label" for="street">Street Address</label>
-                                    <input type="text" name="street" id="street" class="dd-field" placeholder="2 Protea Heights">
+                                    <input type="text" name="street" id="street" class="dd-field" placeholder="2 Protea Heights" required>
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="dd-label" for="local_area">Suburb</label>
-                                    <input type="text" name="local_area" id="local_area" class="dd-field" placeholder="Bellairs">
+                                    <input type="text" name="local_area" id="local_area" class="dd-field" placeholder="Bellairs" required>
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="dd-label" for="city">City</label>
-                                    <input type="text" name="city" id="city" class="dd-field" placeholder="Johannesburg">
+                                    <input type="text" name="city" id="city" class="dd-field" placeholder="Johannesburg" required>
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="dd-label" for="province">Province</label>
-                                    <select name="province" id="province" class="dd-field">
+                                    <select name="province" id="province" class="dd-field" required>
                                         <option value="" disabled selected>Select Province</option>
                                         <option value="EC">Eastern Cape</option>
                                         <option value="FS">Free State</option>
@@ -196,7 +196,7 @@ include __DIR__ . '/layout.php'; ?>
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="dd-label" for="postal_code">Postal Code</label>
-                                    <input type="text" name="postal_code" id="postal_code" class="dd-field" placeholder="2188">
+                                    <input type="text" name="postal_code" id="postal_code" class="dd-field" placeholder="2188" required data-rule="postal">
                                 </div>
                             </div>
                         </div>
@@ -213,19 +213,19 @@ include __DIR__ . '/layout.php'; ?>
                                 </div>
                                 <div class="col-12">
                                     <label class="dd-label" for="street">Street Address</label>
-                                    <input type="text" name="street" id="street" class="dd-field" placeholder="2 Protea Heights">
+                                    <input type="text" name="street" id="street" class="dd-field" placeholder="2 Protea Heights" required>
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="dd-label" for="local_area">Suburb</label>
-                                    <input type="text" name="local_area" id="local_area" class="dd-field" placeholder="Bellairs">
+                                    <input type="text" name="local_area" id="local_area" class="dd-field" placeholder="Bellairs" required>
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="dd-label" for="city">City</label>
-                                    <input type="text" name="city" id="city" class="dd-field" placeholder="Johannesburg">
+                                    <input type="text" name="city" id="city" class="dd-field" placeholder="Johannesburg" required>
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="dd-label" for="province">Province</label>
-                                    <select name="province" id="province" class="dd-field">
+                                    <select name="province" id="province" class="dd-field" required>
                                         <option value="" disabled selected>Select Province</option>
                                         <option value="EC">Eastern Cape</option>
                                         <option value="FS">Free State</option>
@@ -240,7 +240,7 @@ include __DIR__ . '/layout.php'; ?>
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="dd-label" for="postal_code">Postal Code</label>
-                                    <input type="text" name="postal_code" id="postal_code" class="dd-field" placeholder="2188">
+                                    <input type="text" name="postal_code" id="postal_code" class="dd-field" placeholder="2188" required data-rule="postal">
                                 </div>
                             </div>
                         </div>
@@ -366,6 +366,7 @@ include __DIR__ . '/layout.php'; ?>
 </main>
 
 <script src="https://js.stripe.com/v3/"></script>
+<script src="<?= JS_URL ?>validation.js"></script>
 <script src="<?= JS_URL ?>checkout.js"></script>
 
 <script>

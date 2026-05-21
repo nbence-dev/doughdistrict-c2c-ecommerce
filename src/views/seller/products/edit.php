@@ -88,7 +88,7 @@ $p = $product;
     <!-- Right: form -->
     <form method="POST"
           action="<?= BASE_URL ?>seller/products/edit?id=<?= (int)$p['id'] ?>"
-          enctype="multipart/form-data"
+          enctype="multipart/form-data" data-validate
           class="col-span-12 lg:col-span-8 bg-surface-container-lowest rounded-2xl p-8 shadow-sm ring-1 ring-outline-variant/10">
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -150,25 +150,25 @@ $p = $product;
           <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
             <div>
               <label class="block text-[10px] font-semibold text-outline uppercase mb-1">Length (cm)</label>
-              <input type="number" name="length_cm" min="0.1" step="0.1" required
+              <input type="number" name="length_cm" min="0.1" step="0.1" required data-label="Length"
                      value="<?= htmlspecialchars($_POST['length_cm'] ?? $p['length_cm']) ?>"
                      class="w-full bg-surface-container-low border-0 rounded-xl px-3 py-2 text-on-surface focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all"/>
             </div>
             <div>
               <label class="block text-[10px] font-semibold text-outline uppercase mb-1">Width (cm)</label>
-              <input type="number" name="width_cm" min="0.1" step="0.1" required
+              <input type="number" name="width_cm" min="0.1" step="0.1" required data-label="Width"
                      value="<?= htmlspecialchars($_POST['width_cm'] ?? $p['width_cm']) ?>"
                      class="w-full bg-surface-container-low border-0 rounded-xl px-3 py-2 text-on-surface focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all"/>
             </div>
             <div>
               <label class="block text-[10px] font-semibold text-outline uppercase mb-1">Height (cm)</label>
-              <input type="number" name="height_cm" min="0.1" step="0.1" required
+              <input type="number" name="height_cm" min="0.1" step="0.1" required data-label="Height"
                      value="<?= htmlspecialchars($_POST['height_cm'] ?? $p['height_cm']) ?>"
                      class="w-full bg-surface-container-low border-0 rounded-xl px-3 py-2 text-on-surface focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all"/>
             </div>
             <div>
               <label class="block text-[10px] font-semibold text-outline uppercase mb-1">Weight (kg)</label>
-              <input type="number" name="weight_kg" min="0.01" step="0.001" required
+              <input type="number" name="weight_kg" min="0.01" step="0.001" required data-label="Weight"
                      value="<?= htmlspecialchars($_POST['weight_kg'] ?? $p['weight_kg']) ?>"
                      class="w-full bg-surface-container-low border-0 rounded-xl px-3 py-2 text-on-surface focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all"/>
             </div>
@@ -240,5 +240,6 @@ function previewImage(input) {
 </script>
 
 </main>
+<script src="<?= JS_URL ?>validation.js"></script>
 </body>
 </html>

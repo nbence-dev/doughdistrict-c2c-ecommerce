@@ -99,7 +99,7 @@ $flash = get_flash();
       <div class="bg-surface-container-lowest rounded-2xl p-6 lg:p-8 shadow-sm ring-1 ring-outline-variant/10">
         <h3 class="font-headline font-bold text-on-surface mb-6">Shipment Details</h3>
 
-        <form method="POST" action="<?= BASE_URL ?>seller/orders/ship?id=<?= (int) $order['id'] ?>" class="space-y-5">
+        <form method="POST" action="<?= BASE_URL ?>seller/orders/ship?id=<?= (int) $order['id'] ?>" class="space-y-5" data-validate>
 
           <!-- Parcel Description -->
           <div>
@@ -190,5 +190,6 @@ $flash = get_flash();
 </div>
 
 </main>
+<script src="<?= JS_URL ?>validation.js"></script>
 </body>
 </html>

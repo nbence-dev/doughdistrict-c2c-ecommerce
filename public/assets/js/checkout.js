@@ -46,6 +46,24 @@ document.addEventListener('DOMContentLoaded', function () {
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
         errorDiv.textContent = '';
+
+        // Validate a freshly entered shipping address before charging the card
+        const addressRadio = form.querySelector('input[name="address_id"]:checked')
+            || form.querySelector('input[name="address_id"]');
+        const usingNewAddress = addressRadio && addressRadio.value === '0';
+        if (usingNewAddress && window.DDValidate) {
+            let addressOk = true;
+            ['street', 'local_area', 'city', 'province', 'postal_code'].forEach(function (id) {
+                const field = document.getElementById(id);
+                if (field && !window.DDValidate.validateField(field, form)) addressOk = false;
+            });
+            if (!addressOk) {
+                const firstBad = form.querySelector('.dd-invalid');
+                if (firstBad) firstBad.focus();
+                return;
+            }
+        }
+
         payBtn.disabled = true;
         payBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Processing…';
 

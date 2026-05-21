@@ -25,7 +25,7 @@ $flash = get_flash();
   <?php endif; ?>
 
   <form method="POST" action="<?= BASE_URL ?>seller/profile"
-        id="profile-form"
+        id="profile-form" data-validate
         data-maps-key="<?= htmlspecialchars(getenv('ADDRESS_API_KEY') ?: '') ?>">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
@@ -59,7 +59,7 @@ $flash = get_flash();
         <div class="space-y-4">
           <div>
             <label for="street_address" class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Street Address</label>
-            <input type="text" id="street_address" name="street_address"
+            <input type="text" id="street_address" name="street_address" required
                    placeholder="e.g. 12 Bakers Lane"
                    value="<?= htmlspecialchars($sellerProfile['street_address'] ?? '') ?>"
                    class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3 text-on-surface focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all"/>
@@ -67,14 +67,14 @@ $flash = get_flash();
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label for="local_area" class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Suburb</label>
-              <input type="text" id="local_area" name="local_area"
+              <input type="text" id="local_area" name="local_area" required
                      placeholder="e.g. Sandton"
                      value="<?= htmlspecialchars($sellerProfile['local_area'] ?? '') ?>"
                      class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3 text-on-surface focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all"/>
             </div>
             <div>
               <label for="city" class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">City</label>
-              <input type="text" id="city" name="city"
+              <input type="text" id="city" name="city" required
                      placeholder="e.g. Johannesburg"
                      value="<?= htmlspecialchars($sellerProfile['city'] ?? '') ?>"
                      class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3 text-on-surface focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all"/>
@@ -84,7 +84,7 @@ $flash = get_flash();
             <div class="sm:col-span-1">
               <label for="zone" class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Province</label>
               <div class="relative">
-                <select id="zone" name="zone"
+                <select id="zone" name="zone" required
                         class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3 text-on-surface appearance-none bg-none focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all">
                   <option value="">Select province</option>
                   <?php
@@ -108,8 +108,8 @@ $flash = get_flash();
             </div>
             <div>
               <label for="postal_code" class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Postal Code</label>
-              <input type="text" id="postal_code" name="postal_code"
-                     placeholder="e.g. 2196" maxlength="10"
+              <input type="text" id="postal_code" name="postal_code" required
+                     placeholder="e.g. 2196" maxlength="10" data-rule="postal"
                      value="<?= htmlspecialchars($sellerProfile['postal_code'] ?? '') ?>"
                      class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3 text-on-surface focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all"/>
             </div>
@@ -118,7 +118,7 @@ $flash = get_flash();
             <label for="mobile_number" class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">
               Mobile Number <span class="normal-case font-normal text-outline">(for courier)</span>
             </label>
-            <input type="tel" id="mobile_number" name="mobile_number"
+            <input type="tel" id="mobile_number" name="mobile_number" required
                    placeholder="e.g. 0821234567"
                    value="<?= htmlspecialchars($sellerProfile['mobile_number'] ?? '') ?>"
                    class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3 text-on-surface focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all"/>
@@ -202,5 +202,6 @@ function initProfileAutocomplete() {
 })();
 </script>
 
+<script src="<?= JS_URL ?>validation.js"></script>
 </body>
 </html>

@@ -31,7 +31,7 @@ $categories = $categories ?? [];
   <form method="POST"
         action="<?= BASE_URL ?>seller/products/create"
         enctype="multipart/form-data"
-        class="space-y-8">
+        class="space-y-8" data-validate>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
@@ -101,21 +101,21 @@ $categories = $categories ?? [];
           <div class="grid grid-cols-3 gap-3">
             <div class="flex flex-col gap-1">
               <label class="text-xs font-bold text-outline uppercase tracking-wider">Length (cm)</label>
-              <input type="number" name="length_cm" min="0.1" step="0.1" required
+              <input type="number" name="length_cm" min="0.1" step="0.1" required data-label="Length"
                      value="<?= htmlspecialchars($_POST['length_cm'] ?? '') ?>"
                      placeholder="30"
                      class="bg-surface-container-low border-none rounded-xl p-3 text-on-surface focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary/40 transition-all"/>
             </div>
             <div class="flex flex-col gap-1">
               <label class="text-xs font-bold text-outline uppercase tracking-wider">Width (cm)</label>
-              <input type="number" name="width_cm" min="0.1" step="0.1" required
+              <input type="number" name="width_cm" min="0.1" step="0.1" required data-label="Width"
                      value="<?= htmlspecialchars($_POST['width_cm'] ?? '') ?>"
                      placeholder="20"
                      class="bg-surface-container-low border-none rounded-xl p-3 text-on-surface focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary/40 transition-all"/>
             </div>
             <div class="flex flex-col gap-1">
               <label class="text-xs font-bold text-outline uppercase tracking-wider">Height (cm)</label>
-              <input type="number" name="height_cm" min="0.1" step="0.1" required
+              <input type="number" name="height_cm" min="0.1" step="0.1" required data-label="Height"
                      value="<?= htmlspecialchars($_POST['height_cm'] ?? '') ?>"
                      placeholder="10"
                      class="bg-surface-container-low border-none rounded-xl p-3 text-on-surface focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary/40 transition-all"/>
@@ -124,7 +124,7 @@ $categories = $categories ?? [];
 
           <div class="flex flex-col gap-1">
             <label class="text-xs font-bold text-outline uppercase tracking-wider">Weight (kg)</label>
-            <input type="number" name="weight_kg" min="0.01" step="0.001" required
+            <input type="number" name="weight_kg" min="0.01" step="0.001" required data-label="Weight"
                    value="<?= htmlspecialchars($_POST['weight_kg'] ?? '') ?>"
                    placeholder="0.500"
                    class="bg-surface-container-low border-none rounded-xl p-3 w-full text-on-surface focus:bg-surface-container-lowest focus:ring-1 focus:ring-primary/40 transition-all"/>
@@ -206,5 +206,6 @@ document.getElementById('image').addEventListener('change', function () {
     }
 });
 </script>
+<script src="<?= JS_URL ?>validation.js"></script>
 </body>
 </html>

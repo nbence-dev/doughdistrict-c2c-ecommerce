@@ -14,10 +14,10 @@ class Address
         return $stmt->fetchAll();
     }
 
-    public function create($user_id, $label, $street, $city, $province, $postal_code)
+    public function create($user_id, $label, $street, $local_area, $city, $province, $postal_code)
     {
-        $stmt = $this->db->prepare("INSERT INTO addresses (user_id, label, street, city, province, postal_code) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$user_id, $label, $street, $city, $province, $postal_code]);
+        $stmt = $this->db->prepare("INSERT INTO addresses (user_id, label, street, local_area, city, province, postal_code) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$user_id, $label, $street, $local_area ?: null, $city, $province, $postal_code]);
         return $this->db->lastInsertId();
     }
 

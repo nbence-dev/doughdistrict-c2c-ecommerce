@@ -24,7 +24,9 @@ $flash = get_flash();
   </div>
   <?php endif; ?>
 
-  <form method="POST" action="<?= BASE_URL ?>seller/profile">
+  <form method="POST" action="<?= BASE_URL ?>seller/profile"
+        id="profile-form" data-validate
+        data-maps-key="<?= htmlspecialchars(getenv('ADDRESS_API_KEY') ?: '') ?>">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
       <!-- Shop Info -->
@@ -57,7 +59,7 @@ $flash = get_flash();
         <div class="space-y-4">
           <div>
             <label for="street_address" class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Street Address</label>
-            <input type="text" id="street_address" name="street_address"
+            <input type="text" id="street_address" name="street_address" required
                    placeholder="e.g. 12 Bakers Lane"
                    value="<?= htmlspecialchars($sellerProfile['street_address'] ?? '') ?>"
                    class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3 text-on-surface focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all"/>
@@ -65,14 +67,14 @@ $flash = get_flash();
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label for="local_area" class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Suburb</label>
-              <input type="text" id="local_area" name="local_area"
+              <input type="text" id="local_area" name="local_area" required
                      placeholder="e.g. Sandton"
                      value="<?= htmlspecialchars($sellerProfile['local_area'] ?? '') ?>"
                      class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3 text-on-surface focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all"/>
             </div>
             <div>
               <label for="city" class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">City</label>
-              <input type="text" id="city" name="city"
+              <input type="text" id="city" name="city" required
                      placeholder="e.g. Johannesburg"
                      value="<?= htmlspecialchars($sellerProfile['city'] ?? '') ?>"
                      class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3 text-on-surface focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all"/>
@@ -82,7 +84,7 @@ $flash = get_flash();
             <div class="sm:col-span-1">
               <label for="zone" class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Province</label>
               <div class="relative">
-                <select id="zone" name="zone"
+                <select id="zone" name="zone" required
                         class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3 text-on-surface appearance-none bg-none focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all">
                   <option value="">Select province</option>
                   <?php
@@ -106,8 +108,8 @@ $flash = get_flash();
             </div>
             <div>
               <label for="postal_code" class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">Postal Code</label>
-              <input type="text" id="postal_code" name="postal_code"
-                     placeholder="e.g. 2196" maxlength="10"
+              <input type="text" id="postal_code" name="postal_code" required
+                     placeholder="e.g. 2196" maxlength="10" data-rule="postal"
                      value="<?= htmlspecialchars($sellerProfile['postal_code'] ?? '') ?>"
                      class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3 text-on-surface focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all"/>
             </div>
@@ -116,7 +118,7 @@ $flash = get_flash();
             <label for="mobile_number" class="block text-xs font-bold text-outline uppercase tracking-wider mb-2">
               Mobile Number <span class="normal-case font-normal text-outline">(for courier)</span>
             </label>
-            <input type="tel" id="mobile_number" name="mobile_number"
+            <input type="tel" id="mobile_number" name="mobile_number" required
                    placeholder="e.g. 0821234567"
                    value="<?= htmlspecialchars($sellerProfile['mobile_number'] ?? '') ?>"
                    class="w-full bg-surface-container-low border-0 rounded-xl px-4 py-3 text-on-surface focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all"/>
@@ -143,5 +145,63 @@ $flash = get_flash();
 </div>
 
 </main>
+
+<script>
+function initProfileAutocomplete() {
+    const streetInput = document.getElementById('street_address');
+    if (!streetInput) return;
+
+    const provinceMap = {
+        'Gauteng': 'GP', 'Western Cape': 'WC', 'Eastern Cape': 'EC',
+        'KwaZulu-Natal': 'KZN', 'Limpopo': 'LP', 'Mpumalanga': 'MP',
+        'North West': 'NW', 'Northern Cape': 'NC', 'Free State': 'FS'
+    };
+
+    const autocomplete = new google.maps.places.Autocomplete(streetInput, {
+        componentRestrictions: { country: 'za' },
+        fields: ['address_components'],
+        types: ['address']
+    });
+
+    autocomplete.addListener('place_changed', function () {
+        const place = autocomplete.getPlace();
+        if (!place.address_components) return;
+
+        let streetNumber = '', route = '', suburb = '', city = '', province = '', postalCode = '';
+        for (const c of place.address_components) {
+            if (c.types.includes('street_number'))               streetNumber = c.long_name;
+            if (c.types.includes('route'))                       route        = c.long_name;
+            if (c.types.includes('sublocality_level_1') || c.types.includes('sublocality') || (c.types.includes('neighborhood') && !suburb)) suburb = c.long_name;
+            if (c.types.includes('locality'))                    city         = c.long_name;
+            if (c.types.includes('administrative_area_level_1')) province     = c.long_name;
+            if (c.types.includes('postal_code'))                 postalCode   = c.long_name;
+        }
+
+        streetInput.value = streetNumber ? streetNumber + ' ' + route : route;
+
+        const suburbEl   = document.getElementById('local_area');
+        const cityEl     = document.getElementById('city');
+        const provinceEl = document.getElementById('zone');
+        const postalEl   = document.getElementById('postal_code');
+
+        if (suburbEl && suburb)  suburbEl.value   = suburb;
+        if (cityEl)              cityEl.value     = city;
+        if (postalEl)            postalEl.value   = postalCode;
+        if (provinceEl && provinceMap[province]) provinceEl.value = provinceMap[province];
+    });
+}
+</script>
+<script>
+(function () {
+    const key = document.getElementById('profile-form')?.dataset.mapsKey;
+    if (!key) return;
+    const s = document.createElement('script');
+    s.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(key) + '&libraries=places&callback=initProfileAutocomplete';
+    s.async = true; s.defer = true;
+    document.head.appendChild(s);
+})();
+</script>
+
+<script src="<?= JS_URL ?>validation.js"></script>
 </body>
 </html>

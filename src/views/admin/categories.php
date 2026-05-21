@@ -31,7 +31,7 @@ $flash = get_flash();
         <div class="table-card p-4 w-100">
             <p class="mb-3 text-uppercase fw-bold"
                 style="font-size:.7rem;letter-spacing:.14em;color:var(--dd-tertiary)">Quick Create</p>
-            <form method="POST" action="<?= BASE_URL ?>admin/categories/create"
+            <form method="POST" action="<?= BASE_URL ?>admin/categories/create" data-validate
                 class="d-flex flex-column flex-md-row gap-3 align-items-md-end">
                 <div class="flex-grow-1 min-width-0" style="min-width:0">
                     <label class="form-label small fw-semibold" style="color:var(--dd-outline)">Category Name</label>
@@ -172,7 +172,7 @@ $flash = get_flash();
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form method="POST" action="<?= BASE_URL ?>admin/categories/update">
+            <form method="POST" action="<?= BASE_URL ?>admin/categories/update" data-validate>
                 <div class="modal-body py-3">
                     <input type="hidden" name="category_id" id="editCategoryId">
                     <div class="mb-3">
@@ -237,6 +237,7 @@ $flash = get_flash();
 </div><!-- /.admin-content -->
 </div><!-- /#admin-main -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="<?= JS_URL ?>validation.js"></script>
 <script>
     // Existing category names for duplicate checking (id + lowercased name)
     const existingCategories = <?= json_encode(array_map(fn($c) => ['id' => (int)$c['id'], 'name' => strtolower(trim($c['name']))], $categories)) ?>;

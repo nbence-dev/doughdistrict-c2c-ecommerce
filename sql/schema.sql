@@ -38,6 +38,7 @@ CREATE TABLE addresses (
     user_id INT NOT NULL,
     label VARCHAR(50) DEFAULT 'Home',
     street VARCHAR(200) NOT NULL,
+    local_area VARCHAR(100) NULL,
     city VARCHAR(100) NOT NULL,
     province VARCHAR(100) NOT NULL,
     postal_code VARCHAR(10) NOT NULL,

@@ -1,4 +1,5 @@
 <?php
+require_once ROOT_PATH . '/helpers/maps.php';
 require_once ROOT_PATH . '/models/SellerProfile.php';
 require_once ROOT_PATH . '/models/Product.php';
 require_once ROOT_PATH . '/models/Category.php';
@@ -32,6 +33,12 @@ if ($path === 'seller/onboard') {
 
         if (empty($shop_name) || empty($bio) || empty($street) || empty($local_area) || empty($city) || empty($zone) || empty($postal_code) || empty($mobile_number)) {
             set_flash("All fields are required.", 'danger');
+            header('Location: ' . BASE_URL . 'seller/onboard');
+            exit();
+        }
+
+        if (!validate_za_address($street, $city, $zone, $postal_code)) {
+            set_flash("The collection address could not be verified. Please enter a valid South African address.", 'danger');
             header('Location: ' . BASE_URL . 'seller/onboard');
             exit();
         }
@@ -99,6 +106,11 @@ if ($path === 'seller/onboard') {
             } else {
                 $sellerProfileModel->update($sellerProfile['id'], $shop_name, $bio);
                 if (!empty($street) && !empty($city) && !empty($zone) && !empty($postal_code)) {
+                    if (!validate_za_address($street, $city, $zone, $postal_code)) {
+                        set_flash("The collection address could not be verified. Please enter a valid South African address.", 'danger');
+                        header('Location: ' . BASE_URL . 'seller/profile');
+                        exit();
+                    }
                     $sellerProfileModel->updateAddress($sellerProfile['id'], $street, $local_area, $city, $zone, $postal_code, $mobile_number);
                 }
                 set_flash("Shop profile updated.", 'success');

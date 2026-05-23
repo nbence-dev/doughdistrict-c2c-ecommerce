@@ -515,14 +515,14 @@ function admin_nav_link(string $path, string $icon, string $label, string $curre
             <a href="<?= BASE_URL ?>logout" class="nav-link">
                 <span class="material-symbols-outlined">logout</span> Sign Out
             </a>
-            <a href="<?= BASE_URL ?>account/profile" class="admin-user text-decoration-none">
+            <div class="admin-user">
                 <img src="https://ui-avatars.com/api/?name=<?= urlencode($currentUser['name'] ?? 'Admin') ?>&background=6f4627&color=fff&bold=true&size=64"
                     alt="Admin avatar">
                 <div>
                     <div class="admin-name"><?= htmlspecialchars($currentUser['name'] ?? 'Admin') ?></div>
                     <div class="admin-role">Administrator</div>
                 </div>
-            </a>
+            </div>
         </div>
     </aside>
 

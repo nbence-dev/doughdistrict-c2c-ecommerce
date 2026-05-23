@@ -115,5 +115,18 @@ class User
         $stmt = $this->db->prepare('UPDATE users SET password = ?, must_change_password = 0 WHERE id = ?');
         $stmt->execute([$hash, $id]);
     }
+
+    // Returns false if the email is already taken by another account.
+    public function updateProfile(int $id, string $name, string $email): bool
+    {
+        $stmt = $this->db->prepare('SELECT id FROM users WHERE email = ? AND id != ?');
+        $stmt->execute([$email, $id]);
+        if ($stmt->fetch()) {
+            return false;
+        }
+        $stmt = $this->db->prepare('UPDATE users SET name = ?, email = ? WHERE id = ?');
+        $stmt->execute([$name, $email, $id]);
+        return true;
+    }
 }
 ?>

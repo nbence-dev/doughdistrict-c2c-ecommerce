@@ -332,14 +332,14 @@ $_flash = get_flash();
                 <span class="material-symbols-outlined">logout</span> Sign Out
             </a>
             <?php if ($currentUser): ?>
-                <div class="sidebar-user">
+                <a href="<?= BASE_URL ?>account/profile" class="sidebar-user text-decoration-none">
                     <img src="https://ui-avatars.com/api/?name=<?= urlencode($currentUser['name'] ?? 'User') ?>&background=6f4627&color=fff&bold=true&size=64"
                         alt="Avatar">
                     <div>
                         <div class="user-name"><?= htmlspecialchars($currentUser['name'] ?? '') ?></div>
                         <div class="user-role"><?= ucfirst($currentUser['role'] ?? 'Buyer') ?></div>
                     </div>
-                </div>
+                </a>
             <?php endif; ?>
         </div>
     </aside>

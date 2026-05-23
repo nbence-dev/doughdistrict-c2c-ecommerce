@@ -118,7 +118,10 @@ switch ($path) {
         require_once ROOT_PATH . '/views/admin/products.php';
         break;
 
-
+    // case 'admin/products/toggle':
+    //     require_role('admin');
+    //     require_once ROOT_PATH . '/controllers/admin_controller.php';
+    //     break;
 
     case 'admin/products/status':
         require_role('admin');
@@ -281,12 +284,6 @@ switch ($path) {
     case 'seller/orders/waybill':
         require_role('seller');
         require_once ROOT_PATH . '/controllers/waybill_controller.php';
-        break;
-
-    case 'account/profile':
-        require_login();
-        require_once ROOT_PATH . '/controllers/auth_controller.php';
-        require_once ROOT_PATH . '/views/account/profile.php';
         break;
 
     case 'account/change-password':

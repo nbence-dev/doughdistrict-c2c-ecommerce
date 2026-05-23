@@ -67,7 +67,7 @@ tailwind.config = {
 <style>
   body { font-family: 'Be Vietnam Pro', sans-serif; background-color: #fbf9f1; color: #1b1c17; }
   h1, h2, h3, h4 { font-family: 'Plus Jakarta Sans', sans-serif; }
-  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: -4px; font-size: 1.2em; }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
 
   /* ── Sidebar ─────────────────────────────────────────────── */
   #seller-sidebar {
@@ -301,14 +301,14 @@ tailwind.config = {
     <a href="<?= BASE_URL ?>logout" class="nav-link">
       <span class="material-symbols-outlined">logout</span> Sign Out
     </a>
-    <a href="<?= BASE_URL ?>account/profile" class="sidebar-user text-decoration-none">
+    <div class="sidebar-user">
       <img src="https://ui-avatars.com/api/?name=<?= urlencode($currentUser['name'] ?? 'Seller') ?>&background=6f4627&color=fff&bold=true&size=64"
            alt="Avatar">
       <div>
         <div class="user-name"><?= $userName ?></div>
         <div class="user-role">Seller</div>
       </div>
-    </a>
+    </div>
   </div>
 </aside>
 

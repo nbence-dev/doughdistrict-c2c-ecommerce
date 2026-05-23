@@ -84,7 +84,8 @@ $_flash = get_flash();
         /* ── Sidebar ────────────────────────────────────────── */
         #buyer-sidebar {
             width: 256px;
-            min-height: 100vh;
+            height: 100vh;
+            height: 100dvh;
             background-color: #1c1917;
             position: fixed;
             top: 0;
@@ -94,6 +95,7 @@ $_flash = get_flash();
             padding: 1.5rem 0;
             z-index: 1040;
             box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+            overflow-y: auto;
         }
 
         #buyer-sidebar .brand {

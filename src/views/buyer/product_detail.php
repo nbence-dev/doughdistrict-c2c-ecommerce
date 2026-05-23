@@ -105,7 +105,11 @@
                     </span>
                 </div>
                 <p class="small mb-4" style="color: var(--dd-outline);">
-                    <?= (int) $product['stock_qty'] ?> in stock
+                    <?php if ((int) $product['stock_qty'] === 0): ?>
+                        <span style="color: #8b1a1a; font-weight: 600;">Out of stock</span>
+                    <?php else: ?>
+                        <?= (int) $product['stock_qty'] ?> in stock
+                    <?php endif; ?>
                 </p>
 
                 <p class="mb-5" style="color: var(--dd-on-surface-var); line-height: 1.7;">
@@ -118,6 +122,11 @@
                 <div class="alert alert-light border rounded-3 py-2 small mb-4" style="color: var(--dd-outline);">
                     <span class="material-symbols-outlined align-middle" style="font-size:1rem;">info</span>
                     Admins can browse products but cannot purchase.
+                </div>
+                <?php elseif ((int) $product['stock_qty'] === 0): ?>
+                <div class="alert alert-light border rounded-3 py-2 small mb-4" style="color: var(--dd-outline);">
+                    <span class="material-symbols-outlined align-middle" style="font-size:1rem;">inventory_2</span>
+                    This product is currently out of stock.
                 </div>
                 <?php else: ?>
                 <form method="POST" action="<?= BASE_URL ?>cart/add" data-validate>

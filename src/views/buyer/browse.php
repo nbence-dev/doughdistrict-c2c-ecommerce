@@ -176,15 +176,9 @@
                                 style="color: var(--dd-on-surface-var); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
                                 <?= htmlspecialchars($p['description']) ?>
                             </p>
-                            <?php if ((int) $p['stock_qty'] === 0): ?>
-                            <span class="btn w-100 mt-auto disabled" style="background: var(--dd-surface-low); color: var(--dd-outline); cursor: not-allowed;">
-                                Out of Stock
-                            </span>
-                            <?php else: ?>
                             <a href="<?= BASE_URL ?>product?id=<?= $p['id'] ?>" class="btn btn-dd-primary w-100 mt-auto">
                                 View Product
                             </a>
-                            <?php endif; ?>
                         </div>
                     </div>
                 </div>

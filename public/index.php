@@ -90,11 +90,6 @@ switch ($path) {
         break;
 
 
-    // case 'admin/dashboard':
-    //     require_role('admin');
-    //     require_once ROOT_PATH . '/controllers/admin_controller.php';
-    //     require_once ROOT_PATH . '/views/admin/dashboard.php';
-    //     break;
 
     case 'admin/users':
         require_role('admin');

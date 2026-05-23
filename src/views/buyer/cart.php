@@ -1,4 +1,4 @@
-<?php include __DIR__ . '/layout.php'; ?>
+<?php $pageTitle = 'Cart'; include __DIR__ . '/layout.php'; ?>
 
 <style>
     .cart-item-img {
@@ -29,14 +29,6 @@
 
 <main class="container py-5 mt-4">
 
-    <?php if (!empty($_SESSION['flash'])): ?>
-        <div class="alert alert-<?= htmlspecialchars($_SESSION['flash']['type']) ?> alert-dismissible fade show" role="alert">
-            <?= htmlspecialchars($_SESSION['flash']['message']) ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        <?php unset($_SESSION['flash']); ?>
-    <?php endif; ?>
-
     <header class="mb-5">
         <h1 class="fw-bold" style="font-family:'Plus Jakarta Sans',sans-serif;">Your Harvest Basket</h1>
         <p style="color: var(--dd-on-surface-var);">
@@ -66,7 +58,8 @@
                     <?php if (!empty($p['image_url'])): ?>
                         <img src="<?= htmlspecialchars($p['image_url']) ?>"
                              alt="<?= htmlspecialchars($p['name']) ?>"
-                             class="cart-item-img rounded-3">
+                             class="cart-item-img rounded-3"
+                             loading="lazy">
                     <?php else: ?>
                         <div class="cart-item-img rounded-3 d-flex align-items-center justify-content-center"
                              style="background:var(--dd-surface-low);">
@@ -99,7 +92,7 @@
                                     <button type="button" class="qty-minus">
                                         <span class="material-symbols-outlined" style="font-size:18px;">remove</span>
                                     </button>
-                                    <input type="number" name="quantity" value="<?= (int)$item['quantity'] ?>" min="1" max="99">
+                                    <input type="number" name="quantity" value="<?= (int)$item['quantity'] ?>" min="1" max="<?= (int)$p['stock_qty'] ?>">
                                     <button type="button" class="qty-plus">
                                         <span class="material-symbols-outlined" style="font-size:18px;">add</span>
                                     </button>
@@ -188,7 +181,9 @@ document.querySelectorAll('.qty-stepper').forEach(function(stepper) {
     });
 
     stepper.querySelector('.qty-plus').addEventListener('click', function() {
-        input.value = parseInt(input.value) + 1;
+        var next = parseInt(input.value) + 1;
+        if (next > parseInt(input.getAttribute('max'), 10)) return;
+        input.value = next;
         form.submit();
     });
 });

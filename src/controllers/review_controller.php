@@ -43,7 +43,7 @@ if ($path === 'reviews/create') {
     $reviewModel->create($product_id, $user['id'], $order_id, $rating, $comment);
     set_flash('Review submitted. Thank you!', 'success');
     header('Location: ' . BASE_URL . 'product?id=' . $product_id);
-
+    exit();
 
 
 }

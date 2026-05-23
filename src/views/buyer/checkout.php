@@ -5,6 +5,7 @@
  * @var array[]   $addresses       Buyer's saved shipping addresses
  * @var float     $grand_total     Sum of all seller subtotals
  */
+$pageTitle = 'Checkout';
 include __DIR__ . '/layout.php'; ?>
 
 <style>

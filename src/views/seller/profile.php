@@ -89,15 +89,15 @@ $flash = get_flash();
                   <option value="">Select province</option>
                   <?php
                   $provinces = [
-                      'GP' => 'Gauteng',
-                      'WC' => 'Western Cape',
                       'EC' => 'Eastern Cape',
+                      'FS' => 'Free State',
+                      'GP' => 'Gauteng',
                       'KZN' => 'KwaZulu-Natal',
                       'LP' => 'Limpopo',
                       'MP' => 'Mpumalanga',
                       'NW' => 'North West',
                       'NC' => 'Northern Cape',
-                      'FS' => 'Free State',
+                      'WC' => 'Western Cape',
                   ];
                   foreach ($provinces as $code => $label): ?>
                   <option value="<?= $code ?>" <?= ($sellerProfile['zone'] ?? '') === $code ? 'selected' : '' ?>><?= $label ?></option>

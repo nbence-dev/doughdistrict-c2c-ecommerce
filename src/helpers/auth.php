@@ -12,7 +12,11 @@
     $pdo = require_once ROOT_PATH . '/config/db.php';
 
     function current_user() {
-        // Tells function to look for $pdo variable created outside this function in your page logic
+        static $fetched = false;
+        static $cached  = null;
+        if ($fetched) return $cached;
+        $fetched = true;
+
         global $pdo;
 
         if (!isset($_SESSION['user_id'])) {
@@ -20,7 +24,9 @@
         }
 
         $userModel = new User($pdo);
-        return $userModel->find($_SESSION['user_id']);
+        $result    = $userModel->find($_SESSION['user_id']);
+        $cached    = $result ?: null;
+        return $cached;
     }
 
     function is_logged_in() {
@@ -32,7 +38,12 @@
             header('Location: ' . BASE_URL . 'login');
             exit();
         }
-        $user         = current_user();
+        $user = current_user();
+        if (!$user || !($user['is_active'] ?? 1)) {
+            session_destroy();
+            header('Location: ' . BASE_URL . 'login');
+            exit();
+        }
         $current_path = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
         if ($user && ($user['must_change_password'] ?? 0) && $current_path !== 'account/change-password') {
             header('Location: ' . BASE_URL . 'account/change-password');

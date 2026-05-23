@@ -159,7 +159,7 @@ tailwind.config = {
                           class="w-full px-6 py-4 rounded-xl bg-surface-container-low border-none focus:ring-1 focus:ring-primary/40 focus:bg-surface-container-lowest transition-all text-on-surface">
                     <option value="" disabled <?= empty($_POST['zone']) ? 'selected' : '' ?>>Select province</option>
                     <?php
-                    $provinces = ['GP'=>'Gauteng','WC'=>'Western Cape','EC'=>'Eastern Cape','KZN'=>'KwaZulu-Natal','LP'=>'Limpopo','MP'=>'Mpumalanga','NW'=>'North West','NC'=>'Northern Cape','FS'=>'Free State'];
+                    $provinces = ['EC'=>'Eastern Cape','FS'=>'Free State','GP'=>'Gauteng','KZN'=>'KwaZulu-Natal','LP'=>'Limpopo','MP'=>'Mpumalanga','NW'=>'North West','NC'=>'Northern Cape','WC'=>'Western Cape'];
                     foreach ($provinces as $code => $label): ?>
                       <option value="<?= $code ?>" <?= ($_POST['zone'] ?? '') === $code ? 'selected' : '' ?>><?= $label ?></option>
                     <?php endforeach; ?>

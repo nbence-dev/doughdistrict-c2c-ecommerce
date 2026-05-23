@@ -1,4 +1,4 @@
-<?php include __DIR__ . '/layout.php'; ?>
+<?php $pageTitle = 'Browse'; include __DIR__ . '/layout.php'; ?>
 
 <style>
     .dd-card {
@@ -135,7 +135,8 @@
                         <?php if (!empty($p['image_url'])): ?>
                             <div class="overflow-hidden">
                                 <img src="<?= htmlspecialchars($p['image_url']) ?>" class="card-img-top"
-                                    alt="<?= htmlspecialchars($p['name']) ?>">
+                                    alt="<?= htmlspecialchars($p['name']) ?>"
+                                    loading="lazy">
                             </div>
                         <?php else: ?>
                             <div class="img-placeholder">🥐</div>

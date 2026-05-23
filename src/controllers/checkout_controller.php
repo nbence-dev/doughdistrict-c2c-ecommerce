@@ -68,7 +68,7 @@ if ($path === 'checkout') {
 
         try {
             $amount_cents = (int) round(($group['subtotal'] + $group['shipping']) * 100);
-            $intent = stripe_create_payment_intent($amount_cents, 'usd', $seller['stripe_account_id']);
+            $intent = stripe_create_payment_intent($amount_cents, 'usd');
             $client_secrets[] = $intent->client_secret;
             $_SESSION['pending_payment_intents'][$sid] = [
                 'id'       => $intent->id,

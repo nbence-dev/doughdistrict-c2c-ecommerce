@@ -112,7 +112,7 @@ class User
     public function setPassword(int $id, string $newPassword): void
     {
         $hash = password_hash($newPassword, PASSWORD_DEFAULT);
-        $stmt = $this->db->prepare('UPDATE users set PASSWORD = ?, must_change_password = 0 WHERE id = ?');
+        $stmt = $this->db->prepare('UPDATE users SET password = ?, must_change_password = 0 WHERE id = ?');
         $stmt->execute([$hash, $id]);
     }
 }

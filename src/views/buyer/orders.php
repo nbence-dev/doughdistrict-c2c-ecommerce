@@ -1,4 +1,4 @@
-<?php include __DIR__ . '/layout.php'; ?>
+<?php $pageTitle = 'My Orders'; include __DIR__ . '/layout.php'; ?>
 
 <style>
 .status-badge { font-size: .72rem; font-weight: 700; padding: .25rem .8rem; border-radius: 999px; display: inline-block; }

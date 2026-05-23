@@ -18,8 +18,7 @@
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
             vertical-align: middle;
         }
-    </style>
-    <style>
+
         :root {
             --dd-primary: #6f4627;
             --dd-secondary: #924c00;

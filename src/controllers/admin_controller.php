@@ -61,24 +61,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === 'admin/users/toggle' && i
     header('Location: ' . BASE_URL . 'admin/users');
     exit();
 }
-// Handle POST requests for user role change
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === 'admin/users/role' && isset($_POST['user_id'], $_POST['role'])) {
-    $userId = (int) $_POST['user_id'];
-    $newRole = $_POST['role'];
-    $userModel = new User($pdo);
-    $user = $userModel->find($userId);
-    if ($user) {
-        $allowed = ['buyer' => 'admin'];
-        if (!array_key_exists($user['role'], $allowed) || $allowed[$user['role']] !== $newRole || $user['id'] === current_user()['id']) {
-            set_flash("Role change not permitted.", 'danger');
-            header('Location: ' . BASE_URL . 'admin/users');
-            exit();
-        }
-        $userModel->setRole($userId, $newRole);
-        set_flash("User role updated to " . htmlspecialchars($newRole) . " successfully.", 'success');
-    } else {
-        set_flash("User not found.", 'danger');
-    }
+// Role changes via the admin panel are disabled — admins are created by invite only.
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === 'admin/users/role') {
+    set_flash("Role changes are not permitted. Admins are created by invite only.", 'danger');
     header('Location: ' . BASE_URL . 'admin/users');
     exit();
 }

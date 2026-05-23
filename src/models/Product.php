@@ -10,12 +10,8 @@ class Product
 
     public function create($seller_id, $category_id, $name, $description, $price, $stock_qty, $image_url, $weight_kg = 0, $length_cm = 0, $width_cm = 0, $height_cm = 0, $shipping_cost = null)
     {
-        try {
-            $stmt = $this->db->prepare('INSERT INTO products (seller_id, category_id, name, description, price, stock_qty, image_url, weight_kg, length_cm, width_cm, height_cm, shipping_cost) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
-            return $stmt->execute([$seller_id, $category_id, $name, $description, $price, $stock_qty, $image_url, $weight_kg, $length_cm, $width_cm, $height_cm, $shipping_cost]);
-        } catch (PDOException $e) {
-            throw $e;
-        }
+        $stmt = $this->db->prepare('INSERT INTO products (seller_id, category_id, name, description, price, stock_qty, image_url, weight_kg, length_cm, width_cm, height_cm, shipping_cost) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+        return $stmt->execute([$seller_id, $category_id, $name, $description, $price, $stock_qty, $image_url, $weight_kg, $length_cm, $width_cm, $height_cm, $shipping_cost]);
     }
 
     public function findBySeller(int $seller_id): array
@@ -86,22 +82,14 @@ class Product
 
     public function update($id, $category_id, $name, $description, $price, $stock_qty, $image_url, $weight_kg = 0, $length_cm = 0, $width_cm = 0, $height_cm = 0, $shipping_cost = null)
     {
-        try {
-            $stmt = $this->db->prepare('UPDATE products SET category_id = ?, name = ?, description = ?, price = ?, stock_qty = ?, image_url = ?, weight_kg = ?, length_cm = ?, width_cm = ?, height_cm = ?, shipping_cost = ? WHERE id = ?');
-            return $stmt->execute([$category_id, $name, $description, $price, $stock_qty, $image_url, $weight_kg, $length_cm, $width_cm, $height_cm, $shipping_cost, $id]);
-        } catch (PDOException $e) {
-            throw $e;
-        }
+        $stmt = $this->db->prepare('UPDATE products SET category_id = ?, name = ?, description = ?, price = ?, stock_qty = ?, image_url = ?, weight_kg = ?, length_cm = ?, width_cm = ?, height_cm = ?, shipping_cost = ? WHERE id = ?');
+        return $stmt->execute([$category_id, $name, $description, $price, $stock_qty, $image_url, $weight_kg, $length_cm, $width_cm, $height_cm, $shipping_cost, $id]);
     }
 
     public function delete($id)
     {
-        try {
-            $stmt = $this->db->prepare('DELETE FROM products WHERE id = ?');
-            return $stmt->execute([$id]);
-        } catch (PDOException $e) {
-            throw $e; // Rethrow exceptions
-        }
+        $stmt = $this->db->prepare('DELETE FROM products WHERE id = ?');
+        return $stmt->execute([$id]);
     }
 
     public function setStatus($id, $status)
@@ -160,7 +148,7 @@ class Product
 
     public function findActive($id)
     {
-        $stmt = $this->db->prepare('SELECT p.*, c.name AS category_name, sp.shop_name, u.name AS seller_name, u.id AS seller_user_id
+        $stmt = $this->db->prepare('SELECT p.*, c.name AS category_name, c.slug AS category_slug, sp.shop_name, u.name AS seller_name, u.id AS seller_user_id
              FROM products p
              JOIN categories c ON p.category_id = c.id
              JOIN seller_profiles sp ON p.seller_id = sp.id

@@ -10,18 +10,14 @@ class Category
 
     public function create($name)
     {
-        try {
-            $slug = $this->slugify($name);
-            $stmt = $this->db->prepare('INSERT INTO categories (name, slug) VALUES (?, ?)');
-            return $stmt->execute([$name, $slug]);
-        } catch (PDOException $e) {
-            throw $e; // Rethrow exceptions
-        }
+        $slug = $this->slugify($name);
+        $stmt = $this->db->prepare('INSERT INTO categories (name, slug) VALUES (?, ?)');
+        return $stmt->execute([$name, $slug]);
     }
 
     public function getAll()
     {
-        $stmt = $this->db->query('SELECT * FROM categories');
+        $stmt = $this->db->query('SELECT * FROM categories ORDER BY name');
         return $stmt->fetchAll();
     }
 
@@ -40,23 +36,15 @@ class Category
 
     public function update($id, $name)
     {
-        try {
-            $slug = $this->slugify($name);
-            $stmt = $this->db->prepare('UPDATE categories SET name = ?, slug = ? WHERE id = ?');
-            return $stmt->execute([$name, $slug, $id]);
-        } catch (PDOException $e) {
-            throw $e; // Rethrow exceptions
-        }
+        $slug = $this->slugify($name);
+        $stmt = $this->db->prepare('UPDATE categories SET name = ?, slug = ? WHERE id = ?');
+        return $stmt->execute([$name, $slug, $id]);
     }
 
     public function delete($id)
     {
-        try {
-            $stmt = $this->db->prepare('DELETE FROM categories WHERE id = ?');
-            return $stmt->execute([$id]);
-        } catch (PDOException $e) {
-            throw $e; // Rethrow exceptions
-        }
+        $stmt = $this->db->prepare('DELETE FROM categories WHERE id = ?');
+        return $stmt->execute([$id]);
     }
 
     public function hasProducts(int $id): bool

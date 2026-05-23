@@ -2,6 +2,7 @@
 /**
  * @var int[] $order_ids  IDs of orders created in this checkout session
  */
+$pageTitle = 'Order Confirmed';
 include __DIR__ . '/layout.php'; ?>
 
 <style>

@@ -1,4 +1,4 @@
-# DoughDistrict Runner Test 4
+# DoughDistrict
 
 DoughDistrict is a consumer-to-consumer (C2C) e-commerce platform for home-baked goods in South Africa. Home bakers list their products for sale, buyers browse and purchase via Stripe, and sellers fulfil orders with courier integration through The Courier Guy (Shiplogic). Built as a university MVP deliverable (Eduvos ITECA3-B12).
 
@@ -11,6 +11,7 @@ DoughDistrict is a consumer-to-consumer (C2C) e-commerce platform for home-baked
 - Session-based shopping cart (add, update quantity, remove)
 - Checkout with Stripe card payment — one PaymentIntent per seller
 - Save and select shipping addresses at checkout
+- Google-powered address autocomplete with server-side address validation
 - View order history with status badges
 - View order detail with line items and shipping address snapshot
 - Track shipments via Shiplogic tracking link with pre-filled reference
@@ -18,7 +19,7 @@ DoughDistrict is a consumer-to-consumer (C2C) e-commerce platform for home-baked
 
 **Seller**
 - Self-service shop onboarding — any buyer can upgrade their account
-- Shop profile management (name, bio, collection address)
+- Shop profile management (name, bio, collection address) with address autocomplete
 - Product CRUD with image upload to Cloudflare R2
 - Connect a Stripe account via OAuth to receive payments directly
 - View and manage incoming orders, update fulfilment status
@@ -32,6 +33,8 @@ DoughDistrict is a consumer-to-consumer (C2C) e-commerce platform for home-baked
 - Moderate product listings (approve, reject, set pending)
 - Manage product categories (create, edit, delete with product guard)
 
+All forms across the app share an inline client-side validation layer (`public/assets/js/validation.js`); controllers perform the authoritative server-side validation.
+
 ## Tech Stack
 
 | Layer | Technology |
@@ -42,6 +45,7 @@ DoughDistrict is a consumer-to-consumer (C2C) e-commerce platform for home-baked
 | **Object Storage** | Cloudflare R2 (S3-compatible, via AWS SDK for PHP) |
 | **Payments** | Stripe Connect (destination charges — no platform fee) |
 | **Courier** | The Courier Guy via Shiplogic REST API |
+| **Address Lookup** | Google Maps Platform — Places autocomplete + Address Validation API |
 | **Email** | Resend (transactional email via PHP SDK) |
 | **Infrastructure** | Docker, docker-compose, Ubuntu Server VM |
 | **Tunnels** | Cloudflare Named Tunnels |
@@ -54,9 +58,9 @@ doughdistrict-c2c-ecommerce/
 ├── public/                  ← web root (Apache document root)
 │   ├── index.php            ← front controller / router
 │   └── assets/
-│       ├── css/app.css
-│       ├── js/app.js
-│       └── js/checkout.js   ← Stripe.js card element logic
+│       ├── js/checkout.js   ← Stripe.js card element logic
+│       ├── js/validation.js ← shared client-side form validation
+│       └── images/
 ├── src/
 │   ├── config/
 │   │   ├── db.php           ← PDO connection (reads from env)
@@ -174,6 +178,7 @@ Key tables in `sql/schema.sql`:
 | `STRIPE_CONNECT_CLIENT_ID` | Stripe Connect OAuth client ID (`ca_...`) |
 | `SHIPLOGIC_API_KEY` | Shiplogic (The Courier Guy) API key |
 | `SHIPLOGIC_API_URL` | Shiplogic base URL (`https://api.shiplogic.com`) |
+| `ADDRESS_API_KEY` | Google Maps Platform API key (Places autocomplete + Address Validation) |
 | `RESEND_API_KEY` | Resend transactional email API key |
 | `MAIL_FROM` | From address for outgoing emails (e.g. `orders@doughdistrict.co.za`) |
 

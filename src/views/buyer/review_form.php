@@ -22,7 +22,8 @@
     <div class="d-flex align-items-center gap-3 mb-4">
         <?php if (!empty($product['image_url'])): ?>
         <img src="<?= htmlspecialchars($product['image_url']) ?>" class="rounded-3"
-             style="width:64px;height:64px;object-fit:cover;flex-shrink:0;" alt="">
+             style="width:64px;height:64px;object-fit:cover;flex-shrink:0;"
+             alt="<?= htmlspecialchars($product['name']) ?>">
         <?php else: ?>
         <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0"
              style="width:64px;height:64px;background:var(--dd-surface);font-size:1.6rem;">🥐</div>

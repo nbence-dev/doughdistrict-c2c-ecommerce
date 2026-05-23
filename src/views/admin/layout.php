@@ -172,91 +172,10 @@ function admin_nav_link(string $path, string $icon, string $label, string $curre
             line-height: 1;
         }
 
-        /* ── Topbar ──────────────────────────────────── */
-        #admin-topbar {
-            position: fixed;
-            top: 0;
-            left: 256px;
-            right: 0;
-            height: 64px;
-            background-color: rgba(251, 249, 241, 0.88);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(213, 195, 184, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 2rem;
-            z-index: 1039;
-        }
-
-        #admin-topbar .search-wrap {
-            position: relative;
-            width: 300px;
-        }
-
-        #admin-topbar .search-wrap .search-icon {
-            position: absolute;
-            left: 0.75rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--dd-outline);
-            font-size: 1rem;
-            pointer-events: none;
-        }
-
-        #admin-topbar .search-wrap input {
-            background-color: var(--dd-surface-low);
-            border: none;
-            border-radius: 2rem;
-            padding: 0.4rem 1rem 0.4rem 2.4rem;
-            font-size: 0.875rem;
-            color: var(--dd-on-surface);
-            width: 100%;
-        }
-
-        #admin-topbar .search-wrap input:focus {
-            outline: none;
-            box-shadow: 0 0 0 1px rgba(111, 70, 39, 0.25);
-            background-color: var(--dd-surface-card);
-        }
-
-        #admin-topbar .icon-btn {
-            background: none;
-            border: none;
-            color: var(--dd-primary);
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: background 0.15s;
-        }
-
-        #admin-topbar .icon-btn:hover {
-            background-color: var(--dd-surface-low);
-        }
-
-        #admin-topbar .topbar-name {
-            font-size: 0.8125rem;
-            font-weight: 700;
-            color: var(--dd-on-surface);
-            line-height: 1.2;
-        }
-
-        #admin-topbar .topbar-role {
-            font-size: 0.625rem;
-            color: var(--dd-outline);
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-        }
-
         /* ── Main canvas ─────────────────────────────── */
         #admin-main {
             margin-left: 256px;
-            padding-top: 64px;
+            padding-top: 2rem;
             min-height: 100vh;
             overflow-x: hidden;
         }
@@ -504,10 +423,24 @@ function admin_nav_link(string $path, string $icon, string $label, string $curre
         }
 
         /* Visible horizontal scrollbar on tables */
-        .table-responsive::-webkit-scrollbar { height: 6px; }
-        .table-responsive::-webkit-scrollbar-track { background: var(--dd-surface-low); }
-        .table-responsive::-webkit-scrollbar-thumb { background: var(--dd-outline-var); border-radius: 3px; }
-        .table-responsive { scrollbar-width: thin; scrollbar-color: var(--dd-outline-var) var(--dd-surface-low); }
+        .table-responsive::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .table-responsive::-webkit-scrollbar-track {
+            background: var(--dd-surface-low);
+        }
+
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: var(--dd-outline-var);
+            border-radius: 3px;
+        }
+
+        .table-responsive {
+            scrollbar-width: thin;
+            scrollbar-color: var(--dd-outline-var) var(--dd-surface-low);
+        }
+
         .scroll-hint {
             display: none;
             font-size: 0.7rem;
@@ -515,15 +448,11 @@ function admin_nav_link(string $path, string $icon, string $label, string $curre
             text-align: right;
             margin-bottom: 0.25rem;
         }
-        @media (max-width: 767.98px) { .scroll-hint { display: block; } }
 
-        /* ── Sidebar toggle (mobile) ── */
-        #sidebar-toggle {
-            display: none;
-        }
-
-        #sidebar-overlay {
-            display: none;
+        @media (max-width: 767.98px) {
+            .scroll-hint {
+                display: block;
+            }
         }
 
         /* ── Mobile breakpoint ── */
@@ -542,23 +471,11 @@ function admin_nav_link(string $path, string $icon, string $label, string $curre
                 inset: 0;
                 background: rgba(0, 0, 0, 0.45);
                 z-index: 1039;
+                display: none;
             }
 
             body.sidebar-open #sidebar-overlay {
                 display: block;
-            }
-
-            #admin-topbar {
-                left: 0;
-                padding: 0 1rem;
-            }
-
-            #admin-topbar .search-wrap {
-                display: none;
-            }
-
-            #sidebar-toggle {
-                display: inline-flex;
             }
 
             #admin-main {
@@ -571,15 +488,6 @@ function admin_nav_link(string $path, string $icon, string $label, string $curre
 
             .page-heading {
                 font-size: 1.4rem;
-            }
-        }
-
-        @media (max-width: 575.98px) {
-
-            #admin-topbar .topbar-name,
-            #admin-topbar .topbar-role,
-            #admin-topbar .vr {
-                display: none !important;
             }
         }
     </style>
@@ -595,7 +503,7 @@ function admin_nav_link(string $path, string $icon, string $label, string $curre
         </div>
 
         <nav>
-            <!-- <?= admin_nav_link('admin/dashboard', 'dashboard', 'Dashboard', $currentPath) ?> -->
+
             <?= admin_nav_link('admin/users', 'group', 'Users', $currentPath) ?>
             <?= admin_nav_link('admin/products', 'inventory_2', 'Products', $currentPath) ?>
             <?= admin_nav_link('admin/categories', 'category', 'Categories', $currentPath) ?>
@@ -620,36 +528,11 @@ function admin_nav_link(string $path, string $icon, string $label, string $curre
 
     <div id="sidebar-overlay"></div>
 
-    <!-- ════════ Admin Topbar ════════ -->
-    <header id="admin-topbar">
-        <div class="d-flex align-items-center gap-2 d-lg-none">
-            <button class="icon-btn" id="sidebar-toggle" title="Menu">
-                <span class="material-symbols-outlined">menu</span>
-            </button>
-        </div>
-        <div class="search-wrap">
-            <span class="material-symbols-outlined search-icon">search</span>
-            <input type="text" placeholder="Search the ledger…">
-        </div>
-        <div class="d-flex align-items-center gap-2">
-            <button class="icon-btn" title="Notifications">
-                <span class="material-symbols-outlined">notifications</span>
-            </button>
-            <button class="icon-btn" title="Help">
-                <span class="material-symbols-outlined">help</span>
-            </button>
-            <div class="vr mx-1" style="height:24px;opacity:0.25;"></div>
-            <div class="text-end">
-                <div class="topbar-name"><?= htmlspecialchars($currentUser['name'] ?? 'Admin') ?></div>
-                <div class="topbar-role">Administrator</div>
-            </div>
-        </div>
-    </header>
     <script>
-        document.getElementById('sidebar-toggle').addEventListener('click', function () {
+        document.getElementById('sidebar-toggle')?.addEventListener('click', function () {
             document.body.classList.toggle('sidebar-open');
         });
-        document.getElementById('sidebar-overlay').addEventListener('click', function () {
+        document.getElementById('sidebar-overlay')?.addEventListener('click', function () {
             document.body.classList.remove('sidebar-open');
         });
     </script>

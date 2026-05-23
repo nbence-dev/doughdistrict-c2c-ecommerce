@@ -46,7 +46,8 @@ function upload_to_r2(array $file): string
 
     // ── Build object key ──────────────────────────────────────────────────────
 
-    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    $mimeToExt = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp', 'image/gif' => 'gif'];
+    $ext = $mimeToExt[$mimeType];
     $key = 'products/' . bin2hex(random_bytes(16)) . '.' . $ext;
 
     // ── Upload via AWS SDK ────────────────────────────────────────────────────

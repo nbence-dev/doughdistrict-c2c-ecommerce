@@ -1,4 +1,4 @@
-<?php include __DIR__ . '/layout.php'; ?>
+<?php $pageTitle = 'Order #' . ($id ?? ''); include __DIR__ . '/layout.php'; ?>
 
 <style>
     .status-badge {

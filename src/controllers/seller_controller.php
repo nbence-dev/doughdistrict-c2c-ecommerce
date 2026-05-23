@@ -294,14 +294,12 @@ if ($path === 'seller/onboard') {
         // ── Stripe Connect — Phase 3 stub ─────────────────────────────────────────
 
     } elseif ($path === 'seller/stripe/connect') {
-        // TODO Phase 3: redirect to Stripe Connect OAuth URL
         require_once ROOT_PATH . '/helpers/stripe.php';
         header('Location: ' . stripe_connect_oauth_url($sellerProfile['id']));
         exit();
 
 
     } elseif ($path === 'seller/stripe/callback') {
-        // TODO Phase 3: exchange OAuth code for Stripe account ID, store in seller_profiles
         require_once ROOT_PATH . '/helpers/stripe.php';
         if (isset($_GET['error'])) {
             set_flash('Stripe connection cancelled.', 'warning');

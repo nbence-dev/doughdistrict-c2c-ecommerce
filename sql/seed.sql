@@ -48,6 +48,6 @@ INSERT INTO products (seller_id, category_id, name, description, price, stock_qt
 -- -------------------------------------------------------
 -- Buyer addresses
 -- -------------------------------------------------------
-INSERT INTO addresses (user_id, label, street, city, province, postal_code, is_default) VALUES
-    (4, 'Home', '12 Baobab Street', 'Durban',       'KwaZulu-Natal', '4001', TRUE),
-    (5, 'Home', '7 Fynbos Avenue',  'Cape Town',    'Western Cape',  '7441', TRUE);
+INSERT INTO addresses (user_id, label, street, local_area, city, province, postal_code, is_default) VALUES
+    (4, 'Home', '12 Baobab Street', 'Morningside',  'Durban',    'KwaZulu-Natal', '4001', TRUE),
+    (5, 'Home', '7 Fynbos Avenue',  'Claremont',    'Cape Town', 'Western Cape',  '7441', TRUE);

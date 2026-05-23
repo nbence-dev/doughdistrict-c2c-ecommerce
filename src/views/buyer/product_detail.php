@@ -1,4 +1,4 @@
-<?php include __DIR__ . '/layout.php'; ?>
+<?php $pageTitle = $product ? htmlspecialchars($product['name']) : 'Product'; include __DIR__ . '/layout.php'; ?>
 
 <style>
     .product-img {
@@ -51,7 +51,7 @@
             <ol class="breadcrumb small mb-0" style="color: var(--dd-outline);">
                 <li class="breadcrumb-item"><a href="<?= BASE_URL ?>browse" style="color: var(--dd-outline);">Browse</a>
                 </li>
-                <li class="breadcrumb-item"><a href="<?= BASE_URL ?>browse?category=<?= $product['category_id'] ?>"
+                <li class="breadcrumb-item"><a href="<?= BASE_URL ?>browse?category=<?= htmlspecialchars($product['category_slug']) ?>"
                         style="color: var(--dd-outline);"><?= htmlspecialchars($product['category_name']) ?></a></li>
                 <li class="breadcrumb-item active" style="color: var(--dd-on-surface);">
                     <?= htmlspecialchars($product['name']) ?></li>
@@ -65,7 +65,8 @@
             <div class="col-lg-6">
                 <?php if (!empty($product['image_url'])): ?>
                     <img src="<?= htmlspecialchars($product['image_url']) ?>" class="product-img shadow-sm"
-                        alt="<?= htmlspecialchars($product['name']) ?>">
+                        alt="<?= htmlspecialchars($product['name']) ?>"
+                        loading="lazy">
                 <?php else: ?>
                     <div class="d-flex align-items-center justify-content-center shadow-sm"
                         style="height: 420px; border-radius: 1.25rem; background: var(--dd-surface-low); font-size: 5rem;">

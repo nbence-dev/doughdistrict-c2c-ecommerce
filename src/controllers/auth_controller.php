@@ -89,6 +89,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
     }
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
+    $name  = trim($_POST['name'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+
+    if (empty($name) || empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        set_flash('Please enter a valid name and email address.', 'danger');
+        header('Location: ' . BASE_URL . 'account/profile');
+        exit();
+    }
+
+    $userModel = new User($pdo);
+    $updated   = $userModel->updateProfile((int) current_user()['id'], $name, $email);
+
+    if (!$updated) {
+        set_flash('That email address is already in use by another account.', 'danger');
+        header('Location: ' . BASE_URL . 'account/profile');
+        exit();
+    }
+
+    set_flash('Profile updated successfully.', 'success');
+    header('Location: ' . BASE_URL . 'account/profile');
+    exit();
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_password'])) {
+    $current = $_POST['current_password'] ?? '';
+    $new     = $_POST['new_password'] ?? '';
+    $confirm = $_POST['confirm_password'] ?? '';
+
+    $userModel = new User($pdo);
+    $user      = $userModel->find((int) current_user()['id']);
+
+    if (!password_verify($current, $user['password'])) {
+        set_flash('Current password is incorrect.', 'danger');
+        header('Location: ' . BASE_URL . 'account/profile');
+        exit();
+    }
+    if (strlen($new) < 8) {
+        set_flash('New password must be at least 8 characters.', 'danger');
+        header('Location: ' . BASE_URL . 'account/profile');
+        exit();
+    }
+    if ($new !== $confirm) {
+        set_flash('New passwords do not match.', 'danger');
+        header('Location: ' . BASE_URL . 'account/profile');
+        exit();
+    }
+
+    $userModel->setPassword((int) current_user()['id'], $new);
+    set_flash('Password changed successfully.', 'success');
+    header('Location: ' . BASE_URL . 'account/profile');
+    exit();
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
     $new = $_POST['new_password'] ?? '';
     $confirm = $_POST['confirm_password'] ?? '';

@@ -79,7 +79,8 @@ function admin_nav_link(string $path, string $icon, string $label, string $curre
         /* ── Sidebar ─────────────────────────────────── */
         #admin-sidebar {
             width: 256px;
-            min-height: 100vh;
+            height: 100vh;
+            height: 100dvh;
             background-color: #1c1917;
             position: fixed;
             top: 0;
@@ -89,6 +90,7 @@ function admin_nav_link(string $path, string $icon, string $label, string $curre
             padding: 1.5rem 0;
             z-index: 1040;
             box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+            overflow-y: auto;
         }
 
         #admin-sidebar .brand {

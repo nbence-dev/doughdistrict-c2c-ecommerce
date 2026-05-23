@@ -72,7 +72,8 @@ tailwind.config = {
   /* ── Sidebar ─────────────────────────────────────────────── */
   #seller-sidebar {
       width: 256px;
-      min-height: 100vh;
+      height: 100vh;
+      height: 100dvh;
       background-color: #1c1917;
       position: fixed;
       top: 0;
@@ -82,6 +83,7 @@ tailwind.config = {
       padding: 1.5rem 0;
       z-index: 50;
       box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+      overflow-y: auto;
   }
 
   #seller-sidebar .brand {

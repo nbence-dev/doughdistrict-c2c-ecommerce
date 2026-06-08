@@ -206,6 +206,6 @@ document.getElementById('image').addEventListener('change', function () {
     }
 });
 </script>
-<script src="<?= JS_URL ?>validation.js"></script>
+<script src="<?= asset('js/validation.js') ?>"></script>
 </body>
 </html>

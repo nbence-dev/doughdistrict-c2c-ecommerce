@@ -1,5 +1,8 @@
 <?php
-
+// Single entry point for sending mail through Resend. Returns false (instead of
+// throwing) if the API key/sender aren't configured or the send fails, so a
+// failed notification email never breaks the checkout or order flow that
+// triggered it. Failures are logged for debugging.
 require_once dirname(ROOT_PATH) . '/vendor/autoload.php';
 
 function send_email(string $to_email, string $to_name, string $subject, string $html, ?string $from = null): bool

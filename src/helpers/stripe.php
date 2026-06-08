@@ -1,8 +1,12 @@
 <?php
-
+// Stripe wrapper. The secret key is set once here for the whole request.
 require_once dirname(ROOT_PATH) . '/vendor/autoload.php';
 \Stripe\Stripe::setApiKey(getenv('STRIPE_SECRET_KEY'));
 
+// Builds the Stripe Connect onboarding link a seller clicks to link their own
+// account. 'state' carries our seller_profile_id round-trip so the callback
+// knows which profile to attach the returned account to, and redirect_uri is
+// built from the live host so it works on prod and dev without hardcoding.
 function stripe_connect_oauth_url($seller_profile_id)
 {
     return 'https://connect.stripe.com/oauth/authorize?' . http_build_query([
@@ -14,6 +18,9 @@ function stripe_connect_oauth_url($seller_profile_id)
     ]);
 }
 
+// Creates the PaymentIntent that the checkout page confirms with the card.
+// Amount is in the currency's smallest unit (cents), so callers multiply rands
+// by 100 before passing it in.
 function stripe_create_payment_intent($amount_cents, $currency)
 {
     return \Stripe\PaymentIntent::create([

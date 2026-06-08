@@ -1,7 +1,11 @@
 <?php
+// The cart lives entirely in $_SESSION as [product_id => quantity]. Nothing is
+// written to the database until checkout. Each request re-loads the products
+// fresh so prices, stock, and active status are always current.
 require_once ROOT_PATH . '/models/Product.php';
 if ($path === 'cart') {
-    // loop over $_SESSION['cart'] and display cart items using Product->findActive()
+    // Turn the id=>qty session map into full product rows for display, skipping
+    // anything that's no longer active so dead listings drop out of the cart.
     $cart_items = [];
     $total = 0;
 
@@ -39,11 +43,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === 'cart/add') {
 
         $isActive = $productModel->findActive($product_id);
         if ($isActive) {
+            // A seller shouldn't be able to buy their own listing.
             if ($isActive['seller_user_id'] === $_SESSION['user_id']) {
                 set_flash("You cannot add your own product to the cart.", 'danger');
                 header('Location: ' . BASE_URL . 'product?id=' . $product_id);
                 exit();
             }
+            // Check the new quantity against stock, counting what's already in
+            // the cart so repeated adds can't push the buyer past available stock.
             if ($existing_qty + $quantity > $stock) {
                 set_flash("Cannot order more than currently available.", 'danger');
                 header('Location: ' . BASE_URL . 'product?id=' . $product_id);

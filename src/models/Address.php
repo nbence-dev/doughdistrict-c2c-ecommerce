@@ -7,6 +7,8 @@ class Address
         $this->db = $pdo;
 
     }
+    // Default address sorts to the top (is_default DESC) so it's pre-selected
+    // at checkout, then the rest oldest-first.
     public function findByUser($user_id)
     {
         $stmt = $this->db->prepare("SELECT * FROM addresses WHERE user_id = ? ORDER BY is_default DESC, created_at ASC");

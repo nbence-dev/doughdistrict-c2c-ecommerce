@@ -1,12 +1,18 @@
 <?php
-// Bootstrap the application
+// Front controller. Every request hits this file (see .htaccess), which loads
+// the shared bootstrap, works out the path, and dispatches to the matching
+// controller + view. Each case decides its own access level: require_login()
+// for any signed-in user, require_role() to lock a route to one role. Admins are
+// deliberately blocked from buyer flows (cart/checkout/orders) since they are
+// not allowed to buy or sell.
 require_once __DIR__ . '/../src/config/constants.php';
 require_once ROOT_PATH . '/helpers/auth.php';   // also loads db.php and User.php
 require_once ROOT_PATH . '/helpers/flash.php';
 
 
 
-// Parse the request path
+// Turn the request URI into a clean path like "seller/products" (no leading or
+// trailing slashes, query string stripped) to switch on below.
 $path = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
 
 // Router
@@ -32,6 +38,8 @@ switch ($path) {
         break;
 
     case 'logout':
+        // Clear the session data, destroy the session, and expire its cookie
+        // (back-dated time) so nothing is left to resume the login.
         set_flash('You have been logged out.', 'success');
         session_unset();
         session_destroy();
@@ -305,6 +313,7 @@ switch ($path) {
         break;
 
 
+    // Anything that didn't match a case above is an unknown URL.
     default:
         http_response_code(404);
         require_once ROOT_PATH . '/views/errors/404.php';

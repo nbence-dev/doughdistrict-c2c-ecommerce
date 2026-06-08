@@ -1,6 +1,10 @@
 <?php
-// Register
+// Handles register, login, profile edit, and both password-change flows. Each
+// block keys off a hidden field name in the submitted form, so one controller
+// can serve several forms.
 
+// Register: all new accounts start as 'buyer'. A buyer can later upgrade to
+// seller through onboarding; admins are never created here.
 if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['register'])) {
 
     $name             = trim($_POST['name']) ?? '';
@@ -63,16 +67,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
     $userModel = new User($pdo);
     $user = $userModel->findByEmail($email);
 
+    // password_verify checks the submitted password against the stored hash.
     if ($user && password_verify($password, $user['password'])) {
+        // New session id on login to prevent session-fixation attacks.
         session_regenerate_id(true);
         $_SESSION['user_id'] = $user['id'];
 
+        // Invited admins (and anyone flagged) must set a real password first.
         if ($user['must_change_password']) {
             set_flash('Please set a new password to continue.', 'warning');
             header('Location: ' . BASE_URL . 'account/change-password');
             exit();
         }
 
+        // Send each role to its own home screen.
         set_flash("Welcome back, " . htmlspecialchars($user['name']) . "!", 'success');
         if ($user['role'] === 'admin') {
             header('Location: ' . BASE_URL . 'admin/users');
@@ -113,6 +121,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     exit();
 }
 
+// Voluntary password change from the profile page: requires the current
+// password before allowing a new one (unlike the forced flow below).
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_password'])) {
     $current = $_POST['current_password'] ?? '';
     $new     = $_POST['new_password'] ?? '';
@@ -143,6 +153,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_password'])) {
     exit();
 }
 
+// Forced password change (the must_change_password flow). No current password
+// is asked for because the user only has the temp one from their invite. After
+// setPassword clears the flag, we send them on to their role's home page.
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
     $new = $_POST['new_password'] ?? '';
     $confirm = $_POST['confirm_password'] ?? '';

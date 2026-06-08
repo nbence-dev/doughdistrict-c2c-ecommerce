@@ -9,6 +9,12 @@ require_once ROOT_PATH . '/models/SellerProfile.php';
 require_once ROOT_PATH . '/models/Order.php';
 require_once ROOT_PATH . '/models/User.php';
 
+// Checkout happens in three routes:
+//   checkout          - show the page and set up a Stripe PaymentIntent per seller
+//   checkout/confirm  - after payment, verify it and write the orders
+//   order/confirmation- the success page
+// A single cart can contain products from several sellers, so it's split into one
+// order (and one payment) per seller rather than charging everything together.
 if ($path === 'checkout') {
     if (empty($_SESSION['cart'])) {
         header('Location: ' . BASE_URL . 'cart');
@@ -40,7 +46,8 @@ if ($path === 'checkout') {
             'line_total' => $product['price'] * $quantity,
         ];
         $seller_groups[$sid]['subtotal'] += $product['price'] * $quantity;
-        // One shipment per seller — use the highest individual product rate
+        // Everything from one seller ships as a single parcel, so instead of
+        // summing per-item shipping we charge the single highest rate in the group.
         $seller_groups[$sid]['shipping'] = max(
             $seller_groups[$sid]['shipping'],
             (float) ($product['shipping_cost'] ?? 0)
@@ -60,6 +67,8 @@ if ($path === 'checkout') {
     foreach ($seller_groups as $sid => $group) {
         $seller = $group['seller'];
 
+        // Can't take money for a seller who hasn't linked a Stripe account, so
+        // block the whole checkout until they finish onboarding.
         if (empty($seller['stripe_account_id']) || !$seller['stripe_onboarding_complete']) {
             set_flash('A seller in your cart has not completed Stripe setup.', 'danger');
             header('Location: ' . BASE_URL . 'cart');
@@ -67,9 +76,13 @@ if ($path === 'checkout') {
         }
 
         try {
+            // Stripe wants the amount as an integer in the smallest unit, so the
+            // rand total (items + shipping) is rounded and multiplied by 100.
             $amount_cents = (int) round(($group['subtotal'] + $group['shipping']) * 100);
             $intent = stripe_create_payment_intent($amount_cents, 'usd');
             $client_secrets[] = $intent->client_secret;
+            // Remember each intent id + its shipping cost so checkout/confirm can
+            // re-check payment and reuse the same shipping figure on the order.
             $_SESSION['pending_payment_intents'][$sid] = [
                 'id'       => $intent->id,
                 'shipping' => $group['shipping'],
@@ -94,7 +107,9 @@ if ($path === 'checkout') {
     $orderModel   = new Order($pdo);
     $sellerModel  = new SellerProfile($pdo);
 
-    // Resolve shipping address
+    // Resolve shipping address: either an existing saved one (by id) or a brand
+    // new address typed into the form. A saved address is re-checked to make sure
+    // it actually belongs to this buyer, so nobody can ship to someone else's id.
     $address_id = (int) ($_POST['address_id'] ?? 0);
 
     if ($address_id > 0) {
@@ -151,6 +166,10 @@ if ($path === 'checkout') {
     $buyer     = current_user();
 
     try {
+        // Walk each seller's payment intent. We re-fetch it from Stripe rather
+        // than trusting the browser, and only write an order once Stripe itself
+        // reports the charge 'succeeded'. This is what stops a faked POST from
+        // creating a paid order without real money changing hands.
         foreach ($_SESSION['pending_payment_intents'] as $seller_id => $pi) {
             $intent   = \Stripe\PaymentIntent::retrieve($pi['id']);
             $shipping_cost = (float) ($pi['shipping'] ?? 0);
@@ -182,7 +201,8 @@ if ($path === 'checkout') {
 
             $orderModel->createItems($order_id, $order_items);
 
-            // Decrement stock (createItems no longer does this)
+            // Now that the order is recorded, take the purchased quantities out of
+            // stock so the same units can't be oversold on the next checkout.
             foreach ($items as $item) {
                 $pdo->prepare('UPDATE products SET stock_qty = stock_qty - ? WHERE id = ?')
                     ->execute([$item['quantity'], $item['product']['id']]);
@@ -213,6 +233,8 @@ if ($path === 'checkout') {
     // Notify buyer their order is confirmed
     email_order_confirmed($buyer['email'], $buyer['name'], $order_ids);
 
+    // Clear the cart and pending intents so a refresh can't re-submit, and hand
+    // the new order ids to the confirmation page via the session.
     unset($_SESSION['cart'], $_SESSION['pending_payment_intents']);
     $_SESSION['confirmed_order_ids'] = $order_ids;
     header('Location: ' . BASE_URL . 'order/confirmation');

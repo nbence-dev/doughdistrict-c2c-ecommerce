@@ -76,6 +76,9 @@ $sellerUser = $userModel->find($user['id']);
 require_once ROOT_PATH . '/models/Product.php';
 $productModel = new Product($pdo);
 
+// Treat the whole order as one parcel. Weight adds up across every item (qty
+// included), while each dimension takes the largest single item, which roughly
+// approximates stacking everything into one box.
 $totalWeight = 0.0;
 $maxLength   = 0.0;
 $maxWidth    = 0.0;
@@ -92,6 +95,8 @@ foreach ($items as $item) {
     $maxHeight    = max($maxHeight, (float) $prod['height_cm']);
 }
 
+// Fall back to sensible defaults if a product was saved without dimensions, so
+// the courier still gets a valid (non-zero) parcel to quote and book.
 $parcelDimensions = [
     'weight_kg' => $totalWeight > 0 ? $totalWeight : 0.5,
     'length_cm' => $maxLength  > 0 ? $maxLength  : 30,

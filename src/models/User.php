@@ -18,6 +18,9 @@ class User
             $stmt->execute([$name, $email, $hashed_password, $role, $phone_number ?: null]);
             return true;
         } catch (PDOException $e) {
+            // SQLSTATE 23000 is a unique-key violation, which here means the email
+            // is already registered. Return false so the controller can show a
+            // friendly message instead of crashing on the duplicate.
             if ($e->getCode() == 23000) {
                 return false;
             }
@@ -25,6 +28,8 @@ class User
         }
     }
 
+    // Used at login. The is_active = 1 filter means deactivated accounts can't
+    // be found, so they're locked out without needing a separate password check.
     public function findByEmail($email)
     {
         $stmt = $this->db->prepare('SELECT * FROM users WHERE email = ? AND is_active = 1');
@@ -48,6 +53,8 @@ class User
         return $stmt->fetchAll();
     }
 
+    // Total count for the admin user list pagination. The $filter lets the
+    // admin page count only one role, or only deactivated accounts.
     public function countAllUsers(string $filter = 'all'): int
     {
         if ($filter === 'inactive') {
@@ -61,6 +68,8 @@ class User
         return (int) $this->db->query('SELECT COUNT(*) FROM users')->fetchColumn();
     }
 
+    // Returns one page of users for the admin table. Builds the WHERE clause to
+    // match the same filter used by countAllUsers so the two stay in sync.
     public function getPaginated(int $limit, int $offset, string $filter = 'all'): array
     {
         $where = '';
@@ -71,6 +80,7 @@ class User
             $where = 'WHERE role = ?';
             $params[] = $filter;
         }
+        // limit/offset are appended last so they line up with the trailing ?s
         $params[] = $limit;
         $params[] = $offset;
         $stmt = $this->db->prepare(
@@ -93,6 +103,9 @@ class User
         return $stmt->execute([$role, $user_id]);
     }
 
+    // Admins can only be created by invite (never through the users panel).
+    // must_change_password is set to 1 so the invited admin is forced to pick
+    // their own password on first login instead of keeping the temp one.
     public function invite(string $name, string $email, string $tempPassword): bool
     {
         $hash = password_hash($tempPassword, PASSWORD_DEFAULT);
@@ -109,6 +122,7 @@ class User
         }
     }
 
+    // Clears must_change_password too, so the forced-change flow only runs once.
     public function setPassword(int $id, string $newPassword): void
     {
         $hash = password_hash($newPassword, PASSWORD_DEFAULT);

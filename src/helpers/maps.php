@@ -1,5 +1,9 @@
 <?php
-
+// Validates a South African shipping address. Strategy: always run a cheap local
+// sanity check, and if a Google API key is configured, additionally ask Google to
+// geocode it. The key point is that every network/API failure path falls back to
+// the basic check rather than blocking the user, so checkout still works offline
+// or if the API is down.
 function validate_za_address(string $street, string $city, string $province, string $postal_code, string $local_area = ''): bool
 {
     // Basic sanity check: SA postal codes are 4 digits and province must be known

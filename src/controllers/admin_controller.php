@@ -3,13 +3,19 @@ require_once ROOT_PATH . '/models/Product.php';
 require_once ROOT_PATH . '/models/Category.php';
 require_once ROOT_PATH . '/helpers/emails.php';
 
-// Views for each page (users, products, categories) will be included in the main admin view
+// This controller does double duty: the GET blocks below build data for the
+// admin list pages, and the POST blocks further down handle the admin actions
+// (toggle user, moderate product, manage categories, invite admin).
 if ($path === 'admin/users') {
     $userModel = new User($pdo);
 
+    // Only accept a known filter value from the query string; anything else
+    // (including a tampered value) falls back to 'all'.
     $allowedFilters = ['all', 'admin', 'seller', 'buyer', 'inactive'];
     $filter = in_array($_GET['filter'] ?? '', $allowedFilters) ? $_GET['filter'] : 'all';
 
+    // Standard offset pagination. The requested page is clamped between 1 and the
+    // real last page so an out-of-range ?page= can't request a negative offset.
     $perPage = 15;
     $page = max(1, (int) ($_GET['page'] ?? 1));
     $total = $userModel->countAllUsers($filter);
@@ -47,11 +53,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === 'admin/users/toggle' && i
     $userModel = new User($pdo);
     $user = $userModel->find($userId);
     if ($user) {
+        // Stop an admin locking themselves out by deactivating their own login.
         if ($userId === current_user()['id']) {
             set_flash("You cannot deactivate your own account.", 'danger');
             header('Location: ' . BASE_URL . 'admin/users');
             exit();
         }
+        // Flip whatever the current state is (active <-> inactive).
         $newStatus = !$user['is_active'];
         $userModel->setActive($userId, $newStatus);
         set_flash("User " . ($newStatus ? "activated" : "deactivated") . " successfully.", 'success');
@@ -61,7 +69,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === 'admin/users/toggle' && i
     header('Location: ' . BASE_URL . 'admin/users');
     exit();
 }
-// Role changes via the admin panel are disabled — admins are created by invite only.
+// Role changes via the admin panel are disabled by design (see CLAUDE.md): a
+// seller is self-assigned through onboarding and admins only come from invites,
+// so this endpoint always refuses, even if a request reaches it.
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === 'admin/users/role') {
     set_flash("Role changes are not permitted. Admins are created by invite only.", 'danger');
     header('Location: ' . BASE_URL . 'admin/users');
@@ -119,6 +129,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === 'admin/categories/update'
 // Handle POST requests for category deletion
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === 'admin/categories/delete' && isset($_POST['category_id'])) {
     $categoryId = (int) $_POST['category_id'];
+    // Refuse to delete a category that still has products, otherwise those
+    // products would be left pointing at a category that no longer exists.
     $categoryModel = new Category($pdo);
     if ($categoryModel->hasProducts($categoryId)) {
         set_flash("Cannot delete category with associated products. Please reassign or delete those products first.", 'danger');
@@ -141,6 +153,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $path === 'admin/users/invite') {
         exit();
     }
 
+    // Generate a random one-time password for the invited admin. It's emailed to
+    // them and they're forced to change it on first login (must_change_password).
     $tempPassword = strtoupper(bin2hex(random_bytes(4))) . strtolower(bin2hex(random_bytes(3)));
 
     $userModel = new User($pdo);

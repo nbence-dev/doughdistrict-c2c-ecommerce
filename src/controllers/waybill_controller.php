@@ -1,4 +1,7 @@
 <?php
+// Redirects the seller to the courier's printable waybill (shipping label) PDF
+// for one of their orders. Doesn't render anything itself - it just fetches the
+// label URL from Shiplogic and forwards the browser straight to it.
 require_once ROOT_PATH . '/models/Order.php';
 require_once ROOT_PATH . '/models/SellerProfile.php';
 require_once ROOT_PATH . '/helpers/courier.php';
@@ -12,12 +15,14 @@ $order_id = (int) ($_GET['id'] ?? 0);
 $data     = $orderModel->findById($order_id);
 $order    = $data['order'] ?? null;
 
+// Only the seller who owns this order may pull its label.
 if (!$order || !$sellerProfile || (int) $order['seller_id'] !== (int) $sellerProfile['id']) {
     set_flash('Order not found.', 'danger');
     header('Location: ' . BASE_URL . 'seller/orders');
     exit();
 }
 
+// A label only exists once a shipment has been booked with the courier.
 if (empty($order['shiplogic_shipment_id'])) {
     set_flash('No shipment has been booked for this order yet.', 'warning');
     header('Location: ' . BASE_URL . 'seller/orders/detail?id=' . $order_id);

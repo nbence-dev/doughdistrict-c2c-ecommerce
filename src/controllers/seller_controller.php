@@ -6,9 +6,13 @@ require_once ROOT_PATH . '/models/Category.php';
 require_once ROOT_PATH . '/helpers/r2.php';
 require_once ROOT_PATH . '/helpers/courier.php';
 
-// ── Onboarding ────────────────────────────────────────────────────────────────
-// Available to any logged-in user — a buyer becomes a seller on submit.
+// This controller is split in two: the 'seller/onboard' route is open to any
+// logged-in user (that's how a buyer turns into a seller), while every other
+// seller route in the else branch first checks that a seller profile exists and
+// bounces back to onboarding if it doesn't.
 
+// Onboarding: open to any logged-in user. On submit, the buyer gets a seller
+// profile and is promoted to the seller role.
 if ($path === 'seller/onboard') {
     $sellerProfileModel = new SellerProfile($pdo);
 
@@ -50,6 +54,9 @@ if ($path === 'seller/onboard') {
         }
 
         try {
+            // Create the profile, then save the collection address onto it, then
+            // promote the user to 'seller'. Role is only flipped after the profile
+            // exists so we never have a seller with no shop record.
             $sellerProfileModel->create(current_user()['id'], $shop_name, $bio);
             $profile = $sellerProfileModel->findByUserId(current_user()['id']);
             $sellerProfileModel->updateAddress($profile['id'], $street, $local_area, $city, $zone, $postal_code, $mobile_number);
@@ -154,6 +161,9 @@ if ($path === 'seller/onboard') {
 
             if (empty($errors)) {
                 try {
+                    // Try to pre-fetch a shipping estimate so buyers see a cost up
+                    // front. This is best-effort: if the courier API fails we leave
+                    // shipping_cost null rather than blocking the listing.
                     $shipping_cost = null;
                     if (!empty($sellerProfile['street_address'])) {
                         try {
@@ -165,9 +175,12 @@ if ($path === 'seller/onboard') {
                                 'height_cm'   => $height_cm,
                             ]);
                         } catch (RuntimeException $e) {
-                            // Rate fetch failed — save product without estimate
+                            // Rate fetch failed - save product without estimate
                         }
                     }
+                    // Upload the image to R2 first; we only store the returned CDN
+                    // URL on the product row. New listings start as 'pending' (the
+                    // DB default) and stay hidden until an admin approves them.
                     $image_url = upload_to_r2($_FILES['image']);
                     $productModel = new Product($pdo);
                     $productModel->create($sellerProfile['id'], $category_id, $name, $description, $price, $stock_qty, $image_url, $weight_kg, $length_cm, $width_cm, $height_cm, $shipping_cost);
@@ -239,6 +252,8 @@ if ($path === 'seller/onboard') {
                             // Rate fetch failed — keep existing estimate
                         }
                     }
+                    // Keep the existing image unless the seller actually uploaded
+                    // a replacement, so editing other fields doesn't wipe the photo.
                     $image_url = $product['image_url'];
                     if (!empty($_FILES['image']['name'])) {
                         $image_url = upload_to_r2($_FILES['image']);
@@ -279,6 +294,8 @@ if ($path === 'seller/onboard') {
         }
 
         try {
+            // Remove the image from R2 before deleting the row so we don't leave
+            // an orphaned file in the bucket with nothing pointing at it.
             if (!empty($product['image_url'])) {
                 delete_from_r2($product['image_url']);
             }
@@ -291,9 +308,11 @@ if ($path === 'seller/onboard') {
         header('Location: ' . BASE_URL . 'seller/products');
         exit();
 
-        // ── Stripe Connect — Phase 3 stub ─────────────────────────────────────────
+        // Stripe Connect (two-step OAuth). 'connect' sends the seller off to
+        // Stripe; 'callback' is where Stripe sends them back afterwards.
 
     } elseif ($path === 'seller/stripe/connect') {
+        // Kick off the OAuth flow by redirecting to Stripe's authorize URL.
         require_once ROOT_PATH . '/helpers/stripe.php';
         header('Location: ' . stripe_connect_oauth_url($sellerProfile['id']));
         exit();
@@ -301,6 +320,7 @@ if ($path === 'seller/onboard') {
 
     } elseif ($path === 'seller/stripe/callback') {
         require_once ROOT_PATH . '/helpers/stripe.php';
+        // Seller clicked cancel/deny on Stripe's side.
         if (isset($_GET['error'])) {
             set_flash('Stripe connection cancelled.', 'warning');
             header('Location: ' . BASE_URL . 'seller/dashboard');
@@ -309,12 +329,17 @@ if ($path === 'seller/onboard') {
         $code = $_GET['code'] ?? '';
         $state = (int) ($_GET['state'] ?? 0);
 
+        // 'state' must match the profile id we sent out in stripe_connect_oauth_url.
+        // This makes sure the callback belongs to this seller and isn't a forged
+        // or replayed request, and that we actually got an authorization code.
         if ($state !== (int) $sellerProfile['id'] || $code === '') {
             set_flash('Invalid Stripe callback', 'danger');
             header('Location: ' . BASE_URL . 'seller/dashboard');
             exit();
         }
         try {
+            // Exchange the one-time code for the seller's connected account id,
+            // store it, and mark onboarding complete so checkout will allow sales.
             $response = \Stripe\OAuth::token([
                 'grant_type' => 'authorization_code',
                 'code' => $code,

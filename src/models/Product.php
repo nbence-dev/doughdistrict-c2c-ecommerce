@@ -92,6 +92,8 @@ class Product
         return $stmt->execute([$id]);
     }
 
+    // Used by admin product moderation. The allowlist guards against an
+    // arbitrary status being written even though the column is an ENUM.
     public function setStatus($id, $status)
     {
         $allowed = ['pending', 'active', 'rejected'];
@@ -115,11 +117,15 @@ class Product
         return $stmt->fetchAll();
     }
 
+    // Public storefront listing. Only 'active' products are ever shown to buyers;
+    // search and category filters are optional and stacked on top with AND.
     public function getBrowse($search = '', $category_id = null)
     {
+        // Start with the always-on active filter, then add optional conditions.
         $conditions = ["p.status = 'active'"];
         $params = [];
         if (!empty($search)) {
+            // Match the keyword against either the name or the description.
             $conditions[] = '(p.name LIKE ? OR p.description LIKE ?)';
             $params[] = "%$search%";
             $params[] = "%$search%";
@@ -130,6 +136,8 @@ class Product
         }
         $where = 'WHERE ' . implode(' AND ', $conditions);
 
+        // The two subqueries pull the average rating and review count per product
+        // so the browse cards can show stars without a second round-trip.
         $stmt = $this->db->prepare(
             "SELECT p.*, c.name AS category_name, sp.shop_name, u.name AS seller_name,
                     (SELECT AVG(r.rating) FROM reviews r WHERE r.product_id = p.id) AS avg_rating,

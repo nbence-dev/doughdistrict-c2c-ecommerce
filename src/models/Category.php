@@ -21,6 +21,8 @@ class Category
         return $stmt->fetchAll();
     }
 
+    // LEFT JOIN so categories with zero products still show up (with count 0)
+    // on the admin categories screen.
     public function getAllWithCount()
     {
         $stmt = $this->db->query('SELECT c.*, COUNT(p.id) AS product_count FROM categories c LEFT JOIN products p ON p.category_id = c.id GROUP BY c.id');
@@ -47,6 +49,7 @@ class Category
         return $stmt->execute([$id]);
     }
 
+    // Checked before deleting a category so we don't orphan its products.
     public function hasProducts(int $id): bool
     {
         $stmt = $this->db->prepare('SELECT COUNT(*) FROM products WHERE category_id = ?');
@@ -62,6 +65,8 @@ class Category
         return $row ?: null;
     }
 
+    // Case- and whitespace-insensitive duplicate check so "Bread" and " bread "
+    // count as the same name. $excludeId skips the row being edited.
     public function nameExists($name, $excludeId = null)
     {
         if ($excludeId) {
@@ -74,6 +79,9 @@ class Category
         return (int) $stmt->fetchColumn() > 0;
     }
 
+    // Turns a display name into a URL-safe slug, e.g. "Cakes & Bakes" -> "cakes-bakes".
+    // Lowercases, drops anything that isn't a letter/number/space/dash, then
+    // collapses runs of spaces into single dashes.
     private function slugify($name)
     {
         $slug = strtolower(trim($name));

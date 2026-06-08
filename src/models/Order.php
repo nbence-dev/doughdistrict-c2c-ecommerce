@@ -8,6 +8,10 @@ class Order
         $this->db = $pdo;
     }
 
+    // Creates one order row per seller. The shipping_* columns store a snapshot
+    // of the buyer's address at purchase time, so later edits to their saved
+    // address book don't change what was on a past order. Status starts at 'paid'
+    // because the order is only written after Stripe confirms payment.
     public function create($buyer_id, $seller_id, $total_amount, $stripe_payment_intent_id, $shipping, $shipping_cost = null)
     {
         $stmt = $this->db->prepare("INSERT INTO orders
@@ -17,6 +21,9 @@ class Order
         return $this->db->lastInsertId();
     }
 
+    // Saves the line items. product_name and unit_price are copied in as a
+    // snapshot so the order still reads correctly if the product is later
+    // renamed, repriced, or deleted.
     public function createItems($order_id, array $items)
     {
         $stmt = $this->db->prepare("
@@ -46,12 +53,16 @@ class Order
         $stmt->execute([$status, $order_id]);
     }
 
+    // Called after a shipment is booked with the courier. Saves the tracking
+    // details and bumps the order to 'shipped' in the same update.
     public function storeTracking($order_id, $shiplogic_shipment_id, $tracking_reference, $estimated_collection = null)
     {
         $stmt = $this->db->prepare('UPDATE orders SET shiplogic_shipment_id = ?, tracking_reference = ?, estimated_collection = ?, status = ? WHERE id = ?');
         $stmt->execute([$shiplogic_shipment_id, $tracking_reference, $estimated_collection, 'shipped', $order_id]);
     }
 
+    // Returns the order header plus its line items in one call, so order detail
+    // pages get everything they need as ['order' => ..., 'items' => ...].
     public function findById($order_id)
     {
         $stmt = $this->db->prepare('SELECT o.*, sp.shop_name FROM orders o
@@ -67,6 +78,10 @@ class Order
         return ['order' => $order, 'items' => $items];
     }
 
+    // Seller's order list. Note $seller_id here is the user id, joined through
+    // seller_profiles. The FIELD() sort forces the workflow order (unfulfilled
+    // 'paid' orders first, 'delivered' last) rather than plain alphabetical,
+    // then newest-first within each status group.
     public function findBySeller($seller_id)
     {
         $stmt = $this->db->prepare('SELECT o.*, u.name

@@ -40,6 +40,11 @@ class Review
         return (int) $stmt->fetchColumn();
     }
 
+    // Works out which of the buyer's orders let them review this product.
+    // An order qualifies only if it contains the product, belongs to the buyer,
+    // is already 'delivered', and hasn't been reviewed yet (the NOT EXISTS).
+    // This enforces the "one review per buyer per product per order" rule and
+    // stops reviews on items that never arrived.
     public function eligibleOrderIds(int $product_id, int $buyer_id): array
     {
         $stmt = $this->db->prepare("SELECT DISTINCT o.id
@@ -56,6 +61,7 @@ class Review
         return $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
 
+    // Final guard before insert, in case the same review form is submitted twice.
     public function hasReviewed(int $product_id, int $buyer_id, int $order_id): bool
     {
         $stmt = $this->db->prepare("SELECT COUNT(*) FROM reviews

@@ -6,6 +6,9 @@ $productModel = new Product($pdo);
 $categoryModel = new Category($pdo);
 
 if ($path === 'browse') {
+    // The category comes in as a readable slug in the URL (?category=bread), so
+    // look up its numeric id before querying. An unknown slug just falls back to
+    // "no category filter" rather than erroring.
     $search        = trim($_GET['q'] ?? '');
     $category_slug = trim($_GET['category'] ?? '');
     $category_id   = null;
@@ -27,6 +30,8 @@ if ($path === 'product') {
         $reviews = $reviewModel->forProduct($id);
         $avgRating = $reviewModel->avgRating($id);
         $reviewCount = $reviewModel->countForProduct($id);
+        // Work out whether to show this user a "leave a review" form. Admins
+        // never buy, so they're never eligible and we skip the lookup for them.
         $eligibleOrderIds = (current_user()['role'] !== 'admin')
             ? $reviewModel->eligibleOrderIds($id, current_user()['id'])
             : [];

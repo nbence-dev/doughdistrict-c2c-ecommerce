@@ -1,5 +1,11 @@
 <?php
+// Thin wrapper around the Shiplogic (The Courier Guy) REST API. Every call goes
+// through shiplogic_request(), which handles auth, JSON, and error translation.
 
+// Sends one request and returns the decoded JSON. The rtrim/ltrim join avoids
+// double slashes when stitching the base URL and endpoint together. Any HTTP
+// 4xx/5xx is turned into a RuntimeException carrying the API's error message,
+// so callers can just try/catch instead of inspecting status codes.
 function shiplogic_request($method, $endpoint, $body = null)
 {
     $url = rtrim($_ENV['SHIPLOGIC_API_URL'], '/') . '/' . ltrim($endpoint, '/');
@@ -36,6 +42,10 @@ function shiplogic_request($method, $endpoint, $body = null)
     return $data;
 }
 
+// Books an actual shipment. Collection details come from the seller's profile,
+// delivery details from the order's snapshotted shipping address, and the parcel
+// dimensions from the form the seller fills in. 'ECO' is the cheapest economy
+// service level, which is all the MVP offers.
 function shiplogic_create_shipment($order, $seller_profile, $seller_user, $buyer_user, $parcel)
 {
     $body = [
@@ -95,6 +105,9 @@ function shiplogic_get_label_url($shipment_id)
     return $data['url'] ?? null;
 }
 
+// Fetches a shipping estimate for a product so the seller sees a cost when
+// listing it. We don't know the buyer yet, so a fixed Sandton delivery address
+// stands in as a representative destination just to get a ballpark rate.
 function shiplogic_get_rate($sellerProfile, $parcel)
 {
     $body = [
@@ -131,6 +144,8 @@ function shiplogic_get_rate($sellerProfile, $parcel)
 
     // Response may be an array of rate objects, or a wrapper with a 'rates' key
     $rates = $data['rates'] ?? (isset($data[0]) ? $data : []);
+    // Prefer the ECO rate to match the service level we actually ship with;
+    // fall back to the first rate, then to 0 if the API returned nothing usable.
     foreach ($rates as $r) {
         if (($r['service_level_code'] ?? '') === 'ECO') {
             return (float) $r['rate'];

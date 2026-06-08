@@ -51,7 +51,8 @@
                                 <td class="px-4 py-4" style="color: var(--dd-on-surface-var);"><?= htmlspecialchars(date('d M Y', strtotime($o['created_at']))) ?></td>
                                 <td class="px-4 py-4 fw-semibold" style="color: var(--dd-primary);"><?= htmlspecialchars($o['shop_name']) ?></td>
                                 <td class="px-4 py-4"><span class="status-badge <?= $statusClass ?>"><?= ucfirst(htmlspecialchars($o['status'])) ?></span></td>
-                                <td class="px-4 py-4 fw-bold" style="color: var(--dd-secondary);">R&nbsp;<?= number_format($o['total_amount'], 2) ?></td>
+                                <?php // Include shipping so this matches the total shown on the order detail page ?>
+                                <td class="px-4 py-4 fw-bold" style="color: var(--dd-secondary);">R&nbsp;<?= number_format($o['total_amount'] + ($o['shipping_cost'] ?? 0), 2) ?></td>
                                 <td class="px-4 py-4 text-end">
                                     <a href="<?= BASE_URL ?>orders/detail?id=<?= (int) $o['id'] ?>" class="fw-bold text-decoration-none" style="color: var(--dd-primary);">View Details</a>
                                 </td>

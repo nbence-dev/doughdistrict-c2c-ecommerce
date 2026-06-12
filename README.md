@@ -39,7 +39,7 @@ All forms across the app share an inline client-side validation layer (`public/a
 
 | Layer | Technology |
 |---|---|
-| **Frontend** | HTML5, Bootstrap 5, jQuery 3, Material Symbols |
+| **Frontend** | HTML5, Bootstrap 5 (buyer/admin/auth), Tailwind CSS v4 (seller area), vanilla JavaScript, Material Symbols |
 | **Backend** | PHP 8, procedural + light OOP (no framework) |
 | **Database** | MySQL 8 |
 | **Object Storage** | Cloudflare R2 (S3-compatible, via AWS SDK for PHP) |

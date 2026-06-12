@@ -23,13 +23,13 @@ DoughDistrict is a consumer-to-consumer (C2C) e-commerce platform for home-baked
 - Product CRUD with image upload to Cloudflare R2
 - Connect a Stripe account via OAuth to receive payments directly
 - View and manage incoming orders, update fulfilment status
-- Orders sorted by upcoming driver pickup date (soonest first)
+- Orders sorted by fulfilment status (unfulfilled first), then newest first
 - Book shipments via The Courier Guy (Shiplogic API) with parcel dimensions
 - Tracking reference, estimated driver pickup date, and Print Waybill stored after booking
 - Email notification sent to seller on every new order received
 
 **Admin**
-- Manage all users: activate/deactivate, promote buyer→admin or demote admin→buyer
+- Manage all users: activate/deactivate accounts, invite new admins
 - Moderate product listings (approve, reject, set pending)
 - Manage product categories (create, edit, delete with product guard)
 
@@ -39,7 +39,7 @@ All forms across the app share an inline client-side validation layer (`public/a
 
 | Layer | Technology |
 |---|---|
-| **Frontend** | HTML5, Bootstrap 5, jQuery 3, Material Symbols |
+| **Frontend** | HTML5, Bootstrap 5 (buyer/admin/auth), Tailwind CSS v4 (seller area), vanilla JavaScript, Material Symbols |
 | **Backend** | PHP 8, procedural + light OOP (no framework) |
 | **Database** | MySQL 8 |
 | **Object Storage** | Cloudflare R2 (S3-compatible, via AWS SDK for PHP) |
@@ -208,22 +208,6 @@ Tunnel credentials (`cloudflared/config.yml` and `cloudflared/creds.json`) are g
 
 **Role transition rules:**
 - Any `buyer` can self-upgrade to `seller` via the shop onboarding form
-- Admin can promote `buyer → admin` or demote `admin → buyer`
-- The `seller` role is locked — admins cannot reassign it
+- New `admin` accounts are created by invitation only (from the admin users panel)
+- Roles cannot be changed through the user-management table — sellers self-onboard and admins are invited
 - Admins must use a separate account to buy or sell
-
-## Build Phases
-
-| Phase | Scope | Status |
-|---|---|---|
-| 0 | Folder structure, Docker, schema.sql | Done |
-| 1 | Auth + RBAC (register, login, logout, role guards, seed admin) | Done |
-| 2 | Admin panel (user management, categories, product moderation) | Done |
-| 3 | Seller: shop onboarding, product CRUD, R2 image upload, Stripe Connect OAuth | Done |
-| 4 | Buyer: browse, search, category filter, product detail, session cart | Done |
-| 5 | Checkout + Stripe payment (destination charges), order creation | Done |
-| 6 | Order management (buyer history, seller fulfilment, status updates) | Done |
-| 7 | Shiplogic (The Courier Guy) integration — shipment booking, tracking, waybill | Done |
-| 8 | Reviews (post-delivery, per product per order, rating 1–5) | Done |
-| 9 | Email notifications (Resend) — order confirmed, shipped, delivered, new order | Done |
-| 10 | Admin dashboard stats, polish, seed data verification | Pending |

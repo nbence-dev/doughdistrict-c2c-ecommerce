@@ -237,7 +237,7 @@ $flash = get_flash();
 </div><!-- /.admin-content -->
 </div><!-- /#admin-main -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="<?= JS_URL ?>validation.js"></script>
+<script src="<?= asset('js/validation.js') ?>"></script>
 <script>
     // Existing category names for duplicate checking (id + lowercased name)
     const existingCategories = <?= json_encode(array_map(fn($c) => ['id' => (int)$c['id'], 'name' => strtolower(trim($c['name']))], $categories)) ?>;

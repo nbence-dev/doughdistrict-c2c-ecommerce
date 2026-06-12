@@ -28,19 +28,31 @@ document.addEventListener('DOMContentLoaded', function () {
         errorDiv.textContent = event.error ? event.error.message : '';
     });
 
-    // Address section toggle
+    // Address section toggle: the new-address form is only shown when "Use a new
+    // address" is selected. While it's hidden we also disable its inputs. This
+    // matters because those fields are marked `required`: a hidden required field
+    // can't be focused, so the browser silently blocks the form submit (and the
+    // Pay button does nothing) when a saved address is chosen. Disabling the
+    // fields takes them out of validation and out of the POST entirely.
     const newToggle = document.getElementById('new-address-toggle');
     const newFields = document.getElementById('new-address-fields');
     if (newToggle && newFields) {
+        const setNewFieldsActive = function (active) {
+            newFields.classList.toggle('d-none', !active);
+            newFields.querySelectorAll('input, select, textarea').forEach(function (el) {
+                el.disabled = !active;
+            });
+        };
+
         document.querySelectorAll('input[name="address_id"]').forEach(function (radio) {
             radio.addEventListener('change', function () {
-                if (this.value === '0') {
-                    newFields.classList.remove('d-none');
-                } else {
-                    newFields.classList.add('d-none');
-                }
+                setNewFieldsActive(this.value === '0');
             });
         });
+
+        // Match the initial state to whichever radio is checked on page load.
+        const checked = document.querySelector('input[name="address_id"]:checked');
+        setNewFieldsActive(!!checked && checked.value === '0');
     }
 
     form.addEventListener('submit', async function (e) {

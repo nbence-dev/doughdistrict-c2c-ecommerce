@@ -367,8 +367,8 @@ include __DIR__ . '/layout.php'; ?>
 </main>
 
 <script src="https://js.stripe.com/v3/"></script>
-<script src="<?= JS_URL ?>validation.js"></script>
-<script src="<?= JS_URL ?>checkout.js"></script>
+<script src="<?= asset('js/validation.js') ?>"></script>
+<script src="<?= asset('js/checkout.js') ?>"></script>
 
 <script>
 function initAddressAutocomplete() {

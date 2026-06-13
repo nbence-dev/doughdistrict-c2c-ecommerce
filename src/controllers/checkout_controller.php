@@ -60,6 +60,17 @@ if ($path === 'checkout') {
         exit();
     }
 
+    // One Stripe Customer per checkout, shared by every seller's PaymentIntent.
+    // Without it the same card can't be confirmed against more than one intent.
+    $buyer = current_user();
+    try {
+        $stripe_customer_id = stripe_create_customer($buyer['email'], $buyer['name']);
+    } catch (Exception $e) {
+        set_flash('Failed to initialize payment: ' . $e->getMessage(), 'danger');
+        header('Location: ' . BASE_URL . 'cart');
+        exit();
+    }
+
     // Create a PaymentIntent per seller (items + shipping)
     $client_secrets = [];
     $_SESSION['pending_payment_intents'] = [];
@@ -79,7 +90,7 @@ if ($path === 'checkout') {
             // Stripe wants the amount as an integer in the smallest unit, so the
             // rand total (items + shipping) is rounded and multiplied by 100.
             $amount_cents = (int) round(($group['subtotal'] + $group['shipping']) * 100);
-            $intent = stripe_create_payment_intent($amount_cents, 'usd');
+            $intent = stripe_create_payment_intent($amount_cents, 'usd', $stripe_customer_id);
             $client_secrets[] = $intent->client_secret;
             // Remember each intent id + its shipping cost so checkout/confirm can
             // re-check payment and reuse the same shipping figure on the order.

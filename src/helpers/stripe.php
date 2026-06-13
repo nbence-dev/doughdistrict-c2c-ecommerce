@@ -18,15 +18,31 @@ function stripe_connect_oauth_url($seller_profile_id)
     ]);
 }
 
+// A cart can span several sellers, which means several PaymentIntents confirmed
+// with the same card in one go. Stripe won't let a PaymentMethod be reused
+// across PaymentIntents unless it's attached to a Customer, so each checkout
+// gets a Customer that every intent shares. Returns the customer id.
+function stripe_create_customer($email, $name)
+{
+    return \Stripe\Customer::create([
+        'email' => $email,
+        'name'  => $name,
+    ])->id;
+}
+
 // Creates the PaymentIntent that the checkout page confirms with the card.
 // Amount is in the currency's smallest unit (cents), so callers multiply rands
-// by 100 before passing it in.
-function stripe_create_payment_intent($amount_cents, $currency)
+// by 100 before passing it in. The customer is attached and setup_future_usage
+// is set so the first confirmation saves the card to the customer, letting the
+// remaining sellers' intents reuse it without a "PaymentMethod used before" error.
+function stripe_create_payment_intent($amount_cents, $currency, $customer_id)
 {
     return \Stripe\PaymentIntent::create([
         'amount' => $amount_cents,
         'currency' => $currency,
         'payment_method_types' => ['card'],
+        'customer' => $customer_id,
+        'setup_future_usage' => 'off_session',
     ]);
 }
 ?>

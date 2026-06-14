@@ -116,8 +116,8 @@ class User
             return true;
 
         } catch (PDOException $e) {
-            if ($e->getCode() === 23000)
-                return false; // duplicate email
+            if ($e->getCode() === '23000')
+                return false; // duplicate email (SQLSTATE is a string)
             throw $e;
         }
     }

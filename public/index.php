@@ -20,11 +20,8 @@ switch ($path) {
 
     case '':
         // Root: send logged-in users to browse, guests to login
-        if (is_logged_in()) {
-            header('Location: ' . BASE_URL . 'browse');
-        } else {
-            header('Location: ' . BASE_URL . 'login');
-        }
+
+        header('Location: ' . BASE_URL . 'browse');
         exit();
 
     case 'login':
@@ -48,7 +45,7 @@ switch ($path) {
         exit();
 
     case 'browse':
-        require_login();
+
         require_once ROOT_PATH . '/controllers/browse_controller.php';
         require_once ROOT_PATH . '/views/buyer/browse.php';
         break;
